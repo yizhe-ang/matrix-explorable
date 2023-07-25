@@ -23,7 +23,8 @@
 </script>
 
 <!-- Set up camera and lighting -->
-<T.PerspectiveCamera makeDefault position={[0, 0, 1.2]}>
+<T.PerspectiveCamera makeDefault position={[0, 0, 1.12]} near={0.01}>
+  <!-- TODO: Look for better controls? -->
 	<OrbitControls enableDamping />
 </T.PerspectiveCamera>
 

@@ -15,6 +15,7 @@
 		"@rollup/plugin-dsv": "^3.0.2",
 		"@sveltejs/adapter-static": "2.0.2",
 		"@sveltejs/kit": "1.21.0",
+		"@tweakpane/core": "^1.1.9",
 		"archieml": "^0.5.0",
 		"autoprefixer": "^10.4.14",
 		"d3": "^7.8.5",
@@ -39,8 +40,11 @@
 	},
 	"browserslist": "> 0.5%, last 4 versions, not ie <= 11, not ie_mob <= 11",
 	"dependencies": {
+		"@fontsource/old-standard-tt": "^5.0.5",
 		"@threlte/core": "^6.0.0-next.11",
 		"@threlte/extras": "^5.0.0-next.16",
+		"canvas-sketch-util": "^1.10.0",
+		"gsap": "^3.12.2",
 		"mathbox": "^2.3.2-rc1",
 		"three": "github:yizhe-ang/three.js",
 		"tweakpane": "^3.1.10"
