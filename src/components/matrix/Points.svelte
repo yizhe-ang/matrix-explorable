@@ -69,7 +69,7 @@
 		colors: "<",
 		// Multiply every color component in [0..1] by 255
 		color: 0xffffff,
-		size: 3,
+		size: 50,
 		zBias
 	});
 

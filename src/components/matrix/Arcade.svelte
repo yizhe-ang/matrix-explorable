@@ -2,23 +2,29 @@
 	// import Grid from "./Grid.svelte";
 	import { Grid } from "@threlte/extras";
 	import { useTweakpane } from "$utils/useTweakpane";
-	import BasisVectors from "./BasisVectors.svelte";
 	import { T } from "@threlte/core";
-	import { gsap, ScrollTrigger } from "$utils/gsap.js";
 	import Points from "./Points.svelte";
 	import Sphere from "./Sphere.svelte";
 	import Circle from "./Circle.svelte";
+	import { endMatrix, playhead, playToggle, matrixTween } from "$stores";
+	import Vector from "./Vector.svelte";
+	import { ScrollTrigger, gsap } from "$utils/gsap.js";
+	import { onMount } from "svelte";
+	import { sceneMounted, titleMounted, loaded } from "$stores";
+	import { colorVector, colorX, colorY, colorZ } from "$data/variables";
 
 	export let mathbox;
+
+	let mounted;
 
 	const gridColor = "#71717a";
 	const axisColor = "#d4d4d8";
 
 	// Set this to the z-position of the camera
-	mathbox.set("focus", 1.2);
+	// mathbox.set("focus", 1);
 
 	// Set up coordinate system
-	const dim = 15;
+	const dim = 1;
 	const range = [
 		[-dim, dim],
 		[-dim, dim],
@@ -28,108 +34,59 @@
 		range
 	});
 
-	const transformedView = view.transform();
-
 	// States
-	const initMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+	const startMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+	let matrix = [...startMatrix];
 
-	const state = {
-		matrix: initMatrix,
-		endMatrix: [...initMatrix]
-	};
+	// const transformedView = view.transform();
+	// FIXME: Or should I just set manually?
+	const transformedView = view.transform({}, { matrix: () => matrix });
 
 	// Inputs
-	const { pane, action, addInput, addButton } = useTweakpane({});
-
-	const xBasis = addInput({
-		label: "x",
-		value: { x: 2, y: 0, z: 0 },
-		params: { y: { inverted: true } }
-	});
-
-	const yBasis = addInput({
-		label: "y",
-		value: { x: 1, y: 1, z: 0 },
-		params: { y: { inverted: true } }
-	});
-
-	const zBasis = addInput({
-		label: "z",
-		value: { x: -1, y: 1, z: 1 },
-		params: { y: { inverted: true } }
-	});
-
-	const t = addInput({
-		label: "t",
-		value: 0,
-		params: {
-			min: 0,
-			max: 1
-		}
-	});
-
-	// Play matrix transformation
-	addButton({
-		title: "play",
-		onClick: play
-	});
+	// const { pane, action, addInput, addButton } = useTweakpane({});
 
 	// Matrix animation
-	const matrixTween = gsap.to(state.matrix, {
+	// TODO: Make the ease linear
+	// So that the playhead corresponds to the animation progress
+	// Tween the animation's progress separately instead
+	$matrixTween = gsap.to(matrix, {
 		ease: "power2.inOut",
 		duration: 2,
 		paused: true,
-		endArray: state.endMatrix,
+		endArray: $endMatrix,
 		onUpdate() {
-			state.matrix = state.matrix;
-
-			$t = this.progress();
+			$playhead = this.progress();
+			matrix = matrix;
 		},
 		onComplete() {
-			this.pause();
+			// play icon
+			$playToggle = true;
 		}
 	});
 
 	// Update
-	$: transformedView.set("matrix", state.matrix);
-
-	// Sync playhead
-	$: {
-		matrixTween.progress($t);
-		state.matrix = state.matrix;
-	}
-
-	function play() {
-		matrixTween.play();
-		console.log("play");
-	}
-
-	// Update
-	$: onBasisChange($xBasis, $yBasis, $zBasis);
-	function onBasisChange(xBasis, yBasis, zBasis) {
-		// Update end matrices
-		state.endMatrix[0] = xBasis.x;
-		state.endMatrix[1] = yBasis.x;
-		state.endMatrix[2] = zBasis.x;
-
-		state.endMatrix[4] = xBasis.y;
-		state.endMatrix[5] = yBasis.y;
-		state.endMatrix[6] = zBasis.y;
-
-		state.endMatrix[8] = xBasis.z;
-		state.endMatrix[9] = yBasis.z;
-		state.endMatrix[10] = zBasis.z;
+	$: onMatrixChange($endMatrix);
+	let nudgeFlag = true;
+	function onMatrixChange(endMatrix) {
+		// Reset matrix?
+		matrix.forEach((_, i) => {
+			matrix[i] = startMatrix[i];
+		});
 
 		// Update tween
-		matrixTween.invalidate();
-		console.log(matrixTween);
-		// matrixTween.progress(matrixTween.progress())
-		state.matrix = state.matrix;
+		$matrixTween.invalidate();
+
+		// HACK: Nudge
+		const nudgeAmt = nudgeFlag ? 0.0001 : -0.0001;
+		$matrixTween.progress($matrixTween.progress() + nudgeAmt);
+		nudgeFlag = !nudgeFlag;
+
+		matrix = matrix;
 	}
 
 	// Grid props
-	const gridCellSize = 0.066; // HACK
-	const gridSectionSize = 0.8;
+	const gridCellSize = 1;
+	const gridSectionSize = 5;
 
 	const gridProps = {
 		cellSize: gridCellSize,
@@ -139,32 +96,247 @@
 		sectionColor: "#52525b",
 		sectionThickness: 3,
 		infiniteGrid: true,
-		fadeDistance: 3,
-		fadeStrength: 3
+		fadeDistance: 30,
+		fadeStrength: 5
 	};
+
+	const altFadeDistance = 20;
+
+	// ScrollTrigger
+	const delay = 0.5;
+
+	let vectorCoords = [0, 0, 0, 0, 0, 0];
+	let xCoords = [0, 0, 0, 0, 0, 0];
+	let yCoords = [0, 0, 0, 0, 0, 0];
+	let zCoords = [0, 0, 0, 0, 0, 0];
+
+	let props = {
+		vectorTexOpacity: 0,
+		xTexOpacity: 0,
+		yTexOpacity: 0,
+		zTexOpacity: 0
+	};
+
+	const stProps = {
+		// pin: "#section-1",
+		pin: "#article",
+		// pin: true,
+		start: "center center",
+		scrub: 1,
+		pinSpacing: true,
+		toggleClass: "active",
+		onEnter: function () {
+			animateInStProgress();
+		},
+		onLeave: function () {
+			animateOutStProgress();
+		},
+		onEnterBack: function () {
+			animateInStProgress();
+		},
+		onLeaveBack: function () {
+			animateOutStProgress();
+		}
+	};
+
+	const timelineProps = {
+		onUpdate: function () {
+			updateStProgress(this.progress());
+		}
+	};
+
+	const scrollUnit = 1_000;
+
+	function animate() {
+		// gsap
+		// 	.timeline({
+		// 		...timelineProps,
+		// 		scrollTrigger: {
+		// 			...stProps,
+		// 			trigger: "#st-1",
+		// 			end: `+=${scrollUnit * 1}`,
+		// 		}
+		// 	})
+		// 	// Animate in vector
+		// 	.to(vectorCoords, {
+		// 		endArray: [0, 0, 0, -1, 2, 0],
+		// 		onUpdate: function () {
+		// 			vectorCoords = vectorCoords;
+		// 		},
+		// 		delay
+		// 	})
+		// 	.to(props, {
+		// 		vectorTexOpacity: 1,
+		// 		onUpdate: function () {
+		// 			props = props;
+		// 		}
+		// 	});
+
+		gsap
+			.timeline({
+				...timelineProps,
+				scrollTrigger: {
+					...stProps,
+					trigger: "#st-2",
+					end: `+=${scrollUnit * 3}`
+				}
+			})
+			// Animate in basis vectors
+			.to(xCoords, {
+				endArray: [0, 0, 0, 1, 0, 0],
+				onUpdate: function () {
+					xCoords = xCoords;
+				},
+				delay
+			})
+			.to(
+				yCoords,
+				{
+					endArray: [0, 0, 0, 0, 1, 0],
+					onUpdate: function () {
+						yCoords = yCoords;
+					}
+				},
+				"<"
+			)
+			.to(props, {
+				xTexOpacity: 1,
+				onUpdate: function () {
+					props = props;
+				}
+			})
+			.to(
+				props,
+				{
+					yTexOpacity: 1,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"<"
+			)
+			// Scale basis vectors to example vector
+			.to(props, {
+				xTexOpacity: 0,
+				onUpdate: function () {
+					props = props;
+				},
+				delay
+			})
+			.to(
+				props,
+				{
+					yTexOpacity: 0,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"<"
+			)
+			.to(xCoords, {
+				endArray: [0, 0, 0, -1, 0, 0],
+				onUpdate: function () {
+					xCoords = xCoords;
+				},
+				delay
+			})
+			.to(yCoords, {
+				endArray: [0, 0, 0, 0, 2, 0],
+				onUpdate: function () {
+					yCoords = yCoords;
+				},
+				delay
+			})
+			.to(yCoords, {
+				endArray: [-1, 0, 0, -1, 2, 0],
+				onUpdate: function () {
+					yCoords = yCoords;
+				},
+				delay
+			})
+			.to(
+				{},
+				{
+					duration: delay * 2
+				}
+			);
+	}
+
+	function updateStProgress(progress) {
+		gsap.set("#st-progress", {
+			scaleY: progress
+		});
+	}
+	function animateInStProgress() {
+		gsap.to("#st-progress", {
+			opacity: 1,
+			duration: 0.5
+		});
+	}
+	function animateOutStProgress() {
+		gsap.to("#st-progress", {
+			opacity: 0,
+			duration: 0.5
+		});
+	}
+
+  // TODO: Make sure ScrollTriggers are in order
+  // DOM / Layout is already mounted
+	// $: if (mounted && $titleMounted && $sceneMounted) animate();
+	// $: if (loaded && $titleMounted && $sceneMounted) animate();
+	$: if (loaded) animate();
+
+	onMount(() => {
+		mounted = true;
+	});
 </script>
 
+<!-- Example vector -->
+<Vector
+	view={transformedView}
+	coords={vectorCoords}
+	color={colorVector}
+	texOpacity={props.vectorTexOpacity}
+/>
+<!-- Basis vectors -->
+<Vector
+	view={transformedView}
+	coords={xCoords}
+	color={colorX}
+	texOpacity={props.xTexOpacity}
+/>
+<Vector
+	view={transformedView}
+	coords={yCoords}
+	color={colorY}
+	texOpacity={props.yTexOpacity}
+/>
+<!-- <Vector view={transformedView} coords={zCoords} color={colorZ} /> -->
+
 <!-- Peripherals -->
-<BasisVectors view={transformedView} />
 <!-- <Grid {view} {dim} opacity={0.2} {gridColor} {axisColor} />
 <Grid view={transformedView} {dim} {gridColor} {axisColor} /> -->
-<T.Group matrix={state.matrix} matrixAutoUpdate={false}>
+
+<T.Group {matrix} matrixAutoUpdate={false}>
+	<!-- FIXME: Don't do infinite grid? A bit confusing -->
 	<Grid axes={"xyz"} {...gridProps} />
 	<Grid
 		position.y={gridSectionSize}
 		axes={"xzy"}
 		{...gridProps}
-		fadeDistance={2}
+		fadeDistance={altFadeDistance}
+		visible={false}
 	/>
 	<Grid
 		position.x={gridSectionSize}
 		axes={"zyx"}
 		{...gridProps}
-		fadeDistance={2}
+		fadeDistance={altFadeDistance}
+		visible={false}
 	/>
 </T.Group>
 
 <!-- Data -->
 <!-- <Points view={transformedView} /> -->
-<Sphere view={transformedView} />
+<!-- <Sphere view={transformedView} /> -->
 <!-- <Circle view={transformedView} /> -->
