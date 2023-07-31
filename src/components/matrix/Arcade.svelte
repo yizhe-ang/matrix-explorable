@@ -119,8 +119,8 @@
 
 	const stProps = {
 		// pin: "#section-1",
-		pin: "#article",
-		// pin: true,
+		// pin: "#article",
+		pin: true,
 		start: "center center",
 		scrub: 1,
 		pinSpacing: true,
