@@ -119,11 +119,11 @@
 
 	const stProps = {
 		// pin: "#section-1",
-		pin: "#article",
-		// pin: true,
+		// pin: "#test",
+		pin: true,
 		start: "center center",
+    // pinSpacing: "margin",
 		scrub: 1,
-		pinSpacing: true,
 		toggleClass: "active",
 		onEnter: function () {
 			animateInStProgress();
@@ -148,118 +148,121 @@
 	const scrollUnit = 1_000;
 
 	function animate() {
-		// gsap
-		// 	.timeline({
-		// 		...timelineProps,
-		// 		scrollTrigger: {
-		// 			...stProps,
-		// 			trigger: "#st-1",
-		// 			end: `+=${scrollUnit * 1}`,
-		// 		}
-		// 	})
-		// 	// Animate in vector
-		// 	.to(vectorCoords, {
-		// 		endArray: [0, 0, 0, -1, 2, 0],
-		// 		onUpdate: function () {
-		// 			vectorCoords = vectorCoords;
-		// 		},
-		// 		delay
-		// 	})
-		// 	.to(props, {
-		// 		vectorTexOpacity: 1,
-		// 		onUpdate: function () {
-		// 			props = props;
-		// 		}
-		// 	});
-
 		gsap
 			.timeline({
 				...timelineProps,
 				scrollTrigger: {
 					...stProps,
-					trigger: "#st-2",
-					end: `+=${scrollUnit * 3}`
+					trigger: "#st-1",
+					end: `+=${scrollUnit * 1}`,
+          // pin: "#test-2"
 				}
 			})
-			// Animate in basis vectors
-			.to(xCoords, {
-				endArray: [0, 0, 0, 1, 0, 0],
+			// Animate in vector
+			.to(vectorCoords, {
+				endArray: [0, 0, 0, -1, 2, 0],
 				onUpdate: function () {
-					xCoords = xCoords;
+					vectorCoords = vectorCoords;
 				},
 				delay
 			})
-			.to(
-				yCoords,
-				{
-					endArray: [0, 0, 0, 0, 1, 0],
-					onUpdate: function () {
-						yCoords = yCoords;
-					}
-				},
-				"<"
-			)
 			.to(props, {
-				xTexOpacity: 1,
+				vectorTexOpacity: 1,
 				onUpdate: function () {
 					props = props;
 				}
-			})
-			.to(
-				props,
-				{
-					yTexOpacity: 1,
-					onUpdate: function () {
-						props = props;
-					}
-				},
-				"<"
-			)
-			// Scale basis vectors to example vector
-			.to(props, {
-				xTexOpacity: 0,
-				onUpdate: function () {
-					props = props;
-				},
-				delay
-			})
-			.to(
-				props,
-				{
-					yTexOpacity: 0,
-					onUpdate: function () {
-						props = props;
-					}
-				},
-				"<"
-			)
-			.to(xCoords, {
-				endArray: [0, 0, 0, -1, 0, 0],
-				onUpdate: function () {
-					xCoords = xCoords;
-				},
-				delay
-			})
-			.to(yCoords, {
-				endArray: [0, 0, 0, 0, 2, 0],
-				onUpdate: function () {
-					yCoords = yCoords;
-				},
-				delay
-			})
-			.to(yCoords, {
-				endArray: [-1, 0, 0, -1, 2, 0],
-				onUpdate: function () {
-					yCoords = yCoords;
-				},
-				delay
-			})
-			.to(
-				{},
-				{
-					duration: delay * 2
-				}
-			);
+			});
+
+		// gsap
+		// 	.timeline({
+		// 		...timelineProps,
+		// 		scrollTrigger: {
+		// 			...stProps,
+		// 			trigger: "#st-2",
+		// 			// trigger: "#test",
+		// 			end: `+=${scrollUnit * 3}`,
+    //       pin: "#test-1"
+		// 		}
+		// 	})
+		// 	// Animate in basis vectors
+		// 	.to(xCoords, {
+		// 		endArray: [0, 0, 0, 1, 0, 0],
+		// 		onUpdate: function () {
+		// 			xCoords = xCoords;
+		// 		},
+		// 		delay
+		// 	})
+		// 	.to(
+		// 		yCoords,
+		// 		{
+		// 			endArray: [0, 0, 0, 0, 1, 0],
+		// 			onUpdate: function () {
+		// 				yCoords = yCoords;
+		// 			}
+		// 		},
+		// 		"<"
+		// 	)
+		// 	.to(props, {
+		// 		xTexOpacity: 1,
+		// 		onUpdate: function () {
+		// 			props = props;
+		// 		}
+		// 	})
+		// 	.to(
+		// 		props,
+		// 		{
+		// 			yTexOpacity: 1,
+		// 			onUpdate: function () {
+		// 				props = props;
+		// 			}
+		// 		},
+		// 		"<"
+		// 	)
+		// 	// Scale basis vectors to example vector
+		// 	.to(props, {
+		// 		xTexOpacity: 0,
+		// 		onUpdate: function () {
+		// 			props = props;
+		// 		},
+		// 		delay
+		// 	})
+		// 	.to(
+		// 		props,
+		// 		{
+		// 			yTexOpacity: 0,
+		// 			onUpdate: function () {
+		// 				props = props;
+		// 			}
+		// 		},
+		// 		"<"
+		// 	)
+		// 	.to(xCoords, {
+		// 		endArray: [0, 0, 0, -1, 0, 0],
+		// 		onUpdate: function () {
+		// 			xCoords = xCoords;
+		// 		},
+		// 		delay
+		// 	})
+		// 	.to(yCoords, {
+		// 		endArray: [0, 0, 0, 0, 2, 0],
+		// 		onUpdate: function () {
+		// 			yCoords = yCoords;
+		// 		},
+		// 		delay
+		// 	})
+		// 	.to(yCoords, {
+		// 		endArray: [-1, 0, 0, -1, 2, 0],
+		// 		onUpdate: function () {
+		// 			yCoords = yCoords;
+		// 		},
+		// 		delay
+		// 	})
+		// 	.to(
+		// 		{},
+		// 		{
+		// 			duration: delay * 2
+		// 		}
+		// 	);
 	}
 
 	function updateStProgress(progress) {
@@ -283,8 +286,8 @@
   // TODO: Make sure ScrollTriggers are in order
   // DOM / Layout is already mounted
 	// $: if (mounted && $titleMounted && $sceneMounted) animate();
-	// $: if (loaded && $titleMounted && $sceneMounted) animate();
-	$: if (loaded) animate();
+	$: if (loaded && $titleMounted && $sceneMounted) animate();
+	// $: if (loaded) animate();
 
 	onMount(() => {
 		mounted = true;
