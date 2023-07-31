@@ -17,29 +17,30 @@
 <!-- <Demo /> -->
 <!-- <Footer /> -->
 
-<Title />
+<!-- <Title /> -->
 
 <!-- TODO: Update width? -->
-<article class="relative flex bg-base-300 w-[calc(100%+65ch)]">
+<!-- <article class="relative flex bg-base-300 w-[calc(100%+65ch)]"> -->
+<article class="bg-base-300">
 <!-- <article class="flex bg-base-300"> -->
 	<!-- FIXME: Why does canvas not resize? -->
 	<!-- <div
 		id="canvas-wrapper"
 		class="sticky top-0 flex-1 min-w-0 h-screen bg-base-300 pointer-events-none translate-x-[calc(50vw-50%)]"
 	> -->
-	<div
+	<!-- <div
 		id="canvas-wrapper"
 		class="sticky top-0 flex-1 min-w-0 h-screen bg-base-300 pointer-events-none"
-	>
+	> -->
 		<!-- <div class="fixed inset-0 bg-base-300"> -->
-		<Threlte />
+		<!-- <Threlte /> -->
 		<!-- <div
 			class="absolute top-0 bg-gradient-to-l from-base-300 to-20% h-full w-full pointer-events-none"
 		/>
 		<div
 			class="absolute top-0 bg-gradient-to-r from-base-300 to-20% h-full w-full pointer-events-none"
 		/> -->
-	</div>
+	<!-- </div> -->
 
 	<Article />
 </article>

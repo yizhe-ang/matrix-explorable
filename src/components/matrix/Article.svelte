@@ -15,6 +15,28 @@
 	import Intro from "./Intro.svelte";
 	import Title from "./Title.svelte";
 	import P from "./P.svelte";
+	import { onMount } from "svelte";
+  import { ScrollTrigger} from "$utils/gsap"
+
+  onMount(() => {
+    ScrollTrigger.create({
+      trigger: "#st-1",
+      pin: "#article",
+      start: "center center",
+      scrub: 1,
+      end: "+=500",
+      pinSpacing: 'margin'
+    })
+
+    ScrollTrigger.create({
+      trigger: "#st-2",
+      pin: "#article",
+      start: "center center",
+      scrub: 1,
+      end: "+=500",
+      pinSpacing: 'margin'
+    })
+  })
 </script>
 
 <!-- FIXME: max-w-prose -->
@@ -28,11 +50,19 @@
 > -->
 	<!-- <Title /> -->
 
-	<Intro />
+	<!-- <Intro /> -->
 
 	<section id="section-1" class="prose prose-xl [&>*]:px-10 [&>*]:rounded-xl">
 		<!-- <section class="prose prose-xl max-w-[50ch]"> -->
 		<h2>Matrix as Linear Transformations</h2>
+
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dignissimos illo sed voluptas quidem animi non minima explicabo voluptates perspiciatis. Cumque at architecto natus nulla ad iste veritatis assumenda eius non?
+    </p>
+
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dignissimos illo sed voluptas quidem animi non minima explicabo voluptates perspiciatis. Cumque at architecto natus nulla ad iste veritatis assumenda eius non?
+    </p>
 
 		<p>
 			A vector multiplied by a matrix returns a new vector. It transforms a

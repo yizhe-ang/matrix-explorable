@@ -148,6 +148,7 @@
 	const scrollUnit = 1_000;
 
 	function animate() {
+    console.log('animate')
 		// gsap
 		// 	.timeline({
 		// 		...timelineProps,
@@ -186,6 +187,7 @@
 				endArray: [0, 0, 0, 1, 0, 0],
 				onUpdate: function () {
 					xCoords = xCoords;
+          console.log("test")
 				},
 				delay
 			})
