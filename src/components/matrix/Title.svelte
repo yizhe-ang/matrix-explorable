@@ -1,5 +1,6 @@
 <script>
-	import { titleMounted } from "$stores";
+	import { titleMounted, showHero, endMatrix } from "$stores";
+  import { egEndMatrix } from "$data/variables";
 	import { gsap } from "$utils/gsap.js";
 	import { onMount } from "svelte";
 
@@ -10,14 +11,22 @@
 				scrollTrigger: {
 					trigger: "#title",
 					start: "top top",
-					scrub: 1
+					scrub: 1,
+					onLeave: () => {
+            // HACK:
+						$showHero = false;
+            // $endMatrix = egEndMatrix
+					},
+					onEnterBack: () => {
+						$showHero = true;
+					}
 				}
 			})
 			.to("#title", {
 				autoAlpha: 0
 			});
 
-    $titleMounted = true
+		$titleMounted = true;
 	});
 </script>
 

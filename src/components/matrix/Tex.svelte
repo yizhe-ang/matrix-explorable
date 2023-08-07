@@ -25,17 +25,17 @@
 			// TODO: Highlight all tex instances?
 
 			// FIXME: Too inefficient?
-			t = gsap.from(q("*"), {
-				// FIXME: To change color
-				color: "white",
-				paused: true,
-				duration: 0.3
-			});
+			// t = gsap.from(q("*"), {
+			// 	// FIXME: To change color
+			// 	color: "white",
+			// 	paused: true,
+			// 	duration: 0.3
+			// });
 		}
 	});
 
 	// Toggle
-	const { toggle, pressed } = createToggle();
+	const { toggle, pressed } = createToggle({pressed: true});
 
 	$: if (t && color) {
 		onPressed($pressed);
@@ -47,7 +47,7 @@
 	}
 </script>
 
-{#if color}
+<!-- {#if color}
 	<button
 		melt={$toggle}
 		class={`${classes} w-full`}
@@ -59,10 +59,8 @@
 			if (color && !$pressed) t.reverse();
 		}}
 	>
-		<!-- Tex -->
 		<span bind:this={texEl}>
 			{#if color}
-				<!-- Indicator -->
 				<div
 					class="h-5 w-5 rounded-full bg-neutral-focus text-base-100 shadow-lg group-hover:bg-neutral group-data-[disabled]:cursor-not-allowed group-data-[state=on]:bg-neutral-content
   group-data-[state=on]:text-base-100 transition absolute top-1/2 -translate-y-1/2"
@@ -73,9 +71,15 @@
 	</button>
 {:else}
 	<span class={classes}>
+		<span bind:this={texEl}>
+			{@html katex.renderToString(expr, { displayMode: display })}
+		</span>
+	</span>
+{/if} -->
+
+	<span class={classes}>
 		<!-- Tex -->
 		<span bind:this={texEl}>
 			{@html katex.renderToString(expr, { displayMode: display })}
 		</span>
 	</span>
-{/if}

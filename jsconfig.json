@@ -32,6 +32,9 @@
 			"$utils/*": [
 				"src/utils/*"
 			],
+			"$shaders/*": [
+				"src/shaders/*"
+			],
 		}
 	},
 	"include": [

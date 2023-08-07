@@ -8,8 +8,6 @@
 		// max: 1,
 		// step: 0.1
 	});
-
-	$: console.log($value);
 </script>
 
 <!-- <span melt={$slider} class="slider">

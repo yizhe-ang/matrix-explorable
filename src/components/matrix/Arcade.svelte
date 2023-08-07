@@ -2,26 +2,58 @@
 	// import Grid from "./Grid.svelte";
 	import { Grid } from "@threlte/extras";
 	import { useTweakpane } from "$utils/useTweakpane";
-	import { T } from "@threlte/core";
+	import { T, useThrelte } from "@threlte/core";
 	import Points from "./Points.svelte";
 	import Sphere from "./Sphere.svelte";
 	import Circle from "./Circle.svelte";
-	import { endMatrix, playhead, playToggle, matrixTween } from "$stores";
+	import Planes from "./Planes.svelte";
+	import {
+		endMatrix,
+		playhead,
+		playToggle,
+		matrixTween,
+		gridToggled,
+		transformedGridToggled,
+		dataToggled,
+		showHero,
+		heroMatrix
+	} from "$stores";
 	import Vector from "./Vector.svelte";
 	import { ScrollTrigger, gsap } from "$utils/gsap.js";
 	import { onMount } from "svelte";
-	import { sceneMounted, titleMounted, loaded } from "$stores";
-	import { colorVector, colorX, colorY, colorZ } from "$data/variables";
+	import {
+		sceneMounted,
+		titleMounted,
+		loaded,
+		cameraProps,
+		cameraControls
+	} from "$stores";
+	import {
+		colorVector,
+		colorX,
+		colorY,
+		colorZ,
+		egVector,
+		egMatrixX,
+		egMatrixY,
+		egOutputVector,
+		eg3dMatrix,
+		eg3dMatrixX,
+		eg3dMatrixY,
+		eg3dMatrixZ,
+		eg3dVector
+	} from "$data/variables";
+	import colors from "tailwindcss/colors";
+	import CameraControls from "camera-controls";
+	import { Color, MeshBasicMaterial, PlaneGeometry } from "three";
+	import Hero from "./Hero.svelte";
 
 	export let mathbox;
 
 	let mounted;
 
-	const gridColor = "#71717a";
-	const axisColor = "#d4d4d8";
-
 	// Set this to the z-position of the camera
-	// mathbox.set("focus", 1);
+	mathbox.set("focus", 15);
 
 	// Set up coordinate system
 	const dim = 1;
@@ -36,39 +68,41 @@
 
 	// States
 	const startMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+	// Object that gets animated
 	let matrix = [...startMatrix];
+	// `$endMatrix` records the final state of the matrix
 
 	// const transformedView = view.transform();
 	// FIXME: Or should I just set manually?
 	const transformedView = view.transform({}, { matrix: () => matrix });
-
-	// Inputs
-	// const { pane, action, addInput, addButton } = useTweakpane({});
 
 	// Matrix animation
 	// TODO: Make the ease linear
 	// So that the playhead corresponds to the animation progress
 	// Tween the animation's progress separately instead
 	$matrixTween = gsap.to(matrix, {
-		ease: "power2.inOut",
+		ease: "linear",
 		duration: 2,
 		paused: true,
 		endArray: $endMatrix,
 		onUpdate() {
+			// Sync playhead with animation progress
 			$playhead = this.progress();
 			matrix = matrix;
 		},
 		onComplete() {
-			// play icon
+			// Toggle play icon
 			$playToggle = true;
 		}
 	});
 
-	// Update
 	$: onMatrixChange($endMatrix);
+
 	let nudgeFlag = true;
+
+	// FIXME: This has to run first!!
 	function onMatrixChange(endMatrix) {
-		// Reset matrix?
+		// Reset matrix
 		matrix.forEach((_, i) => {
 			matrix[i] = startMatrix[i];
 		});
@@ -81,8 +115,11 @@
 		$matrixTween.progress($matrixTween.progress() + nudgeAmt);
 		nudgeFlag = !nudgeFlag;
 
+		// FIXME: Stays the same
 		matrix = matrix;
 	}
+
+	$: matrixTransform = $showHero ? $heroMatrix : matrix;
 
 	// Grid props
 	const gridCellSize = 1;
@@ -90,37 +127,188 @@
 
 	const gridProps = {
 		cellSize: gridCellSize,
-		cellColor: "#3f3f46",
+		cellColor: colors.slate["800"],
 		cellThickness: 1.5,
 		sectionSize: gridSectionSize,
-		sectionColor: "#52525b",
+		sectionColor: colors.slate["800"],
 		sectionThickness: 3,
 		infiniteGrid: true,
 		fadeDistance: 30,
-		fadeStrength: 5
+		fadeStrength: 4
+	};
+
+	let gridVars = {
+		fadeDistance: gridProps.fadeDistance,
+		transformedFadeDistance: gridProps.fadeDistance
 	};
 
 	const altFadeDistance = 20;
 
+	$: onGridToggle($gridToggled);
+	function onGridToggle(toggled) {
+		if (toggled) {
+			gsap.to(gridVars, {
+				fadeDistance: gridProps.fadeDistance,
+				onUpdate: function () {
+					gridVars = gridVars;
+				}
+			});
+		} else {
+			gsap.to(gridVars, {
+				fadeDistance: 0,
+				onUpdate: function () {
+					gridVars = gridVars;
+				}
+			});
+		}
+	}
+
+	$: onTransformedGridToggle($transformedGridToggled);
+	function onTransformedGridToggle(toggled) {
+		if (toggled) {
+			gsap.to(gridVars, {
+				transformedFadeDistance: gridProps.fadeDistance,
+				onUpdate: function () {
+					gridVars = gridVars;
+				}
+			});
+		} else {
+			gsap.to(gridVars, {
+				transformedFadeDistance: 0,
+				onUpdate: function () {
+					gridVars = gridVars;
+				}
+			});
+		}
+	}
+
+	let prevDataToggled;
+	$: onDataToggle($dataToggled);
+	function onDataToggle(toggled) {
+		// Animate out
+		if (prevDataToggled == "points") {
+			gsap.to(pointsProps, {
+				t: 0,
+				onUpdate: function () {
+					pointsProps = pointsProps;
+				}
+			});
+		} else if (prevDataToggled == "3d points") {
+			gsap.to(points3dProps, {
+				t: 0,
+				onUpdate: function () {
+					points3dProps = points3dProps;
+				}
+			});
+		} else if (prevDataToggled == "planes") {
+			gsap.to(planesProps, {
+				t: 0,
+				onUpdate: function () {
+					planesProps = planesProps;
+				}
+			});
+		} else if (prevDataToggled == "3d planes") {
+			gsap.to(planes3dProps, {
+				t: 0,
+				onUpdate: function () {
+					planes3dProps = planes3dProps;
+				}
+			});
+		}
+
+		// Animate in
+		if (toggled == "points") {
+			gsap.to(pointsProps, {
+				t: 1,
+				onUpdate: function () {
+					pointsProps = pointsProps;
+				}
+			});
+		} else if (toggled == "3d points") {
+			gsap.to(points3dProps, {
+				t: 1,
+				onUpdate: function () {
+					points3dProps = points3dProps;
+				}
+			});
+		} else if (toggled == "planes") {
+			gsap.to(planesProps, {
+				t: 1,
+				onUpdate: function () {
+					planesProps = planesProps;
+				}
+			});
+		} else if (toggled == "3d planes") {
+			gsap.to(planes3dProps, {
+				t: 1,
+				onUpdate: function () {
+					planes3dProps = planes3dProps;
+				}
+			});
+		}
+
+		// Update prev value
+		prevDataToggled = toggled;
+	}
+
 	// ScrollTrigger
-	const delay = 0.5;
+	const delay = 0.2;
+	const transitionDuration = 0.1;
 
 	let vectorCoords = [0, 0, 0, 0, 0, 0];
 	let xCoords = [0, 0, 0, 0, 0, 0];
 	let yCoords = [0, 0, 0, 0, 0, 0];
 	let zCoords = [0, 0, 0, 0, 0, 0];
 
+	// TODO: Separate this?
 	let props = {
 		vectorTexOpacity: 0,
 		xTexOpacity: 0,
 		yTexOpacity: 0,
-		zTexOpacity: 0
+		zTexOpacity: 0,
+		xScalar: 1,
+		yScalar: 1,
+		zScalar: 1,
+		xScalarOpacity: 0,
+		yScalarOpacity: 0,
+		zScalarOpacity: 0,
+		xScalarAlign: "top",
+		yScalarAlign: "left",
+		zScalarAlign: "bottom",
+		xVisible: true,
+		yVisible: true,
+		zVisible: true,
+		xDim3: false,
+		yDim3: false,
+		zDim3: false,
+		vectorDim3: false
+	};
+
+	let pointsProps = {
+		t: 0
+	};
+
+	let planesProps = {
+		t: 0
+	};
+
+	let points3dProps = {
+		t: 0
+	};
+
+	let planes3dProps = {
+		t: 0
+	};
+
+	let basisAltProps = {
+		xVisible: false,
+		yVisible: false
 	};
 
 	const stProps = {
-		// pin: "#section-1",
+		fastScrollEnd: true,
 		pin: "#article",
-		// pin: true,
+		pinnedContainer: "#article",
 		start: "center center",
 		scrub: 1,
 		pinSpacing: true,
@@ -139,49 +327,70 @@
 		}
 	};
 
+	const stPropsAlt = {
+		start: "bottom center",
+		pinnedContainer: "#article",
+		toggleActions: "play none none reverse",
+		fastScrollEnd: true,
+		end: 200
+	};
+
 	const timelineProps = {
 		onUpdate: function () {
 			updateStProgress(this.progress());
 		}
 	};
 
+	const timelinePropsAlt = {
+		ease: "power2.in"
+	};
+
+	const duration = 0.3;
+
 	const scrollUnit = 1_000;
 
 	function animate() {
-		// gsap
-		// 	.timeline({
-		// 		...timelineProps,
-		// 		scrollTrigger: {
-		// 			...stProps,
-		// 			trigger: "#st-1",
-		// 			end: `+=${scrollUnit * 1}`,
-		// 		}
-		// 	})
-		// 	// Animate in vector
-		// 	.to(vectorCoords, {
-		// 		endArray: [0, 0, 0, -1, 2, 0],
-		// 		onUpdate: function () {
-		// 			vectorCoords = vectorCoords;
-		// 		},
-		// 		delay
-		// 	})
-		// 	.to(props, {
-		// 		vectorTexOpacity: 1,
-		// 		onUpdate: function () {
-		// 			props = props;
-		// 		}
-		// 	});
+		// FIXME: Review scroll amounts
 
+		// Animate in vector
+		gsap
+			.timeline({
+				...timelineProps,
+				scrollTrigger: {
+					...stProps,
+					trigger: "#st-1",
+					end: `+=${scrollUnit * 1}`
+				}
+			})
+			.to(vectorCoords, {
+				endArray: [0, 0, 0, ...egVector, 0],
+				onUpdate: function () {
+					vectorCoords = vectorCoords;
+				}
+			})
+			.to(props, {
+				vectorTexOpacity: 1,
+				onUpdate: function () {
+					props = props;
+				}
+			})
+			.to(
+				{},
+				{
+					duration: delay
+				}
+			);
+
+		// Animate in basis vectors
 		gsap
 			.timeline({
 				...timelineProps,
 				scrollTrigger: {
 					...stProps,
 					trigger: "#st-2",
-					end: `+=${scrollUnit * 3}`
+					end: `+=${scrollUnit * 1}`
 				}
 			})
-			// Animate in basis vectors
 			.to(xCoords, {
 				endArray: [0, 0, 0, 1, 0, 0],
 				onUpdate: function () {
@@ -215,13 +424,30 @@
 				},
 				"<"
 			)
-			// Scale basis vectors to example vector
+			.to(
+				{},
+				{
+					duration: delay
+				}
+			);
+
+		// Scale basis vectors to example vector
+		gsap
+			.timeline({
+				...timelineProps,
+				scrollTrigger: {
+					...stProps,
+					trigger: "#st-3",
+					end: `+=${scrollUnit * 3}`,
+					preventOverlaps: true
+				}
+			})
+			// Animate out Tex
 			.to(props, {
 				xTexOpacity: 0,
 				onUpdate: function () {
 					props = props;
-				},
-				delay
+				}
 			})
 			.to(
 				props,
@@ -233,33 +459,896 @@
 				},
 				"<"
 			)
+			// Scale basis vectors
+			.add("step-2")
+			.to(
+				props,
+				{
+					duration: 0.2,
+					xScalarOpacity: 1,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-2"
+			)
+			.to(
+				props,
+				{
+					duration: 0.2,
+					yScalarOpacity: 1,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-2"
+			)
+			.to(
+				xCoords,
+				{
+					endArray: [0, 0, 0, egVector[0], 0, 0],
+					onUpdate: function () {
+						xCoords = xCoords;
+					}
+				},
+				"step-2"
+			)
+			.to(
+				yCoords,
+				{
+					endArray: [0, 0, 0, 0, egVector[1], 0],
+					onUpdate: function () {
+						yCoords = yCoords;
+					}
+				},
+				"step-2"
+			)
+			.to(
+				props,
+				{
+					xScalar: egVector[0],
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-2"
+			)
+			.to(
+				props,
+				{
+					yScalar: egVector[1],
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-2"
+			)
+			.to({}, { duration: delay })
+			// Shift y basis vector
+			.add("step-3")
+			.to(
+				props,
+				{
+					duration: 0.2,
+					xScalarOpacity: 0,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-3"
+			)
+			.to(
+				props,
+				{
+					duration: 0.2,
+					yScalarOpacity: 0,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-3"
+			)
+			.to(
+				yCoords,
+				{
+					endArray: [egVector[0], 0, 0, ...egVector, 0],
+					onUpdate: function () {
+						yCoords = yCoords;
+					}
+				},
+				"step-3"
+			)
+			.to({}, { duration: delay });
+
+		// Animate basis vectors back
+		gsap
+			.timeline({
+				scrollTrigger: {
+					...stPropsAlt,
+					trigger: "#st-3"
+				},
+				timelinePropsAlt
+			})
+			.add("step-1")
+			.to(
+				props,
+				{
+					duration,
+					xScalar: 1,
+					yScalar: 1
+				},
+				"step-1"
+			)
+			.to(
+				xCoords,
+				{
+					duration,
+					endArray: [0, 0, 0, 1, 0, 0],
+					onUpdate: function () {
+						xCoords = xCoords;
+					}
+				},
+				"step-1"
+			)
+			.to(
+				yCoords,
+				{
+					duration,
+					endArray: [0, 0, 0, 0, 1, 0],
+					onUpdate: function () {
+						yCoords = yCoords;
+					}
+				},
+				"step-1"
+			)
+			.to(props, {
+				duration,
+				xTexOpacity: 1,
+				onUpdate: function () {
+					props = props;
+				}
+			})
+			.to(
+				props,
+				{
+					duration,
+					yTexOpacity: 1,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"<"
+			);
+
+		// Transform to new basis vectors
+		gsap
+			.timeline({
+				...timelineProps,
+				scrollTrigger: {
+					...stProps,
+					trigger: "#st-4",
+					end: `+=${scrollUnit * 1}`
+				}
+			})
+			// Animate to new basis vectors
 			.to(xCoords, {
-				endArray: [0, 0, 0, -1, 0, 0],
+				endArray: [0, 0, 0, ...egMatrixX, 0],
 				onUpdate: function () {
 					xCoords = xCoords;
-				},
-				delay
+				}
 			})
-			.to(yCoords, {
-				endArray: [0, 0, 0, 0, 2, 0],
-				onUpdate: function () {
-					yCoords = yCoords;
+			.to(
+				yCoords,
+				{
+					endArray: [0, 0, 0, ...egMatrixY, 0],
+					onUpdate: function () {
+						yCoords = yCoords;
+					}
 				},
-				delay
+				"<"
+			)
+			// Animate to output vector
+			.to(
+				vectorCoords,
+				{
+					endArray: [0, 0, 0, ...egOutputVector, 0],
+					onUpdate: function () {
+						vectorCoords = vectorCoords;
+					}
+				},
+				"<"
+			)
+			.to(
+				{},
+				{
+					duration: delay
+				}
+			);
+
+		// Scale the basis vectors to the transformed vector
+		gsap
+			.timeline({
+				...timelineProps,
+				scrollTrigger: {
+					...stProps,
+					trigger: "#st-5",
+					end: `+=${scrollUnit * 3}`
+				}
 			})
-			.to(yCoords, {
-				endArray: [-1, 0, 0, -1, 2, 0],
-				onUpdate: function () {
-					yCoords = yCoords;
+			.add("step-1")
+			.to(
+				props,
+				{
+					xScalarAlign: "left",
+					yScalarAlign: "top"
 				},
-				delay
+				"step-1"
+			)
+			// Animate out Tex
+			.to(
+				props,
+				{
+					xTexOpacity: 0,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-1"
+			)
+			.to(
+				props,
+				{
+					yTexOpacity: 0,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-1"
+			)
+			// Scale basis vectors
+			.add("step-2")
+			.to(
+				props,
+				{
+					duration: 0.2,
+					xScalarOpacity: 1,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-2"
+			)
+			.to(
+				props,
+				{
+					duration: 0.2,
+					yScalarOpacity: 1,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-2"
+			)
+			.to(
+				xCoords,
+				{
+					endArray: [
+						0,
+						0,
+						0,
+						egVector[0] * egMatrixX[0],
+						egVector[0] * egMatrixX[1],
+						0
+					],
+					onUpdate: function () {
+						xCoords = xCoords;
+					}
+				},
+				"step-2"
+			)
+			.to(
+				yCoords,
+				{
+					endArray: [
+						0,
+						0,
+						0,
+						egVector[1] * egMatrixY[0],
+						egVector[1] * egMatrixY[1],
+						0
+					],
+					onUpdate: function () {
+						yCoords = yCoords;
+					}
+				},
+				"step-2"
+			)
+			.to(
+				props,
+				{
+					xScalar: egVector[0],
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-2"
+			)
+			.to(
+				props,
+				{
+					yScalar: egVector[1],
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-2"
+			)
+			.to({}, { duration: delay })
+			// Shift y basis vector
+			.add("step-3")
+			.to(
+				props,
+				{
+					duration: 0.2,
+					xScalarOpacity: 0,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-3"
+			)
+			.to(
+				props,
+				{
+					duration: 0.2,
+					yScalarOpacity: 0,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-3"
+			)
+			.to(
+				yCoords,
+				{
+					endArray: [
+						egVector[0] * egMatrixX[0],
+						egVector[0] * egMatrixX[1],
+						0,
+						...egOutputVector,
+						0
+					],
+					onUpdate: function () {
+						yCoords = yCoords;
+					}
+				},
+				"step-3"
+			)
+			.to({}, { duration: delay });
+
+		// Animate basis vectors back
+		gsap
+			.timeline({
+				scrollTrigger: {
+					...stPropsAlt,
+					trigger: "#st-5"
+				},
+				timelinePropsAlt
+			})
+			.add("step-1")
+			// Remove example vector
+			.to(
+				props,
+				{
+					duration,
+					vectorTexOpacity: 0,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-1"
+			)
+			.to(
+				vectorCoords,
+				{
+					duration,
+					endArray: [0, 0, 0, 0, 0, 0],
+					onUpdate: function () {
+						vectorCoords = vectorCoords;
+					}
+				},
+				"step-1"
+			)
+			// Animate back x basis
+			.to(
+				xCoords,
+				{
+					duration,
+					endArray: [0, 0, 0, 1, 0, 0],
+					onUpdate: function () {
+						xCoords = xCoords;
+					}
+				},
+				"step-1"
+			)
+			// Animate back y basis
+			.to(
+				yCoords,
+				{
+					duration,
+					endArray: [0, 0, 0, 0, 1, 0],
+					onUpdate: function () {
+						yCoords = yCoords;
+					}
+				},
+				"step-1"
+			)
+			.add("step-2")
+			.to(
+				props,
+				{
+					duration,
+					xTexOpacity: 1,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-2"
+			)
+			.to(
+				props,
+				{
+					duration,
+					yTexOpacity: 1,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-2"
+			);
+
+		// Animate in points
+		// FIXME: Animate vectors too?
+		// TODO: Keep the example vector?
+		gsap
+			.timeline({
+				...timelineProps,
+				scrollTrigger: {
+					...stProps,
+					trigger: "#st-6",
+					end: `+=${scrollUnit * 1}`
+				}
+			})
+			.add("step-1")
+			// Animate in points
+			.to(
+				pointsProps,
+				{
+					t: 1,
+					onUpdate: function () {
+						pointsProps = pointsProps;
+					}
+				},
+				"step-1"
+			)
+			.to(
+				{},
+				{
+					duration: delay
+				}
+			);
+
+		// Perform linear transformation
+		gsap
+			.timeline({
+				...timelineProps,
+				scrollTrigger: {
+					...stProps,
+					trigger: "#st-7",
+					end: `+=${scrollUnit * 1}`,
+					onToggle: (self) => {
+						$dataToggled = self.isActive ? "points" : undefined;
+						$dataToggled = "points";
+					}
+				}
 			})
 			.to(
 				{},
 				{
-					duration: delay * 2
+					duration: delay
+				}
+			)
+			.add("step-1")
+			// Perform linear transformation
+			.to(
+				$matrixTween,
+				{
+					progress: 1.0
+				},
+				"step-1"
+			)
+			// Animate to new basis vectors
+			.to(
+				xCoords,
+				{
+					endArray: [0, 0, 0, ...egMatrixX, 0],
+					onUpdate: function () {
+						xCoords = xCoords;
+					}
+				},
+				"step-1"
+			)
+			.to(
+				yCoords,
+				{
+					endArray: [0, 0, 0, ...egMatrixY, 0],
+					onUpdate: function () {
+						yCoords = yCoords;
+					}
+				},
+				"step-1"
+			)
+			.to(
+				{},
+				{
+					duration: delay
 				}
 			);
+
+		// Let users do some input!
+		gsap
+			.timeline({
+				scrollTrigger: {
+					...stPropsAlt,
+					trigger: "#st-8",
+					start: "top center",
+					onToggle: () => {
+						// Return to default camera position
+						$cameraControls.reset(true);
+					}
+				},
+				timelinePropsAlt
+			})
+			.add("step-1")
+			// Make canvas interactable
+			.to(
+				"#canvas-wrapper",
+				{
+					pointerEvents: "auto",
+					cursor: "move",
+					duration
+				},
+				"step-1"
+			)
+			// Show input
+			.from(
+				"#inputs",
+				{
+					autoAlpha: 0,
+					x: -40,
+					duration
+				},
+				"step-1"
+			)
+			// Hide basis vectors
+			.to(
+				props,
+				{
+					duration,
+					xTexOpacity: 0,
+					yTexOpacity: 0,
+					xVisible: false,
+					yVisible: false,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-1"
+			)
+			// Show alt basis vectors
+			.to(
+				basisAltProps,
+				{
+					duration,
+					xVisible: true,
+					yVisible: true,
+					onUpdate: function () {
+						basisAltProps = basisAltProps;
+					}
+				},
+				"step-1"
+			)
+			.add("step-2")
+			// Shift back basis vectors
+			.to(
+				xCoords,
+				{
+					duration,
+					endArray: [0, 0, 0, 1, 0, 0],
+					onUpdate: function () {
+						xCoords = xCoords;
+					}
+				},
+				"step-2"
+			)
+			.to(
+				yCoords,
+				{
+					duration: 0.001,
+					endArray: [0, 0, 0, 0, 1, 0],
+					onUpdate: function () {
+						yCoords = yCoords;
+					}
+				},
+				"step-2"
+			);
+
+		// Animate back
+		gsap
+			.timeline({
+				scrollTrigger: {
+					...stPropsAlt,
+					trigger: "#section-2",
+					start: "top center",
+					// FIXME:
+					// onToggle: () => {
+					onEnter: () => {
+						// Return to default camera position
+						$cameraControls.reset(true);
+						// Reset input settings
+						$dataToggled = undefined;
+					}
+				},
+				timelinePropsAlt
+			})
+			.add("step-1")
+			// Disable inputs
+			// .to(
+			// 	"#canvas-wrapper",
+			// 	{
+			// 		pointerEvents: "none",
+			// 		duration
+			// 	},
+			// 	"step-1"
+			// )
+			.to(
+				"#inputs",
+				{
+					autoAlpha: 0,
+					x: -40,
+					duration
+				},
+				"step-1"
+			)
+			// Remove points
+			// .to(
+			// 	pointsProps,
+			// 	{
+			// 		t: 0,
+			// 		duration,
+			// 		onUpdate: function () {
+			// 			pointsProps = pointsProps;
+			// 		}
+			// 	},
+			// 	"step-1"
+			// )
+			// Transform back
+			.to(
+				$matrixTween,
+				{
+					duration,
+					progress: 0
+				},
+				"step-1"
+			)
+			// Show basis vectors and coordinates
+			// .to(
+			// 	props,
+			// 	{
+			// 		duration,
+			// 		xTexOpacity: 1,
+			// 		yTexOpacity: 1,
+			// 		onUpdate: function () {
+			// 			props = props;
+			// 		}
+			// 	},
+			// 	"step-1"
+			// )
+			.to(
+				basisAltProps,
+				{
+					duration,
+					xVisible: false,
+					yVisible: false,
+					onUpdate: function () {
+						basisAltProps = basisAltProps;
+					}
+				},
+				"step-1"
+			)
+			.add("step-2")
+			.to(
+				props,
+				{
+					duration: 0.001,
+					xVisible: true,
+					yVisible: true,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-2"
+			);
+
+		// Show third dimension
+		gsap
+			.timeline({
+				...timelineProps,
+				scrollTrigger: {
+					...stProps,
+					trigger: "#st-9",
+					end: `+=${scrollUnit * 2}`
+				}
+			})
+			.add("step-0")
+			.to(
+				$cameraControls.mouseButtons,
+				{
+					right: CameraControls.ACTION.ROTATE,
+					duration: 0.001
+				},
+				"step-0"
+			)
+			// Update matrix
+			.to(
+				$endMatrix,
+				{
+					endArray: eg3dMatrix,
+					duration: 0.001,
+					onUpdate: function () {
+						$endMatrix = $endMatrix;
+					}
+				},
+				"step-0"
+			)
+			.to(
+				{},
+				{
+					duration: delay
+				},
+				"step-0"
+			)
+			.add("step-1")
+			// Change camera position
+			.to(
+				$cameraControls,
+				{
+					distance: 8.5,
+					polarAngle: Math.PI * 0.35,
+					azimuthAngle: Math.PI * 0.3
+				},
+				"step-1"
+			)
+			// Animate in z basis
+			.to(
+				zCoords,
+				{
+					endArray: [0, 0, 0, 0, 0, 1],
+					onUpdate: function () {
+						zCoords = zCoords;
+					}
+				},
+				"step-1"
+			)
+			.to(
+				props,
+				{
+					xTexOpacity: 1,
+					yTexOpacity: 1,
+					xDim3: true,
+					yDim3: true,
+					zDim3: true,
+					vectorDim3: true,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-1"
+			)
+			// Animate in example vector
+			.to(
+				vectorCoords,
+				{
+					endArray: [0, 0, 0, ...eg3dVector],
+					onUpdate: function () {
+						vectorCoords = vectorCoords;
+					}
+				},
+				"step-1"
+			)
+			.add("step-2")
+			.to(
+				props,
+				{
+					zTexOpacity: 1,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-2"
+			)
+			.to(
+				props,
+				{
+					vectorTexOpacity: 1,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-2"
+			);
+
+		// TODO: Auto-rotate?
+		// Perform linear transformation; in 3D!
+		gsap
+			.timeline({
+				...timelineProps,
+				scrollTrigger: {
+					...stProps,
+					trigger: "#st-10",
+					end: `+=${scrollUnit * 1}`,
+					onToggle: () => {
+						// console.log($endMatrix);
+					}
+				}
+			})
+			.add("step-1")
+			.to(
+				$matrixTween,
+				{
+					progress: 1.0
+				},
+				"step-1"
+			)
+			// Animate to new basis vectors
+			.to(
+				xCoords,
+				{
+					endArray: [0, 0, 0, ...eg3dMatrixX],
+					onUpdate: function () {
+						xCoords = xCoords;
+					}
+				},
+				"step-1"
+			)
+			.to(
+				yCoords,
+				{
+					endArray: [0, 0, 0, ...eg3dMatrixY],
+					onUpdate: function () {
+						yCoords = yCoords;
+					}
+				},
+				"step-1"
+			)
+			.to(
+				zCoords,
+				{
+					endArray: [0, 0, 0, ...eg3dMatrixZ],
+					onUpdate: function () {
+						zCoords = zCoords;
+					}
+				},
+				"step-1"
+			)
+			.to(
+				{},
+				{
+					duration: delay
+				}
+			);
+
+		// Show playground
 	}
 
 	function updateStProgress(progress) {
@@ -280,63 +1369,140 @@
 		});
 	}
 
-  // TODO: Make sure ScrollTriggers are in order
-  // DOM / Layout is already mounted
-	// $: if (mounted && $titleMounted && $sceneMounted) animate();
+	// TODO: Make sure ScrollTriggers are in order
+	// DOM / Layout is already mounted
+	$: if (mounted && $titleMounted && $sceneMounted) animate();
+
 	// $: if (loaded && $titleMounted && $sceneMounted) animate();
-	$: if (loaded) animate();
+	// $: if (loaded) animate();
 
 	onMount(() => {
 		mounted = true;
 	});
 </script>
 
-<!-- Example vector -->
-<Vector
-	view={transformedView}
-	coords={vectorCoords}
-	color={colorVector}
-	texOpacity={props.vectorTexOpacity}
-/>
-<!-- Basis vectors -->
-<Vector
-	view={transformedView}
-	coords={xCoords}
-	color={colorX}
-	texOpacity={props.xTexOpacity}
-/>
-<Vector
-	view={transformedView}
-	coords={yCoords}
-	color={colorY}
-	texOpacity={props.yTexOpacity}
-/>
-<!-- <Vector view={transformedView} coords={zCoords} color={colorZ} /> -->
+{#if $showHero}
+	<Hero />
+{/if}
 
 <!-- Peripherals -->
 <!-- <Grid {view} {dim} opacity={0.2} {gridColor} {axisColor} />
 <Grid view={transformedView} {dim} {gridColor} {axisColor} /> -->
 
-<T.Group {matrix} matrixAutoUpdate={false}>
-	<!-- FIXME: Don't do infinite grid? A bit confusing -->
-	<Grid axes={"xyz"} {...gridProps} />
+<!-- Example vector -->
+<Vector
+	{view}
+	coords={vectorCoords}
+	color={colorVector}
+	texOpacity={props.vectorTexOpacity}
+	dim3={props.vectorDim3}
+/>
+<!-- Basis vectors -->
+<Vector
+	{view}
+	coords={xCoords}
+	color={colorX}
+	texOpacity={props.xTexOpacity}
+	scalar={props.xScalar}
+	scalarOpacity={props.xScalarOpacity}
+	scalarAlign={props.xScalarAlign}
+	visible={props.xVisible}
+	dim3={props.xDim3}
+/>
+<Vector
+	{view}
+	coords={yCoords}
+	color={colorY}
+	texOpacity={props.yTexOpacity}
+	scalar={props.yScalar}
+	scalarOpacity={props.yScalarOpacity}
+	scalarAlign={props.yScalarAlign}
+	visible={props.yVisible}
+	dim3={props.yDim3}
+/>
+<Vector
+	{view}
+	coords={zCoords}
+	color={colorZ}
+	texOpacity={props.zTexOpacity}
+	scalar={props.zScalar}
+	scalarOpacity={props.zScalarOpacity}
+	scalarAlign={props.zScalarAlign}
+	visible={props.zVisible}
+	dim3={props.zDim3}
+/>
+
+<!-- Basis vectors (that animate on input) -->
+<Vector
+	view={transformedView}
+	coords={[0, 0, 0, 1, 0, 0]}
+	color={colorX}
+	tex={false}
+	visible={basisAltProps.xVisible}
+/>
+<Vector
+	view={transformedView}
+	coords={[0, 0, 0, 0, 1, 0]}
+	color={colorY}
+	tex={false}
+	visible={basisAltProps.yVisible}
+/>
+
+<!-- <T.Group position.z={-0.005}>
 	<Grid
+		axes={"xyz"}
+		{...gridProps}
+		cellColor={colors.slate["900"]}
+		sectionColor={colors.slate["900"]}
+		fadeDistance={gridVars.fadeDistance}
+	/>
+</T.Group> -->
+
+<!-- Add a plane -->
+<!-- <T.Mesh position.z={-0.02}>
+	<T.PlaneGeometry args={[40, 40]} />
+	<T.MeshStandardMaterial
+		color={new Color("hsl(231, 15%, 18%)")}
+		opacity={0.8}
+		transparent={true}
+	>
+		<T.DoubleSide attach="side" />
+	</T.MeshStandardMaterial>
+</T.Mesh> -->
+
+<!-- Transformed elements -->
+<T.Group matrix={matrixTransform} matrixAutoUpdate={false}>
+	<!-- Grids -->
+	<!-- FIXME: Don't do infinite grid? A bit confusing -->
+	<!-- FIXME: Have a cool gradient environment / background -->
+	<Grid
+		axes={"xyz"}
+		{...gridProps}
+		fadeDistance={gridVars.transformedFadeDistance}
+	/>
+	<Grid
+		position.z={gridSectionSize * 0}
 		position.y={gridSectionSize}
 		axes={"xzy"}
 		{...gridProps}
 		fadeDistance={altFadeDistance}
-		visible={false}
+		visible={true}
 	/>
 	<Grid
-		position.x={gridSectionSize}
+		position.z={gridSectionSize * 0}
+		position.x={-gridSectionSize}
 		axes={"zyx"}
 		{...gridProps}
 		fadeDistance={altFadeDistance}
-		visible={false}
+		visible={true}
 	/>
 </T.Group>
 
+<!-- TODO: Remove objects that are not visible? -->
 <!-- Data -->
-<!-- <Points view={transformedView} /> -->
+<Planes view={transformedView} t={planesProps.t} />
+<Points view={transformedView} t={pointsProps.t} />
+<Planes view={transformedView} t={planes3dProps.t} dim3 />
+<Points view={transformedView} t={points3dProps.t} dim3 />
 <!-- <Sphere view={transformedView} /> -->
 <!-- <Circle view={transformedView} /> -->

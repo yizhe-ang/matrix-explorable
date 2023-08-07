@@ -2,9 +2,6 @@
 	import {
 		matrixVectorFormula,
 		matrixVectorEg,
-		vectorAsLinearComb,
-		vectorAsLinearCombAlt,
-		matrixVectorFormulaEg
 	} from "$data/tex";
 	import Tex from "./Tex.svelte";
 </script>

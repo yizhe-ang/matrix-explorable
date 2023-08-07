@@ -2,6 +2,8 @@
 	import { playhead, playToggle, matrixTween } from "$stores";
 	import { Play, Pause } from "lucide-svelte";
 
+  // TODO: Tween tween's progress instead
+
 	function togglePlay(tween) {
 		tween.paused(!tween.paused());
 
@@ -19,7 +21,8 @@
 	}
 </script>
 
-<div class="flex w-full gap-3">
+<!-- <div class="flex w-full gap-3"> -->
+<div class="flex w-80 gap-3">
 	<!-- Play button -->
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
