@@ -2,6 +2,10 @@
 	import NumberSpinner from "svelte-number-spinner";
 	import { endMatrix, show3d } from "$stores";
 
+  // TODO: Make this a spring?
+  // TODO: For the progress bar too?
+  // Make the interactions feel more playful; no sudden jumps
+
 	const indices3d = [0, 1, 2, 4, 5, 6, 8, 9, 10];
 	const indices2d = [0, 1, 4, 5];
 

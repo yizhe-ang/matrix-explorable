@@ -1,8 +1,8 @@
 <script>
 	import { useThrelte } from "@threlte/core";
 	import { Vector3 } from "three";
-	import Vector from "./Vector.svelte";
 	import { heroMatrix } from "$stores";
+	import { spring } from "svelte/motion";
 
 	// Input is simply position of user's mouse?
 	// To change:
@@ -12,18 +12,21 @@
 
 	const { camera } = useThrelte();
 
-	let vector = new Vector3(1, 0, 0);
+	const xBasis = new Vector3(1, 0, 0);
+  const xBasisSpring = spring([1, 0, 0])
+  // xBasisSpring.stiffness = 0.1
+  xBasisSpring.damping = 1.5
 
 	let width;
 	let height;
 
   // TODO: Animate the other basis vector by some random process
 
-  $: onChange(vector)
-  function onChange(vector) {
+  $: onChange($xBasisSpring)
+  function onChange(xBasis) {
     $heroMatrix = [
-      vector.x, 0, 0, 0,
-      vector.y, 1, 0, 0,
+      xBasis[0], 0, 0, 0,
+      xBasis[1], 1, 0, 0,
       0, 0, 1, 0,
       0, 0, 0, 1
     ]
@@ -35,13 +38,10 @@
 	bind:innerHeight={height}
 	on:mousemove={(e) => {
 		// Normalize
-		vector.set((e.clientX / width) * 2 - 1, -(e.clientY / height) * 2 + 1, 0);
+		// vector.set((e.clientX / width) * 2 - 1, -(e.clientY / height) * 2 + 1, 0);
+		xBasis.set(((e.clientX / width) * 2 - 1) * width, (-(e.clientY / height) * 2 + 1) * height, 0);
+		xBasis.unproject($camera);
 
-		// TODO: Scale vector
-    vector.multiplyScalar(2000)
-
-		vector.unproject($camera);
-
-    vector = vector
+    $xBasisSpring = [xBasis.x, xBasis.y, xBasis.z]
 	}}
 />

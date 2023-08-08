@@ -67,17 +67,18 @@ export const matrixVectorEg = String.raw`\left[\begin{array}{r}
 
 const a1 = colorTex(egVector[0], colorXAlt);
 const a2 = colorTex(egVector[1], colorYAlt);
-// const egVectorTex = colorTex(
-// 	String.raw`\left[\begin{array}{r}
+// const egVectorTex = String.raw`\left[\begin{array}{r}
 //   ${a1} \\
 //   ${a2}
-//   \end{array}\right]`,
-// 	colorVector
-// );
-const egVectorTex = String.raw`\left[\begin{array}{r}
+//   \end{array}\right]`;
+
+const egVectorTex = colorTex(
+	String.raw`\left[\begin{array}{r}
   ${a1} \\
   ${a2}
-  \end{array}\right]`;
+  \end{array}\right]`,
+	colorVector
+);
 
 // export const vectorAsLinearComb = String.raw`${egVectorTex}=${colorTex(
 // 	egVector[0],

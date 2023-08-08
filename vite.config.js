@@ -29,7 +29,7 @@ const config = {
 		}
 	},
 	ssr: {
-		noExternal: ["three", "threestrap", "mathbox", "shadergraph"]
+		noExternal: ["three", "threestrap", "mathbox", "shadergraph", "postprocessing"]
 	},
 	optimizeDeps: {
 		esbuildOptions: {

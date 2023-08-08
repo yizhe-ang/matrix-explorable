@@ -16,7 +16,9 @@
 		transformedGridToggled,
 		dataToggled,
 		showHero,
-		heroMatrix
+		heroMatrix,
+		afterImageEnabled,
+		cameraAutoRotate
 	} from "$stores";
 	import Vector from "./Vector.svelte";
 	import { ScrollTrigger, gsap } from "$utils/gsap.js";
@@ -41,7 +43,9 @@
 		eg3dMatrixX,
 		eg3dMatrixY,
 		eg3dMatrixZ,
-		eg3dVector
+		eg3dVector,
+		eg3dOutputVector,
+		egEndMatrix
 	} from "$data/variables";
 	import colors from "tailwindcss/colors";
 	import CameraControls from "camera-controls";
@@ -93,9 +97,13 @@
 		onComplete() {
 			// Toggle play icon
 			$playToggle = true;
+      // FIXME:
+      this.pause()
 		}
 	});
 
+  // FIXME: Setting $endMatrix directly doesn't work for some reason
+  // FIXME: Use different matrix transformation states during narrative, and during interaction time
 	$: onMatrixChange($endMatrix);
 
 	let nudgeFlag = true;
@@ -127,10 +135,12 @@
 
 	const gridProps = {
 		cellSize: gridCellSize,
-		cellColor: colors.slate["800"],
+		// cellColor: colors.slate["800"],
+		cellColor: colors.slate["600"],
 		cellThickness: 1.5,
 		sectionSize: gridSectionSize,
-		sectionColor: colors.slate["800"],
+		// sectionColor: colors.slate["800"],
+		sectionColor: colors.slate["600"],
 		sectionThickness: 3,
 		infiniteGrid: true,
 		fadeDistance: 30,
@@ -252,7 +262,7 @@
 	}
 
 	// ScrollTrigger
-	const delay = 0.2;
+	const delay = 0.1;
 	const transitionDuration = 0.1;
 
 	let vectorCoords = [0, 0, 0, 0, 0, 0];
@@ -570,6 +580,7 @@
 				timelinePropsAlt
 			})
 			.add("step-1")
+			// Reset scalar values
 			.to(
 				props,
 				{
@@ -939,6 +950,7 @@
 			);
 
 		// Perform linear transformation
+		// TODO: Use afterimage for animation of points?
 		gsap
 			.timeline({
 				...timelineProps,
@@ -1002,9 +1014,14 @@
 					...stPropsAlt,
 					trigger: "#st-8",
 					start: "top center",
-					onToggle: () => {
+					onEnter: () => {
 						// Return to default camera position
+						// $cameraControls.reset(true);
+					},
+					onLeaveBack: () => {
 						$cameraControls.reset(true);
+						$endMatrix = egEndMatrix;
+            console.log($endMatrix)
 					}
 				},
 				timelinePropsAlt
@@ -1093,6 +1110,8 @@
 					// FIXME:
 					// onToggle: () => {
 					onEnter: () => {
+						stProps.onEnter();
+
 						// Return to default camera position
 						$cameraControls.reset(true);
 						// Reset input settings
@@ -1103,14 +1122,14 @@
 			})
 			.add("step-1")
 			// Disable inputs
-			// .to(
-			// 	"#canvas-wrapper",
-			// 	{
-			// 		pointerEvents: "none",
-			// 		duration
-			// 	},
-			// 	"step-1"
-			// )
+			.to(
+				"#canvas-wrapper",
+				{
+					pointerEvents: "none",
+					duration
+				},
+				"step-1"
+			)
 			.to(
 				"#inputs",
 				{
@@ -1187,7 +1206,20 @@
 				scrollTrigger: {
 					...stProps,
 					trigger: "#st-9",
-					end: `+=${scrollUnit * 2}`
+					end: `+=${scrollUnit * 2}`,
+					onLeave: () => {
+						stProps.onLeave();
+
+						$cameraAutoRotate = true;
+					},
+					onEnterBack: () => {
+						stProps.onEnterBack();
+
+						$cameraAutoRotate = false;
+						gsap.to($cameraControls, {
+							azimuthAngle: Math.PI * 0.3
+						});
+					}
 				}
 			})
 			.add("step-0")
@@ -1225,6 +1257,7 @@
 				{
 					distance: 8.5,
 					polarAngle: Math.PI * 0.35,
+					// azimuthAngle: `+=${Math.PI * 0.3}`
 					azimuthAngle: Math.PI * 0.3
 				},
 				"step-1"
@@ -1296,10 +1329,7 @@
 				scrollTrigger: {
 					...stProps,
 					trigger: "#st-10",
-					end: `+=${scrollUnit * 1}`,
-					onToggle: () => {
-						// console.log($endMatrix);
-					}
+					end: `+=${scrollUnit * 1}`
 				}
 			})
 			.add("step-1")
@@ -1341,12 +1371,131 @@
 				},
 				"step-1"
 			)
+			// Animate output vector
+			.to(
+				vectorCoords,
+				{
+					endArray: [0, 0, 0, ...eg3dOutputVector],
+					onUpdate: function () {
+						vectorCoords = vectorCoords;
+					}
+				},
+				"step-1"
+			)
 			.to(
 				{},
 				{
 					duration: delay
 				}
 			);
+
+		// TODO: What is the best way to show transformations of space in 3D?
+		// FIXME: Do we need this animation again?
+		// Show linear combination;  Scale the basis vectors to the transformed vector
+		// gsap
+		// 	.timeline({
+		// 		...timelineProps,
+		// 		scrollTrigger: {
+		// 			...stProps,
+		// 			trigger: "#st-11",
+		// 			end: `+=${scrollUnit * 3}`
+		// 		}
+		// 	})
+		// 	.add("step-1")
+		// 	// Animate out Tex
+		// 	.to(
+		// 		props,
+		// 		{
+		// 			xTexOpacity: 0,
+		// 			yTexOpacity: 0,
+		// 			zTexOpacity: 0,
+		// 			onUpdate: function () {
+		// 				props = props;
+		// 			}
+		// 		},
+		// 		"step-1"
+		// 	)
+		// 	.add("step-2")
+		// 	// Show scalars
+		// 	.to(
+		// 		props,
+		// 		{
+		// 			duration: 0.2,
+		// 			xScalarOpacity: 1,
+		// 			yScalarOpacity: 1,
+		// 			zScalarOpacity: 1,
+		// 			onUpdate: function () {
+		// 				props = props;
+		// 			}
+		// 		},
+		// 		"step-2"
+		// 	)
+		// 	// Scale basis vectors
+		// 	.to(
+		// 		xCoords,
+		// 		{
+		// 			endArray: [
+		// 				0,
+		// 				0,
+		// 				0,
+		// 				eg3dVector[0] * eg3dMatrixX[0],
+		// 				eg3dVector[0] * eg3dMatrixX[1],
+		// 				eg3dVector[0] * eg3dMatrixX[2]
+		// 			],
+		// 			onUpdate: function () {
+		// 				xCoords = xCoords;
+		// 			}
+		// 		},
+		// 		"step-2"
+		// 	)
+		// 	.to(
+		// 		yCoords,
+		// 		{
+		// 			endArray: [
+		// 				0,
+		// 				0,
+		// 				0,
+		// 				eg3dVector[1] * eg3dMatrixY[0],
+		// 				eg3dVector[1] * eg3dMatrixY[1],
+		// 				eg3dVector[1] * eg3dMatrixY[2]
+		// 			],
+		// 			onUpdate: function () {
+		// 				yCoords = yCoords;
+		// 			}
+		// 		},
+		// 		"step-2"
+		// 	)
+		// 	.to(
+		// 		zCoords,
+		// 		{
+		// 			endArray: [
+		// 				0,
+		// 				0,
+		// 				0,
+		// 				eg3dVector[2] * eg3dMatrixZ[0],
+		// 				eg3dVector[2] * eg3dMatrixZ[1],
+		// 				eg3dVector[2] * eg3dMatrixZ[2]
+		// 			],
+		// 			onUpdate: function () {
+		// 				zCoords = zCoords;
+		// 			}
+		// 		},
+		// 		"step-2"
+		// 	)
+		// 	// Animate scalar text too
+		// 	.to(
+		// 		props,
+		// 		{
+		// 			xScalar: eg3dVector[0],
+		// 			yScalar: eg3dVector[1],
+		// 			zScalar: eg3dVector[2],
+		// 			onUpdate: function () {
+		// 				props = props;
+		// 			}
+		// 		},
+		// 		"step-2"
+		// 	)
+		// 	.to({}, { duration: delay });
 
 		// Show playground
 	}
@@ -1448,15 +1597,15 @@
 	visible={basisAltProps.yVisible}
 />
 
-<!-- <T.Group position.z={-0.005}>
+<T.Group position.z={-0.01}>
 	<Grid
 		axes={"xyz"}
 		{...gridProps}
-		cellColor={colors.slate["900"]}
-		sectionColor={colors.slate["900"]}
+		cellColor={colors.slate["700"]}
+		sectionColor={colors.slate["700"]}
 		fadeDistance={gridVars.fadeDistance}
 	/>
-</T.Group> -->
+</T.Group>
 
 <!-- Add a plane -->
 <!-- <T.Mesh position.z={-0.02}>
@@ -1480,7 +1629,7 @@
 		{...gridProps}
 		fadeDistance={gridVars.transformedFadeDistance}
 	/>
-	<Grid
+	<!-- <Grid
 		position.z={gridSectionSize * 0}
 		position.y={gridSectionSize}
 		axes={"xzy"}
@@ -1495,7 +1644,7 @@
 		{...gridProps}
 		fadeDistance={altFadeDistance}
 		visible={true}
-	/>
+	/> -->
 </T.Group>
 
 <!-- TODO: Remove objects that are not visible? -->

@@ -1,8 +1,19 @@
 <script>
 	import { playhead, playToggle, matrixTween } from "$stores";
 	import { Play, Pause } from "lucide-svelte";
+	import { gsap } from "$utils/gsap";
 
-  // TODO: Tween tween's progress instead
+	// TODO: Tween tween's progress instead
+	const progressTween = gsap.fromTo(
+		$matrixTween,
+		{
+			progress: 0
+		},
+		{
+			progress: 1,
+			ease: "power2.inOut"
+		}
+	);
 
 	function togglePlay(tween) {
 		tween.paused(!tween.paused());
@@ -32,6 +43,7 @@
 		class:swap-active={$playToggle}
 		on:click={() => {
 			togglePlay($matrixTween);
+			// togglePlay(progressTween);
 		}}
 	>
 		<div class="swap-on">
@@ -48,6 +60,8 @@
 		on:input={() => {
 			$matrixTween.progress($playhead);
 			$matrixTween.pause();
+			// progressTween.progress($playhead);
+			// progressTween.pause();
 		}}
 		on:change={() => {
 			$playToggle = true;

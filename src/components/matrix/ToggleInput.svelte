@@ -8,6 +8,8 @@
 
   // TODO: Change to 2D view
 
+  // TODO: Cube
+
 	import {
 		gridToggled,
 		transformedGridToggled,

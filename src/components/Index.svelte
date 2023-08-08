@@ -18,6 +18,7 @@
 
 <!-- TODO: Update width? -->
 <article class="relative flex bg-base-300 w-[calc(100%+65ch)]">
+  <!-- FIXME: For some reason no pointer events around the origin -->
 	<div
 		id="canvas-wrapper"
 		class="sticky top-0 flex-1 min-w-0 h-screen bg-base-300 pointer-events-none"

@@ -6,16 +6,22 @@
 	import { onMount } from "svelte";
 	import Arcade from "./Arcade.svelte";
 	import { gsap } from "$utils/gsap.js";
-	import { sceneMounted, cameraControls, cameraProps } from "$stores";
+	import {
+		sceneMounted,
+		cameraControls,
+		afterImageEnabled,
+		cameraAutoRotate
+	} from "$stores";
 	import * as THREE from "three";
 	import CameraControls from "camera-controls";
 	import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 	import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 	import { AfterimagePass } from "three/addons/postprocessing/AfterimagePass.js";
-  import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass.js'
+	import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass.js";
 	import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-  import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js'
+	import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
 	import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
+	// import { EffectComposer, RenderPass } from "postprocessing";
 
 	CameraControls.install({ THREE: THREE });
 
@@ -24,6 +30,8 @@
 	});
 
 	const { size, scene, camera, renderer } = useThrelte();
+
+	scene.background = new THREE.Color("hsl(231, 15%, 4%)");
 
 	// MathBox context
 	const context = new MathBox.Context(renderer, scene, $camera).init();
@@ -34,24 +42,27 @@
 	// FIXME: Can replace with the postprocessing library?
 	let composer;
 
+	const afterImagePass = new AfterimagePass();
+	// $: afterImagePass.enabled = $afterImageEnabled;
+
 	function setupEffectComposer(camera) {
 		composer = new EffectComposer(renderer);
-    // FIXME: Have to set size and pixel ratio?
+
+		// FIXME: Have to set size and pixel ratio?
 		composer.addPass(new RenderPass(scene, camera));
 
-    // FIXME: Keep afterimage for some animations?
-    // FIXME: Why does afterimage make the colors brighter?
-		const afterImagePass = new AfterimagePass();
+		// FIXME: Keep afterimage for some animations?
+		// FIXME: Why does afterimage make the colors brighter?
 		composer.addPass(afterImagePass);
 
-    // const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader)
-    // composer.addPass(gammaCorrectionPass)
+		const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
+		composer.addPass(gammaCorrectionPass);
 
-    const outputPass = new OutputPass()
-    composer.addPass(outputPass)
+		// const outputPass = new OutputPass();
+		// composer.addPass(outputPass);
 
-    // const smaaPass = new SMAAPass()
-    // composer.addPass(smaaPass)
+		const smaaPass = new SMAAPass();
+		composer.addPass(smaaPass);
 	}
 
 	$: setupEffectComposer($camera);
@@ -62,6 +73,14 @@
 	});
 
 	useFrame(({}, delta) => {
+		// TODO: Camera auto-rotate
+		if ($cameraAutoRotate) {
+			$cameraControls.azimuthAngle += 10 * delta * THREE.MathUtils.DEG2RAD;
+			// Normalize
+			$cameraControls.azimuthAngle =
+				$cameraControls.azimuthAngle % (2 * Math.PI);
+		}
+
 		$cameraControls.update(delta);
 
 		context.frame();
@@ -103,7 +122,11 @@
 					translateX: "-=32.5ch"
 				},
 				"<"
-			);
+			)
+			.to(afterImagePass.uniforms.damp, {
+				value: 0,
+				duration: 0.001
+			});
 
 		$sceneMounted = true;
 	});
@@ -118,7 +141,7 @@
 		bind:ref={$cameraControls}
 		args={[ref, renderer.domElement]}
 		mouseButtons.left={CameraControls.ACTION.TRUCK}
-		mouseButtons.right={CameraControls.ACTION.ROTATE}
+		mouseButtons.right={CameraControls.ACTION.NONE}
 		on:update={(e) => {
 			// console.log(e)
 		}}

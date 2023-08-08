@@ -2,6 +2,7 @@
 	import Alert from "./Alert.svelte";
 	import Tex from "./Tex.svelte";
 	import {
+		matrixVectorFormula,
 		vectorAsLinearComb,
 		matrixVectorFormulaEg,
 		matrixVectorFormula3dEg
@@ -16,6 +17,7 @@
 	import Spacer from "./Spacer.svelte";
 	import Action from "./Action.svelte";
 	import Section from "./Section.svelte";
+	import B from "./B.svelte";
 </script>
 
 <!-- FIXME: max-w-prose -->
@@ -34,15 +36,16 @@
 	<!-- <section id="section-1" class="prose prose-xl [&>*]:px-10 [&>*]:rounded-xl"> -->
 	<Section id="section-1">
 		<!-- <section class="prose prose-xl max-w-[50ch]"> -->
-		<h2>Matrix as Linear Transformations</h2>
+		<!-- <h2>Matrix as Linear Transformations</h2> -->
 
 		<p>
-			A vector multiplied by a matrix returns a new vector. It transforms a
-			vector into a new vector. Let's visualize this transformation with an
-			example.
+			A vector multiplied by a matrix returns a new vector — it <B>transforms</B
+			> a vector into a new vector. Let's visualize this transformation with an example.
 		</p>
 
-		<h3>Vectors as a Linear Combination of Basis Vectors</h3>
+		<!-- <h3>Vectors as a Linear Combination of Basis Vectors</h3> -->
+
+		<Spacer />
 
 		<P id="st-1">
 			Let's first think about what the coordinates of a <ColorText color="in"
@@ -71,6 +74,7 @@
       display
     /> -->
 
+		<!-- TODO: Do text highlighting that syncs with the corresponding animation -->
 		<P id="st-3">
 			<Tex expr={vectorAsLinearComb} display color />
 			These are also known as our <Term>standard basis vectors</Term>. The
@@ -81,24 +85,28 @@
 		<p>
 			This scaling and addition of vectors is called a <Term
 				>linear combination</Term
-			>; every vector can be expressed as a linear combination of basis vectors.
+			>, and every vector can be expressed as a linear combination of basis
+			vectors.
 		</p>
 
 		<Spacer />
 
-		<Tex expr={matrixVectorFormulaEg} display color />
+		<Tex expr={matrixVectorFormula} display />
 
 		<p>
-			Did you notice anything similar with the formula for matrix-vector
+			Did you notice anything similar with the expression for matrix-vector
 			multiplication? A vector multiplied with a matrix can also be expressed as
-			a linear combination; this time with the columns of the matrix.
+			a linear combination; this time with the standard basis vectors replaced
+			by the columns of the matrix.
 		</p>
+
+		<Tex expr={matrixVectorFormulaEg} display color />
 
 		<P id="st-4">
 			In other words, a matrix can be viewed as a way of packaging information
 			about our new basis vectors. This is the core insight: a matrix transforms
-			a vector by transforming the original basis vectors; creating an entirely
-			new coordinate system.
+			a vector by <B>transforming the original basis vectors</B>; creating an
+			entirely new coordinate system.
 		</P>
 
 		<P id="st-5">
@@ -111,57 +119,62 @@
 		<p>
 			In that vein, a matrix transformation appears to warp and transform space
 			itself. In order to get a more visceral feel of this, let's visualize what
-			happens to sample of vectors in space, each multiplied by the same matrix.
+			happens to not just a single vector, but a sample of vectors in space,
+			each multiplied by the same matrix.
 		</p>
 
 		<P id="st-6">
 			In order to make the space less visually cluttered, we can represent each
-			vector as a point in space instead.
+			vector as a point in space instead. We'll transform the grid lines along
+			too, overlaying on top a copy of the original.
 		</P>
 
 		<P id="st-7">
-			We'll transform the grid lines too, overlaying it on top of the original.
 			The transformation appears to rotate and stretch the space, accordingly
 			with where the new basis vectors land.
 		</P>
 
 		<P>
-			As we'll see with a plethora of examples to come, a matrix performs a
-			particular kind of transformation, called a <Term
+			As we'll see when you have a chance to tinker around with different basis
+			vectors, a matrix performs a particular kind of transformation, called a <Term
 				>linear transformation</Term
-			>. For such transformations:
+			>. Visually, you'll notice that:
 		</P>
 
 		<ul>
 			<li>
-				All lines in the original space remain as lines, without getting curved.
+				All lines in the original space remain as lines, without getting curved, and
 			</li>
 			<li>Origin remains fixed in place.</li>
 		</ul>
 
 		<p>
-			A visual example is that all grid lines stay parallel and evenly spaced.
+			As an example, all grid lines stay parallel and evenly spaced after the transformation.
 		</p>
+
+    <Spacer />
 
 		<!-- TODO: Have a kind of recap at the end -->
 		<Insight>
-			<p>These are the core ideas of matrix transformations:</p>
 			<ul>
 				<li>
-					All lines in the original space remain as lines, without getting
-					curved.
+          Any vector can be expressed as the addition of scaled basis vectors; or a linear combination of basis vectors.
 				</li>
-				<li>Origin remains fixed in place.</li>
+				<li>
+          A matrix can be viewed as a way to package information about a linear transformation. The columns of a matrix represent where the new basis vectors land after the transformation.
+        </li>
+        <li>
+          Matrix-vector multiplication is a way to compute where a given vector lands after the transformation defined by a matrix.
+        </li>
 			</ul>
 		</Insight>
 
 		<Spacer />
 
 		<P id="st-8">
-			With this understanding, try to tinker about and figure out what kinds of
-			transformations are possible with matrices! What basis vectors should you
-			choose in order to scale space? How about a reflection, rotation or a
-			shear?
+			With our understanding so far, try to tinker about and figure out what
+			kinds of transformations are possible with matrices! What basis vectors
+			should you choose in order to scale space uniformly in all directions? How about a reflection, rotation or a shear?
 		</P>
 		<Action>
 			<!-- TODO: Allow users to grab the basis vectors too? -->
@@ -202,12 +215,12 @@
 
 		<Tex expr={matrixVectorFormula3dEg} display color />
 
-		<p>
+		<P id="st-11">
 			Originally, any vector is composed of a linear combination of these three
 			standard basis vectors. To figure out the where the vector lands after the
 			transformation, it is a linear combination of the transformed basis
 			vectors, each scaled by the respective coordinates in the starting vector.
-		</p>
+		</P>
 
 		<p>
 			Lorem, ipsum dolor sit amet consectetur adipisicing elit. Magni porro quia

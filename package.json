@@ -58,6 +58,7 @@
 		"katex": "^0.16.8",
 		"mathbox": "^2.3.2-rc1",
 		"ml-matrix": "^6.10.4",
+		"postprocessing": "^6.32.2",
 		"svelte-number-spinner": "^0.8.0",
 		"three": "github:yizhe-ang/three.js",
 		"tweakpane": "^3.1.10"
