@@ -181,17 +181,15 @@ ${b3} & ${b4}
 //   \end{array}\right]`,
 // 	colorX
 // );
-const egMatrixXTex =
-	String.raw`\left[\begin{array}{r}
+const egMatrixXTex = String.raw`\left[\begin{array}{r}
   ${colorTex(egMatrixX[0], colorX)} \\
   ${colorTex(egMatrixX[1], colorX)}
-  \end{array}\right]`
+  \end{array}\right]`;
 
-const egMatrixYTex =
-	String.raw`\left[\begin{array}{r}
+const egMatrixYTex = String.raw`\left[\begin{array}{r}
   ${colorTex(egMatrixY[0], colorY)} \\
   ${colorTex(egMatrixY[1], colorY)}
-  \end{array}\right]`
+  \end{array}\right]`;
 
 // const outputVector = colorTex(
 // 	String.raw`\left[\begin{array}{l}
@@ -200,11 +198,10 @@ const egMatrixYTex =
 //   \end{array}\right]`,
 // 	colorVector
 // );
-const outputVector =
-	String.raw`\left[\begin{array}{l}
+const outputVector = String.raw`\left[\begin{array}{l}
   ${colorTex(egOutputVector[0], colorVector)} \\
   ${colorTex(egOutputVector[1], colorVector)}
-  \end{array}\right]`
+  \end{array}\right]`;
 
 export const matrixVectorFormulaEg = String.raw`\begin{aligned}
 {${egMatrixTex}
@@ -238,11 +235,19 @@ const c10 = colorTex(eg3dVector[0], colorXAlt);
 const c11 = colorTex(eg3dVector[1], colorYAlt);
 const c12 = colorTex(eg3dVector[2], colorZAlt);
 
-const eg3dVectorTex = String.raw`\left[\begin{array}{r}
+// const eg3dVectorTex = String.raw`\left[\begin{array}{r}
+//   ${c10} \\
+//   ${c11} \\
+//   ${c12}
+//   \end{array}\right]`;
+const eg3dVectorTex = colorTex(
+	String.raw`\left[\begin{array}{r}
   ${c10} \\
   ${c11} \\
   ${c12}
-  \end{array}\right]`;
+  \end{array}\right]`,
+	colorVector
+);
 
 // const eg3dMatrixXTex = colorTex(
 // 	String.raw`\left[\begin{array}{r}

@@ -18,7 +18,9 @@
 		showHero,
 		heroMatrix,
 		afterImageEnabled,
-		cameraAutoRotate
+		cameraAutoRotate,
+		show3d,
+		showPlayground
 	} from "$stores";
 	import Vector from "./Vector.svelte";
 	import { ScrollTrigger, gsap } from "$utils/gsap.js";
@@ -97,13 +99,13 @@
 		onComplete() {
 			// Toggle play icon
 			$playToggle = true;
-      // FIXME:
-      this.pause()
+			// FIXME:
+			this.pause();
 		}
 	});
 
-  // FIXME: Setting $endMatrix directly doesn't work for some reason
-  // FIXME: Use different matrix transformation states during narrative, and during interaction time
+	// FIXME: Setting $endMatrix directly doesn't work for some reason
+	// FIXME: Use different matrix transformation states during narrative, and during interaction time
 	$: onMatrixChange($endMatrix);
 
 	let nudgeFlag = true;
@@ -127,7 +129,8 @@
 		matrix = matrix;
 	}
 
-	$: matrixTransform = $showHero ? $heroMatrix : matrix;
+	// Use different states during interaction and during narrative
+	$: matrixTransform = $showHero || !$showPlayground ? $heroMatrix : matrix;
 
 	// Grid props
 	const gridCellSize = 1;
@@ -312,7 +315,8 @@
 
 	let basisAltProps = {
 		xVisible: false,
-		yVisible: false
+		yVisible: false,
+		zVisible: false
 	};
 
 	const stProps = {
@@ -1015,13 +1019,40 @@
 					trigger: "#st-8",
 					start: "top center",
 					onEnter: () => {
-						// Return to default camera position
-						// $cameraControls.reset(true);
+						$showPlayground = true;
 					},
 					onLeaveBack: () => {
+						// When going back from playground to interactive
+
+						$showPlayground = false;
+
 						$cameraControls.reset(true);
-						$endMatrix = egEndMatrix;
-            console.log($endMatrix)
+						// $endMatrix = egEndMatrix;
+						// console.log($endMatrix);
+
+						// Reset input settings
+						$dataToggled = "points";
+						$gridToggled = true;
+						$transformedGridToggled = true;
+
+						// Reset playhead
+						gsap.to($matrixTween, {
+							progress: 1,
+							duration
+						});
+
+						// Reset endMatrix
+						// gsap.to(
+						// 	$endMatrix,
+						// 	{
+						// 		endArray: egEndMatrix,
+						// 		duration,
+						// 		onUpdate: function () {
+						// 			$endMatrix = $endMatrix;
+						// 		}
+						// 	},
+						// 	"step-0"
+						// );
 					}
 				},
 				timelinePropsAlt
@@ -1080,7 +1111,7 @@
 			.to(
 				xCoords,
 				{
-					duration,
+					duration: 0.001,
 					endArray: [0, 0, 0, 1, 0, 0],
 					onUpdate: function () {
 						xCoords = xCoords;
@@ -1116,6 +1147,13 @@
 						$cameraControls.reset(true);
 						// Reset input settings
 						$dataToggled = undefined;
+
+						$showPlayground = false;
+					},
+					onLeaveBack: () => {
+						stProps.onLeaveBack();
+
+						$showPlayground = true;
 					}
 				},
 				timelinePropsAlt
@@ -1207,6 +1245,16 @@
 					...stProps,
 					trigger: "#st-9",
 					end: `+=${scrollUnit * 2}`,
+					onEnter: () => {
+						stProps.onEnter();
+
+						$show3d = true;
+					},
+					onLeaveBack: () => {
+						stProps.onLeaveBack();
+
+						$show3d = false;
+					},
 					onLeave: () => {
 						stProps.onLeave();
 
@@ -1498,6 +1546,74 @@
 		// 	.to({}, { duration: delay });
 
 		// Show playground
+		gsap
+			.timeline({
+				scrollTrigger: {
+					...stPropsAlt,
+					trigger: "#st-12",
+					start: "top center",
+					onEnter: () => {
+						console.log("enter");
+						$cameraAutoRotate = false;
+					},
+					onLeaveBack: () => {
+						$cameraAutoRotate = true;
+					}
+				},
+				timelinePropsAlt
+			})
+			.add("step-1")
+			// Make canvas interactable
+			.to(
+				"#canvas-wrapper",
+				{
+					pointerEvents: "auto",
+					cursor: "move",
+					duration
+				},
+				"step-1"
+			)
+			// Show input
+			.to(
+				"#inputs",
+				{
+					autoAlpha: 1,
+					x: 0,
+					duration
+				},
+				"step-1"
+			)
+			// Hide basis vectors
+			.to(
+				props,
+				{
+					duration,
+					xTexOpacity: 0,
+					yTexOpacity: 0,
+					zTexOpacity: 0,
+					xVisible: false,
+					yVisible: false,
+					zVisible: false,
+					onUpdate: function () {
+						props = props;
+					}
+				},
+				"step-1"
+			)
+			// Show alt basis vectors
+			.to(
+				basisAltProps,
+				{
+					duration,
+					xVisible: true,
+					yVisible: true,
+					zVisible: true,
+					onUpdate: function () {
+						basisAltProps = basisAltProps;
+					}
+				},
+				"step-1"
+			);
 	}
 
 	function updateStProgress(progress) {
@@ -1595,6 +1711,13 @@
 	color={colorY}
 	tex={false}
 	visible={basisAltProps.yVisible}
+/>
+<Vector
+	view={transformedView}
+	coords={[0, 0, 0, 0, 0, 1]}
+	color={colorZ}
+	tex={false}
+	visible={basisAltProps.zVisible}
 />
 
 <T.Group position.z={-0.01}>

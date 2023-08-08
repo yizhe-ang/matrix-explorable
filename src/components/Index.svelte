@@ -18,7 +18,7 @@
 
 <!-- TODO: Update width? -->
 <article class="relative flex bg-base-300 w-[calc(100%+65ch)]">
-  <!-- FIXME: For some reason no pointer events around the origin -->
+	<!-- FIXME: For some reason no pointer events around the origin -->
 	<div
 		id="canvas-wrapper"
 		class="sticky top-0 flex-1 min-w-0 h-screen bg-base-300 pointer-events-none"
@@ -35,9 +35,9 @@
 
 <div
 	id="inputs"
-	class="fixed left-0 top-0 flex flex-col items-center px-8 py-8 gap-7 invisible"
+	class="fixed left-0 top-0 flex flex-col items-start px-8 py-8 gap-7 invisible"
 >
-<!-- <div
+	<!-- <div
 	id="inputs"
 	class="fixed left-0 top-0 flex flex-col items-center px-8 py-8 gap-7 z-20"
 > -->

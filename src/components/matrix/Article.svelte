@@ -143,29 +143,35 @@
 
 		<ul>
 			<li>
-				All lines in the original space remain as lines, without getting curved, and
+				All lines in the original space remain as lines, without getting curved,
+				and
 			</li>
 			<li>Origin remains fixed in place.</li>
 		</ul>
 
 		<p>
-			As an example, all grid lines stay parallel and evenly spaced after the transformation.
+			As an example, all grid lines stay parallel and evenly spaced after the
+			transformation.
 		</p>
 
-    <Spacer />
+		<Spacer />
 
 		<!-- TODO: Have a kind of recap at the end -->
 		<Insight>
 			<ul>
 				<li>
-          Any vector can be expressed as the addition of scaled basis vectors; or a linear combination of basis vectors.
+					Any vector can be expressed as the addition of scaled basis vectors;
+					or a linear combination of basis vectors.
 				</li>
 				<li>
-          A matrix can be viewed as a way to package information about a linear transformation. The columns of a matrix represent where the new basis vectors land after the transformation.
-        </li>
-        <li>
-          Matrix-vector multiplication is a way to compute where a given vector lands after the transformation defined by a matrix.
-        </li>
+					A matrix can be viewed as a way to package information about a linear
+					transformation. The columns of a matrix represent where the new basis
+					vectors land after the transformation.
+				</li>
+				<li>
+					Matrix-vector multiplication is a way to compute where a given vector
+					lands after the transformation defined by a matrix.
+				</li>
 			</ul>
 		</Insight>
 
@@ -174,7 +180,8 @@
 		<P id="st-8">
 			With our understanding so far, try to tinker about and figure out what
 			kinds of transformations are possible with matrices! What basis vectors
-			should you choose in order to scale space uniformly in all directions? How about a reflection, rotation or a shear?
+			should you choose in order to scale space uniformly in all directions? How
+			about a reflection, rotation or a shear?
 		</P>
 		<Action>
 			<!-- TODO: Allow users to grab the basis vectors too? -->
@@ -188,12 +195,12 @@
 
 	<!-- TODO: How about 3D? -->
 	<Section id="section-2">
-		<h2 id="test">Transformations in Higher Dimensions</h2>
+		<h2 id="test">Transformations Beyond Two-Dimensions</h2>
 
 		<p>
 			So far we've only been talking about matrix transformations in
 			two-dimensions on the <Tex expr="xy" />-plane. Do the same intuitions
-			carry over to higher dimensions?
+			carry over to <B>higher dimensions</B>?
 		</p>
 
 		<P id="st-9">
@@ -202,7 +209,7 @@
 				><Tex expr="z" />-direction</ColorText
 			>. This also means we're now fiddling around with vectors of length <Tex
 				expr="3"
-			/>, representing the coordinates <Tex expr="xyz" />, and matrices of size
+			/> — representing the <Tex expr="xyz" /> coordinates — and matrices of size
 			<nobr><Tex expr="3\times3" /></nobr>.
 		</P>
 
@@ -223,23 +230,29 @@
 		</P>
 
 		<p>
-			Lorem, ipsum dolor sit amet consectetur adipisicing elit. Magni porro quia
-			adipisci eaque commodi placeat totam, nihil officia, debitis quo
-			necessitatibus quos, exercitationem iusto consectetur optio numquam
-			possimus provident laborum!
+			Talk about application in computer graphics... give a concrete example
+			visually. Give other examples of applications of matrices...
 		</p>
-		<p>
-			Lorem, ipsum dolor sit amet consectetur adipisicing elit. Magni porro quia
-			adipisci eaque commodi placeat totam, nihil officia, debitis quo
-			necessitatibus quos, exercitationem iusto consectetur optio numquam
-			possimus provident laborum!
+		<Spacer />
+		<p id="st-12">
+			Go forth and improve your intuition of matrix transformations in 3D! Now
+			you have a whole additional dimension to fidget around with.
 		</p>
-		<p>
-			Lorem, ipsum dolor sit amet consectetur adipisicing elit. Magni porro quia
-			adipisci eaque commodi placeat totam, nihil officia, debitis quo
-			necessitatibus quos, exercitationem iusto consectetur optio numquam
-			possimus provident laborum!
-		</p>
+		<Action>
+			<ul>
+				<li>Right click and drag to rotate...</li>
+			</ul>
+		</Action>
+
+    <p>
+      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id repellendus in incidunt impedit quos voluptatem itaque saepe ab alias, amet iste, recusandae ratione est veniam corrupti neque ea! Quasi, quaerat.
+    </p>
+    <p>
+      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id repellendus in incidunt impedit quos voluptatem itaque saepe ab alias, amet iste, recusandae ratione est veniam corrupti neque ea! Quasi, quaerat.
+    </p>
+    <p>
+      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id repellendus in incidunt impedit quos voluptatem itaque saepe ab alias, amet iste, recusandae ratione est veniam corrupti neque ea! Quasi, quaerat.
+    </p>
 	</Section>
 
 	<!-- TODO: Composition of matrices -->

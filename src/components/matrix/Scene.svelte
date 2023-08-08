@@ -156,16 +156,5 @@
 <!-- TODO: Make objects further away darker, out of focus -->
 <!-- TODO: Make the scene more 3D realistic -->
 
-<!-- <Grid
-	cellSize={0.5}
-	cellColor={'#3f3f46'}
-	cellThickness={1.5}
-	sectionSize={5}
-	sectionColor={'#52525b'}
-	sectionThickness={3}
-	infiniteGrid
-	fadeDistance={50}
-	fadeStrength={3}
-/> -->
 
 <Arcade {mathbox} />

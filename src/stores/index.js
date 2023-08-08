@@ -56,6 +56,7 @@ export const dataToggled = writable(undefined);
 
 export const showHero = writable(true);
 export const show3d = writable(false);
+export const showPlayground = writable(false)
 
 export const cameraControls = writable(undefined);
 export const cameraProps = writable({
