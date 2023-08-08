@@ -10,7 +10,9 @@
 		sceneMounted,
 		cameraControls,
 		afterImageEnabled,
-		cameraAutoRotate
+		cameraAutoRotate,
+		heroMatrix,
+		titleMounted
 	} from "$stores";
 	import * as THREE from "three";
 	import CameraControls from "camera-controls";
@@ -21,7 +23,10 @@
 	import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 	import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
 	import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
+	import { initMatrix } from "$data/variables";
 	// import { EffectComposer, RenderPass } from "postprocessing";
+
+	let mounted = false;
 
 	CameraControls.install({ THREE: THREE });
 
@@ -86,10 +91,16 @@
 		context.frame();
 	});
 
+	$: if (mounted && $titleMounted) animate();
+
 	onMount(() => {
 		// FIXME: Set size responsively?
 		context.resize({ viewWidth: $size.width, viewHeight: $size.height });
 
+		mounted = true;
+	});
+
+	function animate() {
 		gsap
 			.timeline({
 				scrollTrigger: {
@@ -99,13 +110,18 @@
 					scrub: 1
 				}
 			})
-			.to($cameraControls, {
-				distance: 15,
-				onComplete: function () {
-					// Update default camera position
-					$cameraControls.saveState();
-				}
-			})
+			.add("step-1")
+			.to(
+				$cameraControls,
+				{
+					distance: 15,
+					onComplete: function () {
+						// Update default camera position
+						$cameraControls.saveState();
+					}
+				},
+				"step-1"
+			)
 			.to(
 				"#article",
 				{
@@ -113,7 +129,7 @@
 					translateX: "-=65ch"
 					// translateX: "calc(-50ch-80px)"
 				},
-				"<"
+				"step-1"
 			)
 			.to(
 				"#canvas-wrapper",
@@ -121,7 +137,7 @@
 					// width: "-=65ch",
 					translateX: "-=32.5ch"
 				},
-				"<"
+				"step-1"
 			)
 			.to(afterImagePass.uniforms.damp, {
 				value: 0,
@@ -129,7 +145,7 @@
 			});
 
 		$sceneMounted = true;
-	});
+	}
 </script>
 
 <!-- Set up camera and lighting -->
@@ -155,6 +171,5 @@
 <!-- TODO: Depth-of-field? -->
 <!-- TODO: Make objects further away darker, out of focus -->
 <!-- TODO: Make the scene more 3D realistic -->
-
 
 <Arcade {mathbox} />

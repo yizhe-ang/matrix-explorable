@@ -1,10 +1,18 @@
 <script>
 	import { titleMounted, showHero, endMatrix } from "$stores";
-  import { egEndMatrix } from "$data/variables";
+	import { egEndMatrix } from "$data/variables";
 	import { gsap } from "$utils/gsap.js";
 	import { onMount } from "svelte";
 
+	let mounted = false;
+
+	$: if (mounted) animate();
+
 	onMount(() => {
+		mounted = true;
+	});
+
+	function animate() {
 		// Animate title
 		gsap
 			.timeline({
@@ -13,9 +21,9 @@
 					start: "top top",
 					scrub: 1,
 					onLeave: () => {
-            // HACK:
+						// HACK:
 						$showHero = false;
-            // $endMatrix = egEndMatrix
+						// $endMatrix = egEndMatrix
 					},
 					onEnterBack: () => {
 						$showHero = true;
@@ -27,7 +35,7 @@
 			});
 
 		$titleMounted = true;
-	});
+	}
 </script>
 
 <div

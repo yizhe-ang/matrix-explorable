@@ -20,7 +20,8 @@
 		afterImageEnabled,
 		cameraAutoRotate,
 		show3d,
-		showPlayground
+		showPlayground,
+		customMatrix
 	} from "$stores";
 	import Vector from "./Vector.svelte";
 	import { ScrollTrigger, gsap } from "$utils/gsap.js";
@@ -80,7 +81,8 @@
 
 	// const transformedView = view.transform();
 	// FIXME: Or should I just set manually?
-	const transformedView = view.transform({}, { matrix: () => matrix });
+	// const transformedView = view.transform({}, { matrix: () => matrix });
+	const transformedView = view.transform();
 
 	// Matrix animation
 	// TODO: Make the ease linear
@@ -103,6 +105,7 @@
 			this.pause();
 		}
 	});
+	$matrixTween.progress(1);
 
 	// FIXME: Setting $endMatrix directly doesn't work for some reason
 	// FIXME: Use different matrix transformation states during narrative, and during interaction time
@@ -130,7 +133,23 @@
 	}
 
 	// Use different states during interaction and during narrative
-	$: matrixTransform = $showHero || !$showPlayground ? $heroMatrix : matrix;
+	let matrixTransform;
+	$: {
+		if ($showHero) {
+			matrixTransform = $heroMatrix;
+		} else if (!$showPlayground) {
+			matrixTransform = $customMatrix;
+		} else {
+			console.log("change matrix");
+			matrixTransform = matrix;
+			console.log(matrix);
+		}
+	}
+
+	// Update transformed view
+	$: transformedView.set("matrix", matrixTransform);
+
+	// $: console.log(matrixTransform)
 
 	// Grid props
 	const gridCellSize = 1;
@@ -976,10 +995,20 @@
 			)
 			.add("step-1")
 			// Perform linear transformation
+			// .to(
+			// 	$matrixTween,
+			// 	{
+			// 		progress: 1.0
+			// 	},
+			// 	"step-1"
+			// )
 			.to(
-				$matrixTween,
+				$customMatrix,
 				{
-					progress: 1.0
+					endArray: egEndMatrix,
+					onUpdate: () => {
+						$customMatrix = $customMatrix;
+					}
 				},
 				"step-1"
 			)
@@ -1079,6 +1108,7 @@
 				"step-1"
 			)
 			// Hide basis vectors
+			// FIXME: Animate opacity of vectors
 			.to(
 				props,
 				{

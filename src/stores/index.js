@@ -45,7 +45,12 @@ export const endMatrix = writable([
 // 	1
 // ]);
 
+// Separate matrix transformation states
 export const heroMatrix = writable([
+	1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+]);
+
+export const customMatrix = writable([
 	1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
 ]);
 
@@ -56,7 +61,7 @@ export const dataToggled = writable(undefined);
 
 export const showHero = writable(true);
 export const show3d = writable(false);
-export const showPlayground = writable(false)
+export const showPlayground = writable(false);
 
 export const cameraControls = writable(undefined);
 export const cameraProps = writable({
@@ -69,8 +74,8 @@ export const cameraProps = writable({
 export const matrixTween = writable(undefined);
 
 // ScrubberInput stores
-export const playhead = writable(0);
-// export const playhead = writable(1);
+// export const playhead = writable(0);
+export const playhead = writable(1);
 export const playToggle = writable(true);
 
 export const titleMounted = writable(false);

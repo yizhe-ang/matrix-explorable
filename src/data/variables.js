@@ -8,6 +8,13 @@ export const egMatrixX = [1, -2];
 // export const egMatrixY = [3, 0];
 export const egMatrixY = [2, 0];
 
+export const initMatrix = [
+  	1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1
+];
+
 export const egEndMatrix = [
   	egMatrixX[0], egMatrixY[0], 0, 0,
     egMatrixX[1], egMatrixY[1], 0, 0,
