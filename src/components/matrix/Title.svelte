@@ -1,6 +1,7 @@
 <script>
 	import { titleMounted, showHero, endMatrix } from "$stores";
 	import { egEndMatrix } from "$data/variables";
+	import { playgroundSt } from "$stores";
 	import { gsap } from "$utils/gsap.js";
 	import { onMount } from "svelte";
 
@@ -45,5 +46,25 @@
 	<div class="flex flex-col gap-5 items-center">
 		<h1 class="text-8xl">The Matrix Arcade</h1>
 		<div class="text-3xl">A Visual Explorable of Matrix Transformations</div>
+
+		<!-- <a href="#st-12">Skip to Playground!</a> -->
+		<button
+			class="btn"
+			on:click={() => {
+				// const target = document.querySelector('#st-12')
+
+				// target?.scrollIntoView()
+
+				// gsap.to(window, {
+				// 	scrollTo: "#st-12"
+				// });
+
+				gsap.to(window, {
+					scrollTo: $playgroundSt.end
+				});
+			}}
+		>
+			Skip to Playground!
+		</button>
 	</div>
 </div>

@@ -1,4 +1,5 @@
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
+import { ScrollToPlugin } from 'gsap/dist/ScrollToPlugin'
 import { gsap } from 'gsap'
 
 if (typeof window !== 'undefined') {
@@ -8,6 +9,8 @@ if (typeof window !== 'undefined') {
   // })
   // ScrollTrigger.normalizeScroll(true)
   // ScrollTrigger.config({ ignoreMobileResize: true })
+
+  gsap.registerPlugin(ScrollToPlugin)
 }
 
 export * from 'gsap'

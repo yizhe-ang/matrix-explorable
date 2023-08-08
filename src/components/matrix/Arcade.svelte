@@ -31,7 +31,8 @@
 		titleMounted,
 		loaded,
 		cameraProps,
-		cameraControls
+		cameraControls,
+		playgroundSt
 	} from "$stores";
 	import {
 		colorVector,
@@ -107,7 +108,7 @@
 			this.pause();
 		}
 	});
-	$matrixTween.progress(1);
+	// $matrixTween.progress(1);
 
 	// FIXME: Setting $endMatrix directly doesn't work for some reason
 	// FIXME: Use different matrix transformation states during narrative, and during interaction time
@@ -139,8 +140,8 @@
 	$: {
 		if ($showHero) {
 			$matrixTransform = $heroMatrix;
-		} else if (!$showPlayground) {
-			$matrixTransform = $customMatrix;
+			// } else if (!$showPlayground) {
+			// 	$matrixTransform = $customMatrix;
 		} else {
 			$matrixTransform = matrix;
 		}
@@ -1001,13 +1002,13 @@
 			)
 			.add("step-1")
 			// Perform linear transformation
-			// .to(
-			// 	$matrixTween,
-			// 	{
-			// 		progress: 1.0
-			// 	},
-			// 	"step-1"
-			// )
+			.to(
+				$matrixTween,
+				{
+					progress: 1.0
+				},
+				"step-1"
+			)
 			// .fromTo(
 			// 	$customMatrix,
 			// 	{
@@ -1021,16 +1022,16 @@
 			// 	},
 			// 	"step-1"
 			// )
-			.to(
-				$customMatrix,
-				{
-					endArray: egEndMatrix,
-					onUpdate: () => {
-						$customMatrix = $customMatrix;
-					}
-				},
-				"step-1"
-			)
+			// .to(
+			// 	$customMatrix,
+			// 	{
+			// 		endArray: egEndMatrix,
+			// 		onUpdate: () => {
+			// 			$customMatrix = $customMatrix;
+			// 		}
+			// 	},
+			// 	"step-1"
+			// )
 			// Animate to new basis vectors
 			.to(
 				xCoords,
@@ -1084,6 +1085,15 @@
 
 						// Reset playhead
 						$matrixTween.progress(1);
+
+						// Reset matrix transform
+						gsap.to($endMatrix, {
+							endArray: egEndMatrix,
+							onUpdate: () => {
+								$endMatrix = $endMatrix;
+							},
+							duration
+						});
 					}
 				},
 				timelinePropsAlt
@@ -1182,29 +1192,6 @@
 				"step-1"
 			)
 			.add("step-2");
-		// Shift back basis vectors
-		// .to(
-		// 	xCoords,
-		// 	{
-		// 		duration: 0.001,
-		// 		endArray: [0, 0, 0, 1, 0, 0],
-		// 		onUpdate: function () {
-		// 			xCoords = xCoords;
-		// 		}
-		// 	},
-		// 	"step-2"
-		// )
-		// .to(
-		// 	yCoords,
-		// 	{
-		// 		duration: 0.001,
-		// 		endArray: [0, 0, 0, 0, 1, 0],
-		// 		onUpdate: function () {
-		// 			yCoords = yCoords;
-		// 		}
-		// 	},
-		// 	"step-2"
-		// );
 
 		// Animate back
 		gsap
@@ -1216,7 +1203,7 @@
 					// FIXME:
 					// onToggle: () => {
 					onEnter: () => {
-						stProps.onEnter();
+						// stProps.onEnter();
 
 						$showPlayground = false;
 
@@ -1233,10 +1220,16 @@
 						$matrixTween.progress(1);
 
 						// Reset matrix transform
-						// $customMatrix = initMatrix;
+						gsap.to($endMatrix, {
+							endArray: initMatrix,
+							onUpdate: () => {
+								$endMatrix = $endMatrix;
+							},
+							duration
+						});
 					},
 					onLeaveBack: () => {
-						stProps.onLeaveBack();
+						// stProps.onLeaveBack();
 
 						$showPlayground = true;
 
@@ -1246,18 +1239,6 @@
 				timelinePropsAlt
 			})
 			.add("step-1")
-			// Reset matrix transform
-			.to(
-				$customMatrix,
-				{
-					endArray: initMatrix,
-					onUpdate: () => {
-						$customMatrix = $customMatrix;
-					},
-					duration: 0.001
-				},
-				"step-1"
-			)
 			// Disable inputs
 			.to(
 				"#canvas-wrapper",
@@ -1276,6 +1257,30 @@
 				},
 				"step-1"
 			)
+			// Reset basis vectors
+			.to(
+				xCoords,
+				{
+					endArray: () => [0, 0, 0, 1, 0, 0],
+					onUpdate: () => {
+						xCoords = xCoords;
+					},
+					duration: 0.001
+				},
+				"step-1"
+			)
+			.to(
+				yCoords,
+				{
+					endArray: () => [0, 0, 0, 0, 1, 0],
+					onUpdate: () => {
+						yCoords = yCoords;
+					},
+					duration: 0.001
+				},
+				"step-1"
+			)
+			.add("step-2")
 			.to(
 				basisAltProps,
 				{
@@ -1286,7 +1291,7 @@
 						basisAltProps = basisAltProps;
 					}
 				},
-				"step-1"
+				"step-2"
 			)
 			.to(
 				props,
@@ -1298,40 +1303,8 @@
 						props = props;
 					}
 				},
-				"step-1"
-			)
-			// Reset basis vectors
-			.fromTo(
-				xCoords,
-				{
-					endArray: () => [0, 0, 0, matrix[0], matrix[4], 0]
-				},
-				{
-					endArray: () => [0, 0, 0, 1, 0, 0],
-					onUpdate: () => {
-						xCoords = xCoords;
-					},
-					immediateRender: false,
-					duration
-				},
-				"step-1"
-			)
-			.fromTo(
-				yCoords,
-				{
-					endArray: () => [0, 0, 0, matrix[1], matrix[5], 0]
-				},
-				{
-					endArray: () => [0, 0, 0, 0, 1, 0],
-					onUpdate: () => {
-						yCoords = yCoords;
-					},
-					immediateRender: false,
-					duration
-				},
-				"step-1"
-			)
-			.add("step-2");
+				"step-2"
+			);
 
 		// Show third dimension
 		gsap
@@ -1376,17 +1349,6 @@
 				"step-0"
 			)
 			// Update matrix
-			.to(
-				$endMatrix,
-				{
-					endArray: eg3dMatrix,
-					duration: 0.001,
-					onUpdate: function () {
-						$endMatrix = $endMatrix;
-					}
-				},
-				"step-0"
-			)
 			.to(
 				{},
 				{
@@ -1445,6 +1407,25 @@
 			)
 			.add("step-2")
 			.to(
+				$matrixTween,
+				{
+					progress: 0,
+					duration: 0.001
+				},
+				"step-2"
+			)
+			.to(
+				$endMatrix,
+				{
+					endArray: eg3dMatrix,
+					duration: 0.001,
+					onUpdate: function () {
+						$endMatrix = $endMatrix;
+					}
+				},
+				"step-2"
+			)
+			.to(
 				props,
 				{
 					zTexOpacity: 1,
@@ -1463,6 +1444,12 @@
 					}
 				},
 				"step-2"
+			)
+			.to(
+				{},
+				{
+					duration: delay
+				}
 			);
 
 		// TODO: Auto-rotate?
@@ -1642,18 +1629,34 @@
 		// 	.to({}, { duration: delay });
 
 		// Show playground
-		gsap
+		const playgroundTl = gsap
 			.timeline({
 				scrollTrigger: {
 					...stPropsAlt,
 					trigger: "#st-12",
 					start: "top center",
 					onEnter: () => {
-						console.log("enter");
 						$cameraAutoRotate = false;
 					},
 					onLeaveBack: () => {
 						$cameraAutoRotate = true;
+
+						// Reset
+						$dataToggled = undefined;
+						$gridToggled = true;
+						$transformedGridToggled = true;
+
+						// Reset playhead
+						$matrixTween.progress(1);
+
+						// Reset matrix transform
+						gsap.to($endMatrix, {
+							endArray: eg3dMatrix,
+							onUpdate: () => {
+								$endMatrix = $endMatrix;
+							},
+							duration
+						});
 					}
 				},
 				timelinePropsAlt
@@ -1710,6 +1713,10 @@
 				},
 				"step-1"
 			);
+
+		console.log(playgroundTl);
+
+		$playgroundSt = playgroundTl.scrollTrigger;
 	}
 
 	function updateStProgress(progress) {

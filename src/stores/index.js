@@ -74,8 +74,8 @@ export const cameraProps = writable({
 export const matrixTween = writable(undefined);
 
 // ScrubberInput stores
-// export const playhead = writable(0);
-export const playhead = writable(1);
+export const playhead = writable(0);
+// export const playhead = writable(1);
 export const playToggle = writable(true);
 
 export const titleMounted = writable(false);
@@ -85,3 +85,5 @@ export const loaded = writable(false);
 
 export const afterImageEnabled = writable(true);
 export const cameraAutoRotate = writable(false);
+
+export const playgroundSt = writable(undefined);
