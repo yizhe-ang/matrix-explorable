@@ -13,6 +13,7 @@
 	const { camera } = useThrelte();
 
 	const xBasis = new Vector3(1, 0, 0);
+  // FIXME: Does this have to be a spring too?
   const xBasisSpring = spring([1, 0, 0])
   // xBasisSpring.stiffness = 0.1
   xBasisSpring.damping = 1.5

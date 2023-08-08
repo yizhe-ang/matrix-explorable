@@ -48,12 +48,14 @@
 		eg3dMatrixZ,
 		eg3dVector,
 		eg3dOutputVector,
-		egEndMatrix
+		egEndMatrix,
+		initMatrix
 	} from "$data/variables";
 	import colors from "tailwindcss/colors";
 	import CameraControls from "camera-controls";
 	import { Color, MeshBasicMaterial, PlaneGeometry } from "three";
 	import Hero from "./Hero.svelte";
+	import { spring } from "svelte/motion";
 
 	export let mathbox;
 
@@ -133,21 +135,19 @@
 	}
 
 	// Use different states during interaction and during narrative
-	let matrixTransform;
+	const matrixTransform = spring(initMatrix);
 	$: {
 		if ($showHero) {
-			matrixTransform = $heroMatrix;
+			$matrixTransform = $heroMatrix;
 		} else if (!$showPlayground) {
-			matrixTransform = $customMatrix;
+			$matrixTransform = $customMatrix;
 		} else {
-			console.log("change matrix");
-			matrixTransform = matrix;
-			console.log(matrix);
+			$matrixTransform = matrix;
 		}
 	}
 
 	// Update transformed view
-	$: transformedView.set("matrix", matrixTransform);
+	$: transformedView.set("matrix", $matrixTransform);
 
 	// $: console.log(matrixTransform)
 
@@ -213,6 +213,12 @@
 			});
 		}
 	}
+
+	const cachePlaygroundSettings = {
+		dataToggled: undefined,
+		gridToggled: true,
+		transformedGridToggled: true
+	};
 
 	let prevDataToggled;
 	$: onDataToggle($dataToggled);
@@ -1002,6 +1008,19 @@
 			// 	},
 			// 	"step-1"
 			// )
+			// .fromTo(
+			// 	$customMatrix,
+			// 	{
+			// 		endArray: initMatrix
+			// 	},
+			// 	{
+			// 		endArray: egEndMatrix,
+			// 		onUpdate: () => {
+			// 			$matrixTransform = $customMatrix;
+			// 		},
+			// 	},
+			// 	"step-1"
+			// )
 			.to(
 				$customMatrix,
 				{
@@ -1056,32 +1075,15 @@
 						$showPlayground = false;
 
 						$cameraControls.reset(true);
-						// $endMatrix = egEndMatrix;
-						// console.log($endMatrix);
 
+						// FIXME: Cache settings!
 						// Reset input settings
 						$dataToggled = "points";
 						$gridToggled = true;
 						$transformedGridToggled = true;
 
 						// Reset playhead
-						gsap.to($matrixTween, {
-							progress: 1,
-							duration
-						});
-
-						// Reset endMatrix
-						// gsap.to(
-						// 	$endMatrix,
-						// 	{
-						// 		endArray: egEndMatrix,
-						// 		duration,
-						// 		onUpdate: function () {
-						// 			$endMatrix = $endMatrix;
-						// 		}
-						// 	},
-						// 	"step-0"
-						// );
+						$matrixTween.progress(1);
 					}
 				},
 				timelinePropsAlt
@@ -1107,6 +1109,37 @@
 				},
 				"step-1"
 			)
+			// Animate basis vectors to interactive position
+			.fromTo(
+				xCoords,
+				{
+					endArray: [0, 0, 0, ...egMatrixX, 0]
+				},
+				{
+					endArray: () => [0, 0, 0, matrix[0], matrix[4], 0],
+					onUpdate: () => {
+						xCoords = xCoords;
+					},
+					immediateRender: false,
+					duration
+				},
+				"step-1"
+			)
+			.fromTo(
+				yCoords,
+				{
+					endArray: [0, 0, 0, ...egMatrixY, 0]
+				},
+				{
+					endArray: () => [0, 0, 0, matrix[1], matrix[5], 0],
+					onUpdate: () => {
+						yCoords = yCoords;
+					},
+					immediateRender: false,
+					duration
+				},
+				"step-1"
+			)
 			// Hide basis vectors
 			// FIXME: Animate opacity of vectors
 			.to(
@@ -1115,8 +1148,8 @@
 					duration,
 					xTexOpacity: 0,
 					yTexOpacity: 0,
-					xVisible: false,
-					yVisible: false,
+					// xVisible: false,
+					// yVisible: false,
 					onUpdate: function () {
 						props = props;
 					}
@@ -1127,7 +1160,7 @@
 			.to(
 				basisAltProps,
 				{
-					duration,
+					duration: 0.001,
 					xVisible: true,
 					yVisible: true,
 					onUpdate: function () {
@@ -1136,30 +1169,42 @@
 				},
 				"step-1"
 			)
-			.add("step-2")
-			// Shift back basis vectors
 			.to(
-				xCoords,
+				props,
 				{
 					duration: 0.001,
-					endArray: [0, 0, 0, 1, 0, 0],
+					xVisible: false,
+					yVisible: false,
 					onUpdate: function () {
-						xCoords = xCoords;
+						props = props;
 					}
 				},
-				"step-2"
+				"step-1"
 			)
-			.to(
-				yCoords,
-				{
-					duration: 0.001,
-					endArray: [0, 0, 0, 0, 1, 0],
-					onUpdate: function () {
-						yCoords = yCoords;
-					}
-				},
-				"step-2"
-			);
+			.add("step-2");
+		// Shift back basis vectors
+		// .to(
+		// 	xCoords,
+		// 	{
+		// 		duration: 0.001,
+		// 		endArray: [0, 0, 0, 1, 0, 0],
+		// 		onUpdate: function () {
+		// 			xCoords = xCoords;
+		// 		}
+		// 	},
+		// 	"step-2"
+		// )
+		// .to(
+		// 	yCoords,
+		// 	{
+		// 		duration: 0.001,
+		// 		endArray: [0, 0, 0, 0, 1, 0],
+		// 		onUpdate: function () {
+		// 			yCoords = yCoords;
+		// 		}
+		// 	},
+		// 	"step-2"
+		// );
 
 		// Animate back
 		gsap
@@ -1173,22 +1218,46 @@
 					onEnter: () => {
 						stProps.onEnter();
 
+						$showPlayground = false;
+
 						// Return to default camera position
 						$cameraControls.reset(true);
-						// Reset input settings
-						$dataToggled = undefined;
 
-						$showPlayground = false;
+						// Reset input settings
+						// cachePlaygroundSettings.dataToggled = $dataToggled;
+						$dataToggled = undefined;
+						$gridToggled = true;
+						$transformedGridToggled = true;
+
+						// Reset playhead
+						$matrixTween.progress(1);
+
+						// Reset matrix transform
+						// $customMatrix = initMatrix;
 					},
 					onLeaveBack: () => {
 						stProps.onLeaveBack();
 
 						$showPlayground = true;
+
+						// $dataToggled = cachePlaygroundSettings.dataToggled;
 					}
 				},
 				timelinePropsAlt
 			})
 			.add("step-1")
+			// Reset matrix transform
+			.to(
+				$customMatrix,
+				{
+					endArray: initMatrix,
+					onUpdate: () => {
+						$customMatrix = $customMatrix;
+					},
+					duration: 0.001
+				},
+				"step-1"
+			)
 			// Disable inputs
 			.to(
 				"#canvas-wrapper",
@@ -1207,44 +1276,10 @@
 				},
 				"step-1"
 			)
-			// Remove points
-			// .to(
-			// 	pointsProps,
-			// 	{
-			// 		t: 0,
-			// 		duration,
-			// 		onUpdate: function () {
-			// 			pointsProps = pointsProps;
-			// 		}
-			// 	},
-			// 	"step-1"
-			// )
-			// Transform back
-			.to(
-				$matrixTween,
-				{
-					duration,
-					progress: 0
-				},
-				"step-1"
-			)
-			// Show basis vectors and coordinates
-			// .to(
-			// 	props,
-			// 	{
-			// 		duration,
-			// 		xTexOpacity: 1,
-			// 		yTexOpacity: 1,
-			// 		onUpdate: function () {
-			// 			props = props;
-			// 		}
-			// 	},
-			// 	"step-1"
-			// )
 			.to(
 				basisAltProps,
 				{
-					duration,
+					duration: 0.001,
 					xVisible: false,
 					yVisible: false,
 					onUpdate: function () {
@@ -1253,7 +1288,6 @@
 				},
 				"step-1"
 			)
-			.add("step-2")
 			.to(
 				props,
 				{
@@ -1264,8 +1298,40 @@
 						props = props;
 					}
 				},
-				"step-2"
-			);
+				"step-1"
+			)
+			// Reset basis vectors
+			.fromTo(
+				xCoords,
+				{
+					endArray: () => [0, 0, 0, matrix[0], matrix[4], 0]
+				},
+				{
+					endArray: () => [0, 0, 0, 1, 0, 0],
+					onUpdate: () => {
+						xCoords = xCoords;
+					},
+					immediateRender: false,
+					duration
+				},
+				"step-1"
+			)
+			.fromTo(
+				yCoords,
+				{
+					endArray: () => [0, 0, 0, matrix[1], matrix[5], 0]
+				},
+				{
+					endArray: () => [0, 0, 0, 0, 1, 0],
+					onUpdate: () => {
+						yCoords = yCoords;
+					},
+					immediateRender: false,
+					duration
+				},
+				"step-1"
+			)
+			.add("step-2");
 
 		// Show third dimension
 		gsap
@@ -1773,7 +1839,7 @@
 </T.Mesh> -->
 
 <!-- Transformed elements -->
-<T.Group matrix={matrixTransform} matrixAutoUpdate={false}>
+<T.Group matrix={$matrixTransform} matrixAutoUpdate={false}>
 	<!-- Grids -->
 	<!-- FIXME: Don't do infinite grid? A bit confusing -->
 	<!-- FIXME: Have a cool gradient environment / background -->

@@ -3,18 +3,6 @@
 	import { Play, Pause } from "lucide-svelte";
 	import { gsap } from "$utils/gsap";
 
-	// TODO: Tween tween's progress instead
-	const progressTween = gsap.fromTo(
-		$matrixTween,
-		{
-			progress: 0
-		},
-		{
-			progress: 1,
-			ease: "power2.inOut"
-		}
-	);
-
 	function togglePlay(tween) {
 		tween.paused(!tween.paused());
 
