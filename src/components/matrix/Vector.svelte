@@ -4,6 +4,7 @@
 	import katex from "katex";
 	import { formatCoord } from "$utils";
 	import { Color } from "three";
+	import { onMount } from "svelte";
 
 	export let view;
 	export let coords = [0, 0, 0, -1, 2, 0];
@@ -70,6 +71,13 @@
 		dx = 0;
 		dy = offset;
 	}
+
+	let ref;
+
+	onMount(() => {
+		// HACK
+		if (ref) ref.parentElement.style.pointerEvents = "none";
+	});
 </script>
 
 {#if tex}
@@ -80,11 +88,11 @@
 		{@const position = dim3
 			? [x2 / 2, y2 / 2, z2 / 2]
 			: [x2 / 2 + dx, y2 / 2 + dy, z2 / 2]}
-		<HTML {position} center pointerEvents="none">
+		<HTML {position} center>
 			<span
+				bind:this={ref}
 				class="text-xl whitespace-nowrap"
 				style:opacity={scalarOpacity}
-				style:pointer-events={"none"}
 			>
 				{@html katex.renderToString(String.raw`\times ${formatCoord(scalar)}`)}
 			</span>

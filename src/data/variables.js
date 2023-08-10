@@ -63,10 +63,31 @@ export const colorXAlt = dracula.primary;
 export const colorYAlt = dracula.secondary;
 export const colorZAlt = dracula.accent;
 
-export const colorX = d3Color("hsl(326, 100%, 67%)").formatHex();
-export const colorY = d3Color("hsl(265, 89%, 71%)").formatHex();
-export const colorZ = d3Color("hsl(31, 100%, 64%)").formatHex();
+// export const colorX = d3Color("hsl(326, 100%, 67%)").formatHex();
+// export const colorY = d3Color("hsl(265, 89%, 71%)").formatHex();
+// export const colorZ = d3Color("hsl(31, 100%, 64%)").formatHex();
+export const colorX = colorToHex("hsl(326, 100%, 67%)")
+export const colorY = colorToHex("hsl(265, 89%, 71%)")
+export const colorZ = colorToHex("hsl(31, 100%, 64%)")
 
-export const colorVector = dracula.info;
+// export const colorVector = dracula.info;
+// export const colorVector = "hsl(191, 97%, 77%)";
+// export const colorVector = "#04cefb";
+export const colorVector = colorToHex("hsl(191, 97%, 50%)")
+
+export const colorGrid = colorToHex("hsl(191, 97%, 30%)")
+export const colorGridAlt = colorToHex("hsl(191, 97%, 20%)")
+
+export const colorB1 = "hsl(231, 15%, 18%)"
+export const colorB2 = "hsl(231, 15%, 11%)"
+export const colorB3 = "hsl(231, 15%, 4%)"
+
+export const colorN = "hsl(230, 15%, 30%)"
+export const colorNc = "hsl(232, 7%, 85%)"
+export const colorNf = "hsl(230, 15%, 23%)"
 
 console.log(dracula)
+
+function colorToHex(color) {
+  return d3Color(color).formatHex()
+}

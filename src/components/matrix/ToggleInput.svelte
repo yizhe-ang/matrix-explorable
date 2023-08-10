@@ -10,6 +10,8 @@
 
   // TODO: Cube
 
+  // TODO: Reset camera
+
 	import {
 		gridToggled,
 		transformedGridToggled,
@@ -17,7 +19,7 @@
 		show3d
 	} from "$stores";
 	import { createToolbar, createToggle, melt } from "@melt-ui/svelte";
-	import { Grid, ScatterChart, Layers } from "lucide-svelte";
+	import { Grid, ScatterChart, Layers, Move3d } from "lucide-svelte";
 
 	const size = 30;
 
@@ -31,18 +33,28 @@
 	} = createToolbarGroup({ value: dataToggled });
 
 	const {
-		elements: { root: gridToggle }
-	} = createToggle({ pressed: gridToggled });
+		elements: { root: threeDToggle }
+	} = createToggle({ pressed: show3d });
 
 	const {
 		elements: { root: transformedGridToggle }
 	} = createToggle({ pressed: transformedGridToggled });
+
+	const {
+		elements: { root: gridToggle }
+	} = createToggle({ pressed: gridToggled });
 </script>
 
 <div
 	use:melt={$root}
 	class="flex min-w-max items-center gap-4 rounded-md bg-base-200 px-3 py-3 shadow-sm"
 >
+  <!-- Toggle 3d mode -->
+	<button class="item" aria-label="Toggle 3d view" use:melt={$threeDToggle}>
+		<Move3d {size} />
+	</button>
+	<div class="separator" use:melt={$separator} />
+
 	<!-- Toggle grid -->
 	<button class="item" aria-label="Toggle grid" use:melt={$gridToggle}>
 		<Grid {size} />

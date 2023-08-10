@@ -2,6 +2,7 @@
 	import { HTML } from "@threlte/extras";
 	import katex from "katex";
 	import { formatCoord } from "$utils";
+	import { onMount } from "svelte";
 
 	export let coords;
 	export let opacity;
@@ -39,19 +40,21 @@
   ${dim3 ? `${formatCoord(z2)}` : ``}
   \end{array}\right]`);
 
-  // FIXME: Why does position become NaN?
-  $: position = [x2 + dx, y2 + dy, z2 + dz]
+	$: position = [x2 + dx, y2 + dy, z2 + dz];
+
+	let ref;
+
+	onMount(() => {
+		// HACK
+		ref.parentElement.style.pointerEvents = "none";
+	});
 </script>
 
-<HTML
-	{position}
-	center
-  pointerEvents="none"
->
+<HTML {position} center>
 	<span
+		bind:this={ref}
 		class="text-2xl bg-base-300/50 inline-block"
 		style:opacity
-		style:pointer-events={"none"}
 	>
 		<!-- <span class="text-2xl opacity-50"> -->
 		{@html tex}

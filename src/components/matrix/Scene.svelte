@@ -1,7 +1,7 @@
 <script>
 	// https://github.com/unconed/mathbox/blob/master/examples/test/context.html
 	import { T, useFrame, useThrelte, extend, useRender } from "@threlte/core";
-	import { OrbitControls, Grid } from "@threlte/extras";
+	import { OrbitControls, Grid, useCursor } from "@threlte/extras";
 	import * as MathBox from "mathbox";
 	import { onMount } from "svelte";
 	import Arcade from "./Arcade.svelte";
@@ -12,7 +12,9 @@
 		afterImageEnabled,
 		cameraAutoRotate,
 		heroMatrix,
-		titleMounted
+		titleMounted,
+    show3d,
+    debug
 	} from "$stores";
 	import * as THREE from "three";
 	import CameraControls from "camera-controls";
@@ -22,11 +24,19 @@
 	import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass.js";
 	import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 	import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
+	import { RGBShiftShader } from "three/examples/jsm/shaders/RGBShiftShader.js";
 	import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
+	import { RenderPixelatedPass } from "three/addons/postprocessing/RenderPixelatedPass.js";
+	import { HalftonePass } from "three/addons/postprocessing/HalftonePass.js";
 	import { initMatrix } from "$data/variables";
 	// import { EffectComposer, RenderPass } from "postprocessing";
 
 	let mounted = false;
+
+	const cameraPan = 10;
+	const minPan = new THREE.Vector3(-cameraPan, -cameraPan, -cameraPan);
+	const maxPan = new THREE.Vector3(cameraPan, cameraPan, cameraPan);
+	const _v = new THREE.Vector3();
 
 	CameraControls.install({ THREE: THREE });
 
@@ -50,6 +60,19 @@
 	const afterImagePass = new AfterimagePass();
 	// $: afterImagePass.enabled = $afterImageEnabled;
 
+	const halfToneParams = {
+		shape: 1,
+		radius: 4,
+		rotateR: Math.PI / 12,
+		rotateB: (Math.PI / 12) * 2,
+		rotateG: (Math.PI / 12) * 3,
+		scatter: 0,
+		blending: 1,
+		blendingMode: 1,
+		greyscale: false,
+		disable: false
+	};
+
 	function setupEffectComposer(camera) {
 		composer = new EffectComposer(renderer);
 
@@ -59,6 +82,15 @@
 		// FIXME: Keep afterimage for some animations?
 		// FIXME: Why does afterimage make the colors brighter?
 		composer.addPass(afterImagePass);
+
+		// FIXME: Only add this for the hero?
+		// const rgbShiftPass = new ShaderPass(RGBShiftShader);
+		// rgbShiftPass.uniforms["amount"].value = 0.0015;
+		// rgbShiftPass.uniforms["amount"].value = 0.003;
+		// composer.addPass(rgbShiftPass);
+
+		// const halfTonePass = new HalftonePass(halfToneParams);
+		// composer.addPass(halfTonePass);
 
 		const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
 		composer.addPass(gammaCorrectionPass);
@@ -146,6 +178,8 @@
 
 		$sceneMounted = true;
 	}
+
+  $: if ($debug) afterImagePass.uniforms.damp = 0
 </script>
 
 <!-- Set up camera and lighting -->
@@ -156,10 +190,30 @@
 	<T.CameraControls
 		bind:ref={$cameraControls}
 		args={[ref, renderer.domElement]}
+		minDistance={5}
+		maxDistance={100}
 		mouseButtons.left={CameraControls.ACTION.TRUCK}
-		mouseButtons.right={CameraControls.ACTION.NONE}
-		on:update={(e) => {
-			// console.log(e)
+		mouseButtons.right={$show3d ? CameraControls.ACTION.ROTATE : CameraControls.ACTION.NONE}
+		on:controlstart={() => {
+			if ($cameraControls.currentAction == CameraControls.ACTION.ROTATE) {
+				renderer.domElement.classList.add("dragging");
+			} else if ($cameraControls.currentAction == CameraControls.ACTION.TRUCK) {
+				renderer.domElement.classList.add("moving");
+			} else if ($cameraControls.currentAction == CameraControls.ACTION.DOLLY) {
+				renderer.domElement.classList.add("zoomIn");
+			}
+		}}
+		on:controlend={() => {
+			renderer.domElement.classList.remove("dragging", "moving");
+		}}
+		on:update={() => {
+			// Limit pan
+			_v.copy($cameraControls._target);
+			$cameraControls._target.clamp(minPan, maxPan);
+			_v.sub($cameraControls._target);
+			$cameraControls._camera.position.sub(_v);
+
+      console.log($cameraControls)
 		}}
 	/>
 </T.PerspectiveCamera>
@@ -173,3 +227,22 @@
 <!-- TODO: Make the scene more 3D realistic -->
 
 <Arcade {mathbox} />
+
+<style lang="postcss">
+	:global(canvas) {
+		/* cursor: grab; */
+		cursor: move;
+
+		&.dragging {
+			cursor: grabbing;
+		}
+
+		&.moving {
+			cursor: move;
+		}
+
+		&.zoomIn {
+			cursor: zoom-in;
+		}
+	}
+</style>

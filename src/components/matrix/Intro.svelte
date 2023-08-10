@@ -7,10 +7,12 @@
 
 <!-- <section class="prose prose-xl translate-x-[calc(-50vw+32.5ch-32.5ch)]"> -->
 <section
-	class="prose prose-xl translate-x-[calc(-50vw-50%)] mt-[100vh] max-w-prose h-screen"
+	class="prose prose-xl translate-x-[calc(-50vw-50%)] mt-[100vh] max-w-prose h-[120vh]"
 >
 	<!-- <section class="prose prose-xl"> -->
 	<p>What do <B>matrices</B> mean to you?</p>
+
+  <Spacer />
 
 	<p>
 		Why do we need a way to represent an array of rows and columns of numbers,

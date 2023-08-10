@@ -7,6 +7,7 @@
 	import Sphere from "./Sphere.svelte";
 	import Circle from "./Circle.svelte";
 	import Planes from "./Planes.svelte";
+	import Sky from "./Sky.svelte";
 	import {
 		endMatrix,
 		playhead,
@@ -21,7 +22,8 @@
 		cameraAutoRotate,
 		show3d,
 		showPlayground,
-		customMatrix
+		customMatrix,
+		debug
 	} from "$stores";
 	import Vector from "./Vector.svelte";
 	import { ScrollTrigger, gsap } from "$utils/gsap.js";
@@ -50,7 +52,9 @@
 		eg3dVector,
 		eg3dOutputVector,
 		egEndMatrix,
-		initMatrix
+		initMatrix,
+		colorGrid,
+		colorGridAlt
 	} from "$data/variables";
 	import colors from "tailwindcss/colors";
 	import CameraControls from "camera-controls";
@@ -63,7 +67,8 @@
 	let mounted;
 
 	// Set this to the z-position of the camera
-	mathbox.set("focus", 15);
+	// mathbox.set("focus", 15);
+	mathbox.set("focus", 20);
 
 	// Set up coordinate system
 	const dim = 1;
@@ -156,26 +161,53 @@
 	const gridCellSize = 1;
 	const gridSectionSize = 5;
 
-	const gridProps = {
+	const defaultGridProps = {
 		cellSize: gridCellSize,
-		// cellColor: colors.slate["800"],
-		cellColor: colors.slate["600"],
+		cellColor: colors.slate["700"],
 		cellThickness: 1.5,
 		sectionSize: gridSectionSize,
-		// sectionColor: colors.slate["800"],
-		sectionColor: colors.slate["600"],
+		sectionColor: colors.slate["700"],
 		sectionThickness: 3,
 		infiniteGrid: true,
-		fadeDistance: 30,
+		fadeDistance: 50,
+		fadeStrength: 5
+	};
+
+
+
+	const grid3dProps = {
+		fadeDistance: 100,
 		fadeStrength: 4
 	};
 
-	let gridVars = {
-		fadeDistance: gridProps.fadeDistance,
-		transformedFadeDistance: gridProps.fadeDistance
+	const transformedGridProps = {
+		fadeDistance: 50,
+		fadeStrength: 5
 	};
 
-	const altFadeDistance = 20;
+	const transformedGrid3dProps = {
+		fadeDistance: 100,
+		fadeStrength: 4
+	};
+
+	const gridAltProps = {
+		...gridProps,
+		infiniteGrid: false,
+		gridSize: [10, 10]
+	};
+
+	// const transformedGridColor = colors.slate['700']
+	const transformedGridColor = colorGrid;
+
+	let gridVars = {
+		fadeDistance: gridProps.fadeDistance,
+		transformedFadeDistance: 0,
+		fadeStrength: gridProps.fadeStrength,
+		transformedFadeStrength: transformedGridProps.fadeStrength
+	};
+
+	const altFadeDistance = 15;
+	const altFadeStrength = 0.5;
 
 	$: onGridToggle($gridToggled);
 	function onGridToggle(toggled) {
@@ -290,6 +322,31 @@
 		prevDataToggled = toggled;
 	}
 
+	// Have a show 3d trigger?
+	$: toggle3d($show3d);
+	function toggle3d(toggle) {
+		gsap.to(gridVars, {
+			transformedFadeDistance: !$transformedGridToggled
+				? 0
+				: toggle
+				? transformedGrid3dProps.fadeDistance
+				: transformedGridProps.fadeDistance,
+			transformedFadeStrength: toggle
+				? transformedGrid3dProps.fadeStrength
+				: transformedGridProps.fadeStrength,
+			fadeDistance: !$gridToggled
+				? 0
+				: toggle
+				? grid3dProps.fadeDistance
+				: gridProps.fadeDistance,
+			fadeStrength: toggle
+				? grid3dProps.fadeStrength
+				: transformedGridProps.fadeStrength,
+			onUpdate: () => (gridVars = gridVars),
+			duration
+		});
+	}
+
 	// ScrollTrigger
 	const delay = 0.1;
 	const transitionDuration = 0.1;
@@ -345,6 +402,14 @@
 		zVisible: false
 	};
 
+	$: if ($debug) {
+		basisAltProps.xVisible = true;
+		basisAltProps.yVisible = true;
+		basisAltProps.zVisible = true;
+	}
+
+	$: basisAltProps.zVisible = $show3d;
+
 	const stProps = {
 		fastScrollEnd: true,
 		pin: "#article",
@@ -399,7 +464,17 @@
 				scrollTrigger: {
 					...stProps,
 					trigger: "#st-1",
-					end: `+=${scrollUnit * 1}`
+					end: `+=${scrollUnit * 1}`,
+					onEnter: () => {
+						stProps.onEnter();
+
+						($gridToggled = true), ($transformedGridToggled = false);
+					},
+					onLeaveBack: () => {
+						stProps.onLeaveBack();
+
+						($gridToggled = false), ($transformedGridToggled = true);
+					}
 				}
 			})
 			.to(vectorCoords, {
@@ -950,14 +1025,19 @@
 
 		// Animate in points
 		// FIXME: Animate vectors too?
-		// TODO: Keep the example vector?
 		gsap
 			.timeline({
 				...timelineProps,
 				scrollTrigger: {
 					...stProps,
 					trigger: "#st-6",
-					end: `+=${scrollUnit * 1}`
+					end: `+=${scrollUnit * 1}`,
+					onLeaveBack: () => {
+						stProps.onLeaveBack();
+
+						$dataToggled = undefined;
+						$transformedGridToggled = false;
+					}
 				}
 			})
 			.add("step-1")
@@ -972,11 +1052,16 @@
 				},
 				"step-1"
 			)
+			// Animate in transformed grid
 			.to(
-				{},
+				gridVars,
 				{
-					duration: delay
-				}
+					transformedFadeDistance: gridProps.fadeDistance,
+					onUpdate: function () {
+						gridVars = gridVars;
+					}
+				},
+				"step-1"
 			);
 
 		// Perform linear transformation
@@ -989,8 +1074,9 @@
 					trigger: "#st-7",
 					end: `+=${scrollUnit * 1}`,
 					onToggle: (self) => {
-						$dataToggled = self.isActive ? "points" : undefined;
+						// $dataToggled = self.isActive ? "points" : undefined;
 						$dataToggled = "points";
+						$transformedGridToggled = true;
 					}
 				}
 			})
@@ -1104,7 +1190,7 @@
 				"#canvas-wrapper",
 				{
 					pointerEvents: "auto",
-					cursor: "move",
+					// cursor: "move",
 					duration
 				},
 				"step-1"
@@ -1214,7 +1300,7 @@
 						// cachePlaygroundSettings.dataToggled = $dataToggled;
 						$dataToggled = undefined;
 						$gridToggled = true;
-						$transformedGridToggled = true;
+						$transformedGridToggled = false;
 
 						// Reset playhead
 						$matrixTween.progress(1);
@@ -1239,6 +1325,19 @@
 				timelinePropsAlt
 			})
 			.add("step-1")
+			// Change grid settings
+			.to(
+				gridVars,
+				{
+					duration,
+					fadeDistance: grid3dProps.fadeDistance,
+					onUpdate: () => {
+						gridVars = gridVars;
+						console.log(gridVars.fadeDistance);
+					}
+				},
+				"step-1"
+			)
 			// Disable inputs
 			.to(
 				"#canvas-wrapper",
@@ -1452,7 +1551,6 @@
 				}
 			);
 
-		// TODO: Auto-rotate?
 		// Perform linear transformation; in 3D!
 		gsap
 			.timeline({
@@ -1667,7 +1765,7 @@
 				"#canvas-wrapper",
 				{
 					pointerEvents: "auto",
-					cursor: "move",
+					// cursor: "move",
 					duration
 				},
 				"step-1"
@@ -1690,6 +1788,7 @@
 					xTexOpacity: 0,
 					yTexOpacity: 0,
 					zTexOpacity: 0,
+					vectorTexOpacity: 0,
 					xVisible: false,
 					yVisible: false,
 					zVisible: false,
@@ -1714,8 +1813,6 @@
 				"step-1"
 			);
 
-		console.log(playgroundTl);
-
 		$playgroundSt = playgroundTl.scrollTrigger;
 	}
 
@@ -1739,7 +1836,7 @@
 
 	// TODO: Make sure ScrollTriggers are in order
 	// DOM / Layout is already mounted
-	$: if (mounted && $titleMounted && $sceneMounted) animate();
+	$: if (!$debug && mounted && $titleMounted && $sceneMounted) animate();
 
 	// $: if (loaded && $titleMounted && $sceneMounted) animate();
 	// $: if (loaded) animate();
@@ -1752,6 +1849,11 @@
 {#if $showHero}
 	<Hero />
 {/if}
+
+<!-- TODO: Shadows? -->
+
+<!-- TODO: Add sky? -->
+<!-- <Sky /> -->
 
 <!-- Peripherals -->
 <!-- <Grid {view} {dim} opacity={0.2} {gridColor} {axisColor} />
@@ -1823,14 +1925,47 @@
 	visible={basisAltProps.zVisible}
 />
 
-<T.Group position.z={-0.01}>
+<T.Group renderOrder={-1}>
 	<Grid
 		axes={"xyz"}
 		{...gridProps}
-		cellColor={colors.slate["700"]}
-		sectionColor={colors.slate["700"]}
 		fadeDistance={gridVars.fadeDistance}
+		fadeStrength={gridVars.fadeStrength}
 	/>
+
+	<!-- Grid for 3D -->
+	<!-- <Grid
+		{...grid3dProps}
+		position.z={gridSectionSize * 0}
+		position.y={gridSectionSize}
+		axes={"xzy"}
+		visible={$show3d}
+	/>
+	<Grid
+		{...grid3dProps}
+		position.z={gridSectionSize * 0}
+		position.x={-gridSectionSize}
+		axes={"zyx"}
+		visible={$show3d}
+	/> -->
+	<!-- <Grid
+		position.z={gridSectionSize * 0}
+		position.y={gridSectionSize}
+		axes={"xzy"}
+		{...gridProps}
+		fadeDistance={altFadeDistance}
+		fadeStrength={altFadeStrength}
+		visible={$show3d}
+	/>
+	<Grid
+		position.z={gridSectionSize * 0}
+		position.x={-gridSectionSize}
+		axes={"zyx"}
+		{...gridProps}
+		fadeDistance={altFadeDistance}
+		fadeStrength={altFadeStrength}
+		visible={$show3d}
+	/> -->
 </T.Group>
 
 <!-- Add a plane -->
@@ -1849,28 +1984,17 @@
 <T.Group matrix={$matrixTransform} matrixAutoUpdate={false}>
 	<!-- Grids -->
 	<!-- FIXME: Don't do infinite grid? A bit confusing -->
-	<!-- FIXME: Have a cool gradient environment / background -->
+	<!-- FIXME: Something wrong with 3d transformations -->
 	<Grid
 		axes={"xyz"}
 		{...gridProps}
+		cellColor={colorGridAlt}
+		sectionColor={colorGrid}
 		fadeDistance={gridVars.transformedFadeDistance}
+		fadeStrength={gridVars.transformedFadeStrength}
+		cellThickness={1.5}
+		sectionThickness={3}
 	/>
-	<!-- <Grid
-		position.z={gridSectionSize * 0}
-		position.y={gridSectionSize}
-		axes={"xzy"}
-		{...gridProps}
-		fadeDistance={altFadeDistance}
-		visible={true}
-	/>
-	<Grid
-		position.z={gridSectionSize * 0}
-		position.x={-gridSectionSize}
-		axes={"zyx"}
-		{...gridProps}
-		fadeDistance={altFadeDistance}
-		visible={true}
-	/> -->
 </T.Group>
 
 <!-- TODO: Remove objects that are not visible? -->

@@ -13,6 +13,6 @@ export default /* glsl */ `
 
     // return vec4(rgb * grid, 1.0);
 
-    return vec4(rgb, 1.0);
+    return vec4(rgb, 0.3);
   }
 `;

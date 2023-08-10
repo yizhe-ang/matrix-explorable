@@ -9,24 +9,25 @@
 	import Title from "./matrix/Title.svelte";
 	import ToggleInput from "./matrix/ToggleInput.svelte";
 	import { Vector3 } from "three/src/math/Vector3";
+	import { debug } from "$stores";
 
 	// const copy = getContext("copy");
 	// const data = getContext("data");
 </script>
 
-<Title />
+{#if !$debug}
+	<Title />
+{/if}
 
 <!-- TODO: Update width? -->
 <article class="relative flex bg-base-300 w-[calc(100%+65ch)]">
 	<!-- FIXME: For some reason no pointer events around the origin -->
 	<div
 		id="canvas-wrapper"
-		class="sticky top-0 flex-1 min-w-0 h-screen bg-base-300 pointer-events-none"
+		class="sticky top-0 flex-1 min-w-0 h-screen bg-base-300 {!$debug
+			? `pointer-events-none`
+			: ``}"
 	>
-		<!-- <div
-		id="canvas-wrapper"
-		class="sticky top-0 flex-1 min-w-0 h-screen bg-base-300"
-	> -->
 		<Threlte />
 	</div>
 
@@ -35,12 +36,10 @@
 
 <div
 	id="inputs"
-	class="fixed left-0 top-0 flex flex-col items-start px-8 py-8 gap-7 invisible"
+	class="fixed left-0 top-0 flex flex-col items-start px-8 py-8 gap-7 {!$debug
+		? `invisible`
+		: ``}"
 >
-	<!-- <div
-	id="inputs"
-	class="fixed left-0 top-0 flex flex-col items-center px-8 py-8 gap-7 z-20"
-> -->
 	<ToggleInput />
 	<ScrubberInput />
 	<div>
