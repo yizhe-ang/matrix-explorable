@@ -24,6 +24,7 @@
 		width: 3,
 		// zBias: 10_000,
 		zBias: 1_000,
+    zIndex: 3,
 		// size: 10,
 		width: 3,
 		// color: new Color(color).convertLinearToSRGB(),

@@ -9,7 +9,8 @@
 	import Title from "./matrix/Title.svelte";
 	import ToggleInput from "./matrix/ToggleInput.svelte";
 	import { Vector3 } from "three/src/math/Vector3";
-	import { debug } from "$stores";
+	import { debug, showPlayground } from "$stores";
+	import TogglePlayground from "./matrix/TogglePlayground.svelte";
 
 	// const copy = getContext("copy");
 	// const data = getContext("data");
@@ -33,6 +34,10 @@
 
 	<Article />
 </article>
+
+{#if $showPlayground}
+	<TogglePlayground />
+{/if}
 
 <div
 	id="inputs"

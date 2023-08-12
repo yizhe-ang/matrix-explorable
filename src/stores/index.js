@@ -1,8 +1,8 @@
 import { get, writable } from "svelte/store";
-import { egMatrixX, egMatrixY } from "$data/variables";
+import { egMatrixX, egMatrixY, egVector } from "$data/variables";
 import { spring } from "svelte/motion";
 
-export const debug = writable(true);
+export const debug = writable(false);
 
 // export const endMatrix = writable([
 // 	1, 1, -1, 0,
@@ -47,6 +47,8 @@ export const endMatrix = writable([
 // 	1
 // ]);
 
+export const vectorCoordsInput = spring([...egVector, 0])
+
 // Separate matrix transformation states
 export const heroMatrix = writable([
 	1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
@@ -56,8 +58,10 @@ export const customMatrix = writable([
 	1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
 ]);
 
+export const inputVectorToggled = writable(false);
 export const gridToggled = writable(false);
 export const transformedGridToggled = writable(true);
+export const grid3dToggled = writable(false);
 export const dataToggled = writable(undefined);
 
 export const showHero = writable(true);
@@ -92,3 +96,7 @@ export const afterImageEnabled = writable(true);
 export const cameraAutoRotate = writable(false);
 
 export const playgroundSt = writable(undefined);
+
+export const resetViewToggle = writable(true)
+
+export const expandPlayground = writable(false)

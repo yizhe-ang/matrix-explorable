@@ -7,10 +7,13 @@
 		tween.paused(!tween.paused());
 
 		if (tween.progress() == 1) {
-			tween.restart();
-		}
+			// tween.restart()
 
-		if (tween.paused()) {
+			$playToggle = false;
+			tween.progress(0);
+			tween.pause();
+			setTimeout(() => tween.play(), 500);
+		} else if (tween.paused()) {
 			// play icon
 			$playToggle = true;
 		} else {

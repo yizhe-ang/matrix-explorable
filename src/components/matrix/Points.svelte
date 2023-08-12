@@ -12,6 +12,8 @@
 	const dim = 6;
 	const range = [0, 1];
 
+  const opacity = 0.5
+
 	const pointsVolumeProps = {
 		rangeX: range,
 		rangeY: range,
@@ -24,9 +26,9 @@
 		live: false,
 		expr: (emit, x, y, z) => {
 			if (dim3) {
-				emit(x, y, z, 1);
+				emit(x, y, z, opacity);
 			} else {
-				emit(x, y, 1, 1);
+				emit(x, y, 1, opacity);
 			}
 		}
 	};
@@ -52,7 +54,7 @@
 			// Multiply every color component in [0..1] by 255
 			colors: "<",
 			color: 0xffffff,
-			size: 4,
+			size: 3,
 			zBias
 		});
 

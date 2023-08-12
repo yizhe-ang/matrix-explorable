@@ -53,7 +53,7 @@
 <HTML {position} center>
 	<span
 		bind:this={ref}
-		class="text-2xl bg-base-300/50 inline-block"
+		class="{dim3 ? `text-xl`: `text-2xl`} bg-base-300/50 inline-block"
 		style:opacity
 	>
 		<!-- <span class="text-2xl opacity-50"> -->

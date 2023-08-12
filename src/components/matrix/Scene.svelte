@@ -13,8 +13,9 @@
 		cameraAutoRotate,
 		heroMatrix,
 		titleMounted,
-    show3d,
-    debug
+		show3d,
+		debug,
+		resetViewToggle
 	} from "$stores";
 	import * as THREE from "three";
 	import CameraControls from "camera-controls";
@@ -158,7 +159,8 @@
 				"#article",
 				{
 					// width: "-=65ch"
-					translateX: "-=65ch"
+					// translateX: "-=65ch"
+					translateX: "-65ch"
 					// translateX: "calc(-50ch-80px)"
 				},
 				"step-1"
@@ -167,7 +169,7 @@
 				"#canvas-wrapper",
 				{
 					// width: "-=65ch",
-					translateX: "-=32.5ch"
+					translateX: "-32.5ch"
 				},
 				"step-1"
 			)
@@ -179,7 +181,22 @@
 		$sceneMounted = true;
 	}
 
-  $: if ($debug) afterImagePass.uniforms.damp = 0
+	$: if ($debug) afterImagePass.uniforms.damp = 0;
+
+	// Reset camera view
+	$: if ($cameraControls) resetView($resetViewToggle);
+	function resetView(toggle) {
+		if ($show3d) {
+			$cameraControls.rotateTo(Math.PI * 0.3, Math.PI * 0.35, true);
+			// $cameraControls.dollyTo(8.5, true);
+			$cameraControls.dollyTo(15, true);
+			$cameraControls.moveTo(0, 0, 0, true);
+		} else {
+			$cameraControls.rotateTo(0, 0, true);
+			$cameraControls.dollyTo(15, true);
+			$cameraControls.moveTo(0, 0, 0, true);
+		}
+	}
 </script>
 
 <!-- Set up camera and lighting -->
@@ -193,7 +210,9 @@
 		minDistance={5}
 		maxDistance={100}
 		mouseButtons.left={CameraControls.ACTION.TRUCK}
-		mouseButtons.right={$show3d ? CameraControls.ACTION.ROTATE : CameraControls.ACTION.NONE}
+		mouseButtons.right={$show3d
+			? CameraControls.ACTION.ROTATE
+			: CameraControls.ACTION.NONE}
 		on:controlstart={() => {
 			if ($cameraControls.currentAction == CameraControls.ACTION.ROTATE) {
 				renderer.domElement.classList.add("dragging");
@@ -212,8 +231,6 @@
 			$cameraControls._target.clamp(minPan, maxPan);
 			_v.sub($cameraControls._target);
 			$cameraControls._camera.position.sub(_v);
-
-      console.log($cameraControls)
 		}}
 	/>
 </T.PerspectiveCamera>

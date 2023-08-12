@@ -7,13 +7,17 @@
 	import Sphere from "./Sphere.svelte";
 	import Circle from "./Circle.svelte";
 	import Planes from "./Planes.svelte";
+	import Plane from "./Plane.svelte";
+	import Grid3d from "./Grid3d.svelte";
 	import Sky from "./Sky.svelte";
+	import Gridlines from "./Gridlines.svelte";
 	import {
 		endMatrix,
 		playhead,
 		playToggle,
 		matrixTween,
 		gridToggled,
+		grid3dToggled,
 		transformedGridToggled,
 		dataToggled,
 		showHero,
@@ -23,7 +27,8 @@
 		show3d,
 		showPlayground,
 		customMatrix,
-		debug
+		debug,
+		inputVectorToggled
 	} from "$stores";
 	import Vector from "./Vector.svelte";
 	import { ScrollTrigger, gsap } from "$utils/gsap.js";
@@ -34,7 +39,8 @@
 		loaded,
 		cameraProps,
 		cameraControls,
-		playgroundSt
+		playgroundSt,
+		vectorCoordsInput
 	} from "$stores";
 	import {
 		colorVector,
@@ -80,6 +86,8 @@
 	const view = mathbox.cartesian({
 		range
 	});
+
+	const planeDim = 10;
 
 	// States
 	const startMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
@@ -168,36 +176,47 @@
 		sectionSize: gridSectionSize,
 		sectionColor: colors.slate["700"],
 		sectionThickness: 3,
-		infiniteGrid: true,
-		fadeDistance: 50,
-		fadeStrength: 5
+		infiniteGrid: true
 	};
 
+	$: gridSettings = $show3d
+		? {
+				fadeDistance: 150,
+				fadeStrength: 4
+		  }
+		: {
+				fadeDistance: 50,
+				fadeStrength: 5
+		  };
 
+	$: transformedGridSettings = $show3d
+		? {
+				fadeDistance: 150,
+				fadeStrength: 4
+		  }
+		: {
+				fadeDistance: 50,
+				fadeStrength: 5
+		  };
 
-	const grid3dProps = {
-		fadeDistance: 100,
-		fadeStrength: 4
+	let gridProps = {
+		...defaultGridProps,
+		// sectionThickness: 2.5,
+		...gridSettings
 	};
 
-	const transformedGridProps = {
-		fadeDistance: 50,
-		fadeStrength: 5
+	let transformedGridProps = {
+		...defaultGridProps,
+		cellColor: colorGridAlt,
+		sectionColor: colorGrid,
+		...transformedGridSettings
 	};
 
-	const transformedGrid3dProps = {
-		fadeDistance: 100,
-		fadeStrength: 4
-	};
-
-	const gridAltProps = {
-		...gridProps,
-		infiniteGrid: false,
-		gridSize: [10, 10]
-	};
-
-	// const transformedGridColor = colors.slate['700']
-	const transformedGridColor = colorGrid;
+	// let grid3dProps = {
+	// 	...defaultGridProps,
+	// 	infiniteGrid: false,
+	// 	gridSize: [10, 10]
+	// };
 
 	let gridVars = {
 		fadeDistance: gridProps.fadeDistance,
@@ -206,23 +225,24 @@
 		transformedFadeStrength: transformedGridProps.fadeStrength
 	};
 
-	const altFadeDistance = 15;
-	const altFadeStrength = 0.5;
+	let grid3dProps = {
+		t: 0
+	};
 
 	$: onGridToggle($gridToggled);
 	function onGridToggle(toggled) {
 		if (toggled) {
-			gsap.to(gridVars, {
-				fadeDistance: gridProps.fadeDistance,
+			gsap.to(gridProps, {
+				fadeDistance: gridSettings.fadeDistance,
 				onUpdate: function () {
-					gridVars = gridVars;
+					gridProps = gridProps;
 				}
 			});
 		} else {
-			gsap.to(gridVars, {
+			gsap.to(gridProps, {
 				fadeDistance: 0,
 				onUpdate: function () {
-					gridVars = gridVars;
+					gridProps = gridProps;
 				}
 			});
 		}
@@ -231,17 +251,36 @@
 	$: onTransformedGridToggle($transformedGridToggled);
 	function onTransformedGridToggle(toggled) {
 		if (toggled) {
-			gsap.to(gridVars, {
-				transformedFadeDistance: gridProps.fadeDistance,
+			gsap.to(transformedGridProps, {
+				fadeDistance: transformedGridSettings.fadeDistance,
 				onUpdate: function () {
-					gridVars = gridVars;
+					transformedGridProps = transformedGridProps;
 				}
 			});
 		} else {
-			gsap.to(gridVars, {
-				transformedFadeDistance: 0,
+			gsap.to(transformedGridProps, {
+				fadeDistance: 0,
 				onUpdate: function () {
-					gridVars = gridVars;
+					transformedGridProps = transformedGridProps;
+				}
+			});
+		}
+	}
+
+	$: onGrid3dToggle($grid3dToggled);
+	function onGrid3dToggle(toggled) {
+		if (toggled) {
+			gsap.to(grid3dProps, {
+				t: 1,
+				onUpdate: function () {
+					grid3dProps = grid3dProps;
+				}
+			});
+		} else {
+			gsap.to(grid3dProps, {
+				t: 0,
+				onUpdate: function () {
+					grid3dProps = grid3dProps;
 				}
 			});
 		}
@@ -325,26 +364,23 @@
 	// Have a show 3d trigger?
 	$: toggle3d($show3d);
 	function toggle3d(toggle) {
-		gsap.to(gridVars, {
-			transformedFadeDistance: !$transformedGridToggled
-				? 0
-				: toggle
-				? transformedGrid3dProps.fadeDistance
-				: transformedGridProps.fadeDistance,
-			transformedFadeStrength: toggle
-				? transformedGrid3dProps.fadeStrength
-				: transformedGridProps.fadeStrength,
-			fadeDistance: !$gridToggled
-				? 0
-				: toggle
-				? grid3dProps.fadeDistance
-				: gridProps.fadeDistance,
-			fadeStrength: toggle
-				? grid3dProps.fadeStrength
-				: transformedGridProps.fadeStrength,
-			onUpdate: () => (gridVars = gridVars),
-			duration
-		});
+		if ($gridToggled) {
+			gsap.to(gridProps, {
+				duration,
+				fadeDistance: gridSettings.fadeDistance,
+				fadeStrength: gridSettings.fadeStrength,
+				onUpdate: () => (gridProps = gridProps)
+			});
+		}
+
+		if ($transformedGridToggled) {
+			gsap.to(transformedGridProps, {
+				duration,
+				fadeDistance: transformedGridSettings.fadeDistance,
+				fadeStrength: transformedGridSettings.fadeStrength,
+				onUpdate: () => (transformedGridProps = transformedGridProps)
+			});
+		}
 	}
 
 	// ScrollTrigger
@@ -355,6 +391,20 @@
 	let xCoords = [0, 0, 0, 0, 0, 0];
 	let yCoords = [0, 0, 0, 0, 0, 0];
 	let zCoords = [0, 0, 0, 0, 0, 0];
+
+	const vectorCoordsSpring = spring([0, 0, 0]);
+	$: $vectorCoordsSpring = $vectorCoordsInput;
+
+	// FIXME: Do we have to set visibility to false?
+	// Hide vector input on toggle
+	$: onInputVectorToggle($inputVectorToggled);
+	function onInputVectorToggle(toggled) {
+		if (toggled) {
+			$vectorCoordsSpring = $vectorCoordsInput;
+		} else {
+			$vectorCoordsSpring = [0, 0, 0];
+		}
+	}
 
 	// TODO: Separate this?
 	let props = {
@@ -408,7 +458,7 @@
 		basisAltProps.zVisible = true;
 	}
 
-	$: basisAltProps.zVisible = $show3d;
+	// $: basisAltProps.zVisible = $show3d;
 
 	const stProps = {
 		fastScrollEnd: true,
@@ -1277,6 +1327,8 @@
 				},
 				"step-1"
 			)
+			// Show example vector
+
 			.add("step-2");
 
 		// Animate back
@@ -1417,16 +1469,19 @@
 						stProps.onEnter();
 
 						$show3d = true;
+						basisAltProps.zVisible = false;
 					},
 					onLeaveBack: () => {
 						stProps.onLeaveBack();
 
 						$show3d = false;
+						$grid3dToggled = false;
 					},
 					onLeave: () => {
 						stProps.onLeave();
 
 						$cameraAutoRotate = true;
+						$grid3dToggled = true;
 					},
 					onEnterBack: () => {
 						stProps.onEnterBack();
@@ -1460,7 +1515,8 @@
 			.to(
 				$cameraControls,
 				{
-					distance: 8.5,
+					// distance: 8.5,
+					distance: 15,
 					polarAngle: Math.PI * 0.35,
 					// azimuthAngle: `+=${Math.PI * 0.3}`
 					azimuthAngle: Math.PI * 0.3
@@ -1540,6 +1596,17 @@
 					vectorTexOpacity: 1,
 					onUpdate: function () {
 						props = props;
+					}
+				},
+				"step-2"
+			)
+			// Animate in 3d grid
+			.to(
+				grid3dProps,
+				{
+					t: 1,
+					onUpdate: function () {
+						grid3dProps = grid3dProps;
 					}
 				},
 				"step-2"
@@ -1735,9 +1802,13 @@
 					start: "top center",
 					onEnter: () => {
 						$cameraAutoRotate = false;
+
+            $showPlayground = true
 					},
 					onLeaveBack: () => {
 						$cameraAutoRotate = true;
+
+            $showPlayground = false
 
 						// Reset
 						$dataToggled = undefined;
@@ -1867,6 +1938,16 @@
 	texOpacity={props.vectorTexOpacity}
 	dim3={props.vectorDim3}
 />
+
+<!-- Example vector that animates on input -->
+<Vector
+	view={transformedView}
+	coords={[0, 0, 0, ...$vectorCoordsSpring]}
+	color={colorVector}
+	tex={false}
+	visible={true}
+/>
+
 <!-- Basis vectors -->
 <Vector
 	{view}
@@ -1925,13 +2006,8 @@
 	visible={basisAltProps.zVisible}
 />
 
-<T.Group renderOrder={-1}>
-	<Grid
-		axes={"xyz"}
-		{...gridProps}
-		fadeDistance={gridVars.fadeDistance}
-		fadeStrength={gridVars.fadeStrength}
-	/>
+<T.Group renderOrder={-2}>
+	<Grid {...gridProps} axes={"xyz"} />
 
 	<!-- Grid for 3D -->
 	<!-- <Grid
@@ -1968,6 +2044,31 @@
 	/> -->
 </T.Group>
 
+<!-- Transformed elements -->
+<T.Group renderOrder={-1} matrix={$matrixTransform} matrixAutoUpdate={false}>
+	<!-- Grids -->
+	<!-- FIXME: Don't do infinite grid? A bit confusing -->
+	<!-- FIXME: Something wrong with 3d transformations -->
+	<Grid {...transformedGridProps} axes={"xyz"} />
+
+	<!-- 3d grid -->
+	<!-- <Grid
+		axes={"xzy"}
+		position.z={gridSectionSize * 0}
+		position.y={gridSectionSize}
+		visible={$show3d}
+		{...grid3dProps}
+	/>
+	<Grid
+		axes={"zyx"}
+		position.z={gridSectionSize * 0}
+		position.x={-gridSectionSize}
+		visible={$show3d}
+		{...grid3dProps}
+	/> -->
+	<!-- <Grid3d /> -->
+</T.Group>
+
 <!-- Add a plane -->
 <!-- <T.Mesh position.z={-0.02}>
 	<T.PlaneGeometry args={[40, 40]} />
@@ -1980,23 +2081,6 @@
 	</T.MeshStandardMaterial>
 </T.Mesh> -->
 
-<!-- Transformed elements -->
-<T.Group matrix={$matrixTransform} matrixAutoUpdate={false}>
-	<!-- Grids -->
-	<!-- FIXME: Don't do infinite grid? A bit confusing -->
-	<!-- FIXME: Something wrong with 3d transformations -->
-	<Grid
-		axes={"xyz"}
-		{...gridProps}
-		cellColor={colorGridAlt}
-		sectionColor={colorGrid}
-		fadeDistance={gridVars.transformedFadeDistance}
-		fadeStrength={gridVars.transformedFadeStrength}
-		cellThickness={1.5}
-		sectionThickness={3}
-	/>
-</T.Group>
-
 <!-- TODO: Remove objects that are not visible? -->
 <!-- Data -->
 <Planes view={transformedView} t={planesProps.t} />
@@ -2005,3 +2089,19 @@
 <Points view={transformedView} t={points3dProps.t} dim3 />
 <!-- <Sphere view={transformedView} /> -->
 <!-- <Circle view={transformedView} /> -->
+
+<Plane
+	view={transformedView}
+	dim={planeDim}
+	position={[-planeDim / 2 - 0.5, -planeDim / 2, -planeDim / 2]}
+	rotation={[0, -Math.PI / 2, 0]}
+	t={grid3dProps.t}
+/>
+<Plane
+	view={transformedView}
+	dim={planeDim}
+	position={[-planeDim / 2, planeDim / 2 + 0.5, planeDim / 2]}
+	rotation={[-Math.PI / 2, 0, 0]}
+	t={grid3dProps.t}
+/>
+<Gridlines view={transformedView} t={grid3dProps.t} />
