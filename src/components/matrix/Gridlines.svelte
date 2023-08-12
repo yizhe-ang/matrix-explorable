@@ -1,6 +1,8 @@
 <script>
   import { colorNf, colorN, colorGridAlt, colorGrid } from "$data/variables.js"
 
+  // FIXME: Change this to Threlte's Grid?
+
 	export let view;
 	export let t;
 
@@ -8,7 +10,7 @@
 	const range = 5;
 
 	const gridProps = {
-		width: 2,
+		width: 1.5,
 		opacity: 0.9,
     color: colorGrid,
 		divideX: divisions,

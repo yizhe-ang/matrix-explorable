@@ -11,22 +11,10 @@ export const egMatrixY = [2, 0];
 export const initMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
 export const egEndMatrix = [
-	egMatrixX[0],
-	egMatrixY[0],
-	0,
-	0,
-	egMatrixX[1],
-	egMatrixY[1],
-	0,
-	0,
-	0,
-	0,
-	1,
-	0,
-	0,
-	0,
-	0,
-	1
+	egMatrixX[0], egMatrixY[0], 0, 0,
+	egMatrixX[1], egMatrixY[1], 0, 0,
+	0, 0, 1, 0,
+  0, 0, 0, 1
 ];
 
 const A = new Matrix([egMatrixX, egMatrixY]).transpose();
@@ -57,23 +45,10 @@ const [y1, y2, y3] = eg3dMatrixY;
 const [z1, z2, z3] = eg3dMatrixZ;
 
 export const eg3dMatrix = [
-	x1,
-	y1,
-	z1,
-	0,
-	x2,
-	y2,
-	z2,
-	0,
-	x3,
-	y3,
-	z3,
-	0,
-	0,
-	0,
-	0,
-	0,
-	1
+	x1, y1, z1, 0,
+	x2, y2, z2, 0,
+	x3, y3, z3, 0,
+	0, 0, 0, 1,
 ];
 
 // Colors

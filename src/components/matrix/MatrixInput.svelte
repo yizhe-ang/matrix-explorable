@@ -36,7 +36,6 @@
 			]);
 
 			const v = new Matrix([$vectorCoordsInput]).transpose();
-			console.log(v);
 
 			const b = A.mmul(v);
 
@@ -58,7 +57,7 @@
 	}
 </script>
 
-<div class="flex gap-5 items-center">
+<div class="flex gap-5 items-center pointer-events-auto">
 	<!-- Matrix -->
 	<div class="shadow-lg shadow-neutral-content/20">
 		{#if $show3d}

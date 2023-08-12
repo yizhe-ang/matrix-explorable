@@ -24,7 +24,7 @@
 </script>
 
 <!-- <div class="flex w-full gap-3"> -->
-<div class="flex w-80 gap-3">
+<div class="flex w-80 gap-3 pointer-events-auto">
 	<!-- Play button -->
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->

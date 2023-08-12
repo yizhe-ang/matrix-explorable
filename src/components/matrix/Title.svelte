@@ -5,6 +5,9 @@
 	import { gsap } from "$utils/gsap.js";
 	import { onMount } from "svelte";
 
+  // TODO: Colorful gradient shadows
+  // TODO: Get inspiration from decoration
+
 	let mounted = false;
 
 	$: if (mounted) animate();

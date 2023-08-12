@@ -74,7 +74,7 @@
 
 <div
 	use:melt={$root}
-	class="flex min-w-max items-center gap-4 rounded-md bg-base-200 px-3 py-3 shadow-lg shadow-neutral-content/20"
+	class="flex min-w-max items-center gap-4 rounded-md bg-base-200 px-3 py-3 shadow-lg shadow-neutral-content/20 pointer-events-auto"
 >
 	<!-- Reset view -->
 	<button

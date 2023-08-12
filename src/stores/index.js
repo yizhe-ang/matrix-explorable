@@ -2,7 +2,7 @@ import { get, writable } from "svelte/store";
 import { egMatrixX, egMatrixY, egVector } from "$data/variables";
 import { spring } from "svelte/motion";
 
-export const debug = writable(false);
+export const debug = writable(true);
 
 // export const endMatrix = writable([
 // 	1, 1, -1, 0,
@@ -67,7 +67,7 @@ export const dataToggled = writable(undefined);
 export const showHero = writable(true);
 if (get(debug)) showHero.set(false);
 
-export const show3d = writable(false);
+export const show3d = writable(true);
 // if (get(debug)) show3d.set(true);
 export const showPlayground = writable(false);
 if (get(debug)) showPlayground.set(true);

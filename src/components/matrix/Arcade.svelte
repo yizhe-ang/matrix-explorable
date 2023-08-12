@@ -212,11 +212,13 @@
 		...transformedGridSettings
 	};
 
-	// let grid3dProps = {
-	// 	...defaultGridProps,
-	// 	infiniteGrid: false,
-	// 	gridSize: [10, 10]
-	// };
+	let grid3dProps = {
+		...defaultGridProps,
+		infiniteGrid: false,
+		cellColor: colorGridAlt,
+		sectionColor: colorGrid,
+		gridSize: [10, 10]
+	};
 
 	let gridVars = {
 		fadeDistance: gridProps.fadeDistance,
@@ -225,9 +227,9 @@
 		transformedFadeStrength: transformedGridProps.fadeStrength
 	};
 
-	let grid3dProps = {
-		t: 0
-	};
+	// let grid3dProps = {
+	// 	t: 0
+	// };
 
 	$: onGridToggle($gridToggled);
 	function onGridToggle(toggled) {
@@ -481,6 +483,8 @@
 			animateOutStProgress();
 		}
 	};
+
+	$: console.log($endMatrix);
 
 	const stPropsAlt = {
 		start: "bottom center",
@@ -1470,12 +1474,30 @@
 
 						$show3d = true;
 						basisAltProps.zVisible = false;
+
+						// // Update matrix transform
+						// gsap.to($endMatrix, {
+						// 	endArray: eg3dMatrix,
+						// 	onUpdate: () => {
+						// 		$endMatrix = $endMatrix;
+						// 	},
+						// 	duration
+						// });
 					},
 					onLeaveBack: () => {
 						stProps.onLeaveBack();
 
 						$show3d = false;
 						$grid3dToggled = false;
+
+						// // Reset matrix transform
+						// gsap.to($endMatrix, {
+						// 	endArray: initMatrix,
+						// 	onUpdate: () => {
+						// 		$endMatrix = $endMatrix;
+						// 	},
+						// 	duration
+						// });
 					},
 					onLeave: () => {
 						stProps.onLeave();
@@ -1803,17 +1825,17 @@
 					onEnter: () => {
 						$cameraAutoRotate = false;
 
-            $showPlayground = true
+						$showPlayground = true;
 					},
 					onLeaveBack: () => {
 						$cameraAutoRotate = true;
 
-            $showPlayground = false
+						$showPlayground = false;
 
 						// Reset
 						$dataToggled = undefined;
 						$gridToggled = true;
-						$transformedGridToggled = true;
+						$transformedGridToggled = false;
 
 						// Reset playhead
 						$matrixTween.progress(1);
@@ -2048,26 +2070,37 @@
 <T.Group renderOrder={-1} matrix={$matrixTransform} matrixAutoUpdate={false}>
 	<!-- Grids -->
 	<!-- FIXME: Don't do infinite grid? A bit confusing -->
-	<!-- FIXME: Something wrong with 3d transformations -->
-	<Grid {...transformedGridProps} axes={"xyz"} />
 
+	<Grid {...transformedGridProps} axes={"xyz"} />
 	<!-- 3d grid -->
-	<!-- <Grid
+	<Grid
 		axes={"xzy"}
 		position.z={gridSectionSize * 0}
 		position.y={gridSectionSize}
-		visible={$show3d}
 		{...grid3dProps}
 	/>
 	<Grid
 		axes={"zyx"}
 		position.z={gridSectionSize * 0}
 		position.x={-gridSectionSize}
-		visible={$show3d}
 		{...grid3dProps}
-	/> -->
-	<!-- <Grid3d /> -->
+	/>
+
 </T.Group>
+<!-- <T.Group renderOrder={1} matrix={$matrixTransform} matrixAutoUpdate={false}>
+	<Grid
+		axes={"xzy"}
+		position.z={gridSectionSize * 0}
+		position.y={gridSectionSize}
+		{...grid3dProps}
+	/>
+	<Grid
+		axes={"zyx"}
+		position.z={gridSectionSize * 0}
+		position.x={-gridSectionSize}
+		{...grid3dProps}
+	/>
+</T.Group> -->
 
 <!-- Add a plane -->
 <!-- <T.Mesh position.z={-0.02}>
@@ -2090,7 +2123,7 @@
 <!-- <Sphere view={transformedView} /> -->
 <!-- <Circle view={transformedView} /> -->
 
-<Plane
+<!-- <Plane
 	view={transformedView}
 	dim={planeDim}
 	position={[-planeDim / 2 - 0.5, -planeDim / 2, -planeDim / 2]}
@@ -2103,5 +2136,19 @@
 	position={[-planeDim / 2, planeDim / 2 + 0.5, planeDim / 2]}
 	rotation={[-Math.PI / 2, 0, 0]}
 	t={grid3dProps.t}
+/> -->
+<!-- <Plane
+	view={transformedView}
+	dim={planeDim}
+	position={[-planeDim / 2, -planeDim / 2, -planeDim / 2]}
+	rotation={[0, -Math.PI / 2, 0]}
+	t={grid3dProps.t}
 />
-<Gridlines view={transformedView} t={grid3dProps.t} />
+<Plane
+	view={transformedView}
+	dim={planeDim}
+	position={[-planeDim / 2, planeDim / 2, planeDim / 2]}
+	rotation={[-Math.PI / 2, 0, 0]}
+	t={grid3dProps.t}
+/> -->
+<!-- <Gridlines view={transformedView} t={grid3dProps.t} /> -->
