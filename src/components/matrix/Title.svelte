@@ -5,8 +5,8 @@
 	import { gsap } from "$utils/gsap.js";
 	import { onMount } from "svelte";
 
-  // TODO: Colorful gradient shadows
-  // TODO: Get inspiration from decoration
+	// TODO: Colorful gradient shadows
+	// TODO: Get inspiration from decoration
 
 	let mounted = false;
 
@@ -44,15 +44,20 @@
 
 <div
 	id="title"
-	class="fixed top-0 left-0 right-0 z-10 grid place-content-center pt-16"
+	class="fixed top-0 left-0 right-0 z-10 grid place-content-center pt-16 px-10 max-w-5xl mx-auto"
 >
+	<!-- TODO: Vertically center everything here? -->
 	<div class="flex flex-col gap-5 items-center">
-		<h1 class="text-8xl">The Matrix Arcade</h1>
-		<div class="text-3xl">A Visual Explorable of Matrix Transformations</div>
+		<h1 class="text-9xl font-display drop-shadow-xl">
+			The <br /> Matrix Arcade
+		</h1>
+		<div class="text-3xl font-displayAlt text-right">
+			A Visual Explorable <br /> of Matrix Transformations
+		</div>
 
 		<!-- <a href="#st-12">Skip to Playground!</a> -->
 		<button
-			class="btn"
+			class="playground-btn btn font-sansAlt text-xl backdrop-blur-sm bg-white/10 hover:bg-white/20 border-0"
 			on:click={() => {
 				// const target = document.querySelector('#st-12')
 
@@ -71,3 +76,46 @@
 		</button>
 	</div>
 </div>
+
+<style lang="postcss">
+	.playground-btn {
+		&:before {
+			content: "";
+			z-index: -1;
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			background: linear-gradient(-45deg, #fff000 0%, #ed008c 100%);
+			transform: translate3d(0px, 20px, 0) scale(0.95);
+			filter: blur(20px);
+			/* opacity: var(0.7); */
+			opacity: 0.7;
+			transition: opacity 0.3s;
+			border-radius: inherit;
+		}
+
+    &:hover {
+      &:before {
+        opacity: 1;
+      }
+    }
+		/*
+* Prevents issues when the parent creates a
+* stacking context. (For example, using the transform
+* property )
+*/
+		&::after {
+			content: "";
+			z-index: -1;
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			background: inherit;
+			border-radius: inherit;
+		}
+	}
+</style>

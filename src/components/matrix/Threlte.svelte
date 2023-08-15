@@ -7,6 +7,6 @@
   THREE.Object3D.DEFAULT_UP.set(0, 0, 1)
 </script>
 
-<Canvas colorManagementEnabled={true} rendererParameters={{ webgl1: true }}>
+<Canvas colorManagementEnabled={true} rendererParameters={{ webgl1: true, logarithmicDepthBuffer: false }}>
 	<Scene />
 </Canvas>

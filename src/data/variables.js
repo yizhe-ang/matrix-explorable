@@ -32,7 +32,8 @@ export const egOutputVector = [w.get(0, 0), w.get(1, 0)];
 export const eg3dVector = [-1, 2, 1];
 export const eg3dMatrixX = [1, 0, 0];
 export const eg3dMatrixY = [1, 1, 1];
-export const eg3dMatrixZ = [0, 0, 1];
+// export const eg3dMatrixZ = [0, 0, 1];
+export const eg3dMatrixZ = [0, -1, 1];
 
 const B = new Matrix([eg3dMatrixX, eg3dMatrixY, eg3dMatrixZ]).transpose();
 const u = new Matrix([eg3dVector]).transpose();

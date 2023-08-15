@@ -15,7 +15,8 @@
 		titleMounted,
 		show3d,
 		debug,
-		resetViewToggle
+		resetViewToggle,
+		rgbShiftEnabled
 	} from "$stores";
 	import * as THREE from "three";
 	import CameraControls from "camera-controls";
@@ -61,6 +62,10 @@
 	const afterImagePass = new AfterimagePass();
 	// $: afterImagePass.enabled = $afterImageEnabled;
 
+	const rgbShiftPass = new ShaderPass(RGBShiftShader);
+	rgbShiftPass.uniforms["amount"].value = 0.0015;
+	$: rgbShiftPass.enabled = $rgbShiftEnabled;
+
 	const halfToneParams = {
 		shape: 1,
 		radius: 4,
@@ -84,11 +89,7 @@
 		// FIXME: Why does afterimage make the colors brighter?
 		composer.addPass(afterImagePass);
 
-		// FIXME: Only add this for the hero?
-		// const rgbShiftPass = new ShaderPass(RGBShiftShader);
-		// rgbShiftPass.uniforms["amount"].value = 0.0015;
-		// rgbShiftPass.uniforms["amount"].value = 0.003;
-		// composer.addPass(rgbShiftPass);
+		composer.addPass(rgbShiftPass);
 
 		// const halfTonePass = new HalftonePass(halfToneParams);
 		// composer.addPass(halfTonePass);
@@ -200,7 +201,13 @@
 </script>
 
 <!-- Set up camera and lighting -->
-<T.PerspectiveCamera let:ref makeDefault position={cameraPos} near={0.01}>
+<T.PerspectiveCamera
+	let:ref
+	makeDefault
+	position={cameraPos}
+	near={2}
+	far={300}
+>
 	<!-- TODO: Look for better controls? -->
 	<!-- <OrbitControls enableDamping /> -->
 	<!-- TODO: Change touch controls -->
@@ -234,6 +241,9 @@
 		}}
 	/>
 </T.PerspectiveCamera>
+
+<T.AmbientLight intensity={0.8} />
+<!-- <T.DirectionalLight position={[0, 0, 20]} /> -->
 
 <!-- TODO: Try post-processing -->
 <!-- TODO: Afterimage -->

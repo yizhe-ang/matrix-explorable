@@ -5,6 +5,11 @@
 @import "@fontsource/old-standard-tt/700.css";
 @import "@fontsource-variable/manrope";
 @import "@fontsource/barlow";
+@import "@fontsource-variable/chivo";
+@import "@fontsource/bungee-shade";
+@import "@fontsource/bungee-outline";
+@import "@fontsource/bungee-hairline";
+@import "@fontsource/bungee-inline";
 
 /* Tailwind */
 @tailwind base;
@@ -12,7 +17,16 @@
 @tailwind utilities;
 
 body {
-  overflow-x: hidden;
+	overflow-x: hidden;
+}
+
+ul {
+  /* @apply list-inside; */
+}
+
+li:not(:last-child) {
+	/* margin-bottom: 5px; */
+  @apply mb-5;
 }
 
 .skip-to-main {

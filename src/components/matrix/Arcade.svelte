@@ -1,6 +1,6 @@
 <script>
 	// import Grid from "./Grid.svelte";
-	import { Grid } from "@threlte/extras";
+	import { Grid, useGltf, useTexture } from "@threlte/extras";
 	import { useTweakpane } from "$utils/useTweakpane";
 	import { T, useThrelte } from "@threlte/core";
 	import Points from "./Points.svelte";
@@ -28,7 +28,9 @@
 		showPlayground,
 		customMatrix,
 		debug,
-		inputVectorToggled
+		inputVectorToggled,
+		rgbShiftEnabled,
+		resetViewToggle
 	} from "$stores";
 	import Vector from "./Vector.svelte";
 	import { ScrollTrigger, gsap } from "$utils/gsap.js";
@@ -64,11 +66,24 @@
 	} from "$data/variables";
 	import colors from "tailwindcss/colors";
 	import CameraControls from "camera-controls";
-	import { Color, MeshBasicMaterial, PlaneGeometry } from "three";
+	import {
+		Color,
+		MeshBasicMaterial,
+		PlaneGeometry,
+		SRGBColorSpace,
+		sRGBEncoding
+	} from "three";
 	import Hero from "./Hero.svelte";
 	import { spring } from "svelte/motion";
 
+  $: console.log($vectorCoordsInput)
+
 	export let mathbox;
+
+	const map = useTexture("/maxwell.jpg");
+	$: if ($map) $map.encoding = sRGBEncoding;
+
+	const model = useGltf("/maxwell.glb");
 
 	let mounted;
 
@@ -196,7 +211,8 @@
 		  }
 		: {
 				fadeDistance: 50,
-				fadeStrength: 5
+				// fadeStrength: 5
+				fadeStrength: 9
 		  };
 
 	let gridProps = {
@@ -217,7 +233,8 @@
 		infiniteGrid: false,
 		cellColor: colorGridAlt,
 		sectionColor: colorGrid,
-		gridSize: [10, 10]
+		gridSize: [10, 10],
+		t: 0
 	};
 
 	let gridVars = {
@@ -274,6 +291,8 @@
 		if (toggled) {
 			gsap.to(grid3dProps, {
 				t: 1,
+				cellThickness: defaultGridProps.cellThickness,
+				sectionThickness: defaultGridProps.sectionThickness,
 				onUpdate: function () {
 					grid3dProps = grid3dProps;
 				}
@@ -281,6 +300,8 @@
 		} else {
 			gsap.to(grid3dProps, {
 				t: 0,
+				cellThickness: 0,
+				sectionThickness: 0,
 				onUpdate: function () {
 					grid3dProps = grid3dProps;
 				}
@@ -326,6 +347,20 @@
 					planes3dProps = planes3dProps;
 				}
 			});
+		} else if (prevDataToggled == "model") {
+			gsap.to(modelProps, {
+				scale: 0,
+				onUpdate: function () {
+					modelProps = modelProps;
+				}
+			});
+		} else if (prevDataToggled == "image") {
+			gsap.to(imageProps, {
+				scale: 0,
+				onUpdate: function () {
+					imageProps = imageProps;
+				}
+			});
 		}
 
 		// Animate in
@@ -357,6 +392,20 @@
 					planes3dProps = planes3dProps;
 				}
 			});
+		} else if (toggled == "model") {
+			gsap.to(modelProps, {
+				scale: 0.25,
+				onUpdate: function () {
+					modelProps = modelProps;
+				}
+			});
+		} else if (toggled == "image") {
+			gsap.to(imageProps, {
+				scale: 1,
+				onUpdate: function () {
+					imageProps = imageProps;
+				}
+			});
 		}
 
 		// Update prev value
@@ -382,6 +431,25 @@
 				fadeStrength: transformedGridSettings.fadeStrength,
 				onUpdate: () => (transformedGridProps = transformedGridProps)
 			});
+		}
+
+		if ($showPlayground) {
+			if (!$show3d) {
+				// Hide any toggled 3d objects
+				$dataToggled = undefined;
+				onDataToggle(undefined);
+
+				// Reset camera to 2d view
+				$resetViewToggle = !$resetViewToggle;
+
+				// Hide z basis vector
+				basisAltProps.zVisible = false;
+
+				// Remove z-coord of input vector
+				$vectorCoordsInput[2] = 0;
+			} else {
+				basisAltProps.zVisible = true;
+			}
 		}
 	}
 
@@ -423,6 +491,7 @@
 		xScalarAlign: "top",
 		yScalarAlign: "left",
 		zScalarAlign: "bottom",
+		vectorVisible: false,
 		xVisible: true,
 		yVisible: true,
 		zVisible: true,
@@ -447,8 +516,15 @@
 	let planes3dProps = {
 		t: 0
 	};
+	let modelProps = {
+		scale: 0
+	};
+	let imageProps = {
+		scale: 0
+	};
 
 	let basisAltProps = {
+		vectorVisible: true,
 		xVisible: false,
 		yVisible: false,
 		zVisible: false
@@ -483,8 +559,6 @@
 			animateOutStProgress();
 		}
 	};
-
-	$: console.log($endMatrix);
 
 	const stPropsAlt = {
 		start: "bottom center",
@@ -523,11 +597,15 @@
 						stProps.onEnter();
 
 						($gridToggled = true), ($transformedGridToggled = false);
+
+						$rgbShiftEnabled = false;
 					},
 					onLeaveBack: () => {
 						stProps.onLeaveBack();
 
 						($gridToggled = false), ($transformedGridToggled = true);
+
+						$rgbShiftEnabled = true;
 					}
 				}
 			})
@@ -1209,6 +1287,8 @@
 					start: "top center",
 					onEnter: () => {
 						$showPlayground = true;
+
+						$inputVectorToggled = true;
 					},
 					onLeaveBack: () => {
 						// When going back from playground to interactive
@@ -1222,6 +1302,7 @@
 						$dataToggled = "points";
 						$gridToggled = true;
 						$transformedGridToggled = true;
+						$inputVectorToggled = false;
 
 						// Reset playhead
 						$matrixTween.progress(1);
@@ -1357,6 +1438,7 @@
 						$dataToggled = undefined;
 						$gridToggled = true;
 						$transformedGridToggled = false;
+						$inputVectorToggled = false;
 
 						// Reset playhead
 						$matrixTween.progress(1);
@@ -1389,7 +1471,6 @@
 					fadeDistance: grid3dProps.fadeDistance,
 					onUpdate: () => {
 						gridVars = gridVars;
-						console.log(gridVars.fadeDistance);
 					}
 				},
 				"step-1"
@@ -1468,7 +1549,7 @@
 				scrollTrigger: {
 					...stProps,
 					trigger: "#st-9",
-					end: `+=${scrollUnit * 2}`,
+					end: `+=${scrollUnit * 3}`,
 					onEnter: () => {
 						stProps.onEnter();
 
@@ -1483,12 +1564,30 @@
 						// 	},
 						// 	duration
 						// });
+
+						basisAltProps.vectorVisible = false;
+
+						$inputVectorToggled = true;
+
+						$vectorCoordsInput[0] = eg3dVector[0];
+						$vectorCoordsInput[1] = eg3dVector[1];
+						$vectorCoordsInput[2] = eg3dVector[2];
 					},
 					onLeaveBack: () => {
 						stProps.onLeaveBack();
 
 						$show3d = false;
 						$grid3dToggled = false;
+
+						// basisAltProps.vectorVisible = true;
+
+						// $vectorCoordsInput = egVector;
+            console.log(egVector)
+						$vectorCoordsInput[0] = egVector[0];
+						$vectorCoordsInput[1] = egVector[1];
+						$vectorCoordsInput[2] = 0;
+
+						$inputVectorToggled = false;
 
 						// // Reset matrix transform
 						// gsap.to($endMatrix, {
@@ -1582,6 +1681,16 @@
 				},
 				"step-1"
 			)
+			// .to(
+			// 	$vectorCoordsInput,
+			// 	{
+			// 		endArray: eg3dVector,
+			// 		onUpdate: function () {
+			// 			$vectorCoordsInput = $vectorCoordsInput;
+			// 		}
+			// 	},
+			// 	"step-1"
+			// )
 			.add("step-2")
 			.to(
 				$matrixTween,
@@ -1626,12 +1735,24 @@
 			.to(
 				grid3dProps,
 				{
-					t: 1,
+					cellThickness: defaultGridProps.cellThickness,
+					sectionThickness: defaultGridProps.sectionThickness,
 					onUpdate: function () {
 						grid3dProps = grid3dProps;
 					}
 				},
 				"step-2"
+			)
+			.add("step-3")
+			.to(
+				grid3dProps,
+				{
+					t: 1,
+					onUpdate: function () {
+						grid3dProps = grid3dProps;
+					}
+				},
+				"step-3"
 			)
 			.to(
 				{},
@@ -1826,6 +1947,9 @@
 						$cameraAutoRotate = false;
 
 						$showPlayground = true;
+
+						basisAltProps.vectorVisible = true;
+						props.vectorVisible = true;
 					},
 					onLeaveBack: () => {
 						$cameraAutoRotate = true;
@@ -1848,6 +1972,9 @@
 							},
 							duration
 						});
+
+						basisAltProps.vectorVisible = false;
+						props.vectorVisible = false;
 					}
 				},
 				timelinePropsAlt
@@ -1958,6 +2085,7 @@
 	coords={vectorCoords}
 	color={colorVector}
 	texOpacity={props.vectorTexOpacity}
+	visible={props.xVisible}
 	dim3={props.vectorDim3}
 />
 
@@ -1967,7 +2095,7 @@
 	coords={[0, 0, 0, ...$vectorCoordsSpring]}
 	color={colorVector}
 	tex={false}
-	visible={true}
+	visible={basisAltProps.vectorVisible}
 />
 
 <!-- Basis vectors -->
@@ -2028,50 +2156,21 @@
 	visible={basisAltProps.zVisible}
 />
 
-<T.Group renderOrder={-2}>
+<!-- FIXME: Change blending mode of grid? -->
+<T.Group renderOrder={-3}>
 	<Grid {...gridProps} axes={"xyz"} />
-
-	<!-- Grid for 3D -->
-	<!-- <Grid
-		{...grid3dProps}
-		position.z={gridSectionSize * 0}
-		position.y={gridSectionSize}
-		axes={"xzy"}
-		visible={$show3d}
-	/>
-	<Grid
-		{...grid3dProps}
-		position.z={gridSectionSize * 0}
-		position.x={-gridSectionSize}
-		axes={"zyx"}
-		visible={$show3d}
-	/> -->
-	<!-- <Grid
-		position.z={gridSectionSize * 0}
-		position.y={gridSectionSize}
-		axes={"xzy"}
-		{...gridProps}
-		fadeDistance={altFadeDistance}
-		fadeStrength={altFadeStrength}
-		visible={$show3d}
-	/>
-	<Grid
-		position.z={gridSectionSize * 0}
-		position.x={-gridSectionSize}
-		axes={"zyx"}
-		{...gridProps}
-		fadeDistance={altFadeDistance}
-		fadeStrength={altFadeStrength}
-		visible={$show3d}
-	/> -->
 </T.Group>
 
 <!-- Transformed elements -->
-<T.Group renderOrder={-1} matrix={$matrixTransform} matrixAutoUpdate={false}>
+<!-- TODO: Overlay another grid in the hero for a cool effect? -->
+<T.Group renderOrder={-2} matrix={$matrixTransform} matrixAutoUpdate={false}>
 	<!-- Grids -->
 	<!-- FIXME: Don't do infinite grid? A bit confusing -->
 
 	<Grid {...transformedGridProps} axes={"xyz"} />
+</T.Group>
+
+<T.Group renderOrder={-4} matrix={$matrixTransform} matrixAutoUpdate={false}>
 	<!-- 3d grid -->
 	<Grid
 		axes={"xzy"}
@@ -2085,22 +2184,33 @@
 		position.x={-gridSectionSize}
 		{...grid3dProps}
 	/>
-
 </T.Group>
-<!-- <T.Group renderOrder={1} matrix={$matrixTransform} matrixAutoUpdate={false}>
-	<Grid
-		axes={"xzy"}
-		position.z={gridSectionSize * 0}
-		position.y={gridSectionSize}
-		{...grid3dProps}
-	/>
-	<Grid
-		axes={"zyx"}
-		position.z={gridSectionSize * 0}
-		position.x={-gridSectionSize}
-		{...grid3dProps}
-	/>
-</T.Group> -->
+
+<!-- Maxwell the carryable cat -->
+<T.Group renderOrder={-4} matrix={$matrixTransform} matrixAutoUpdate={false}>
+	{#await useGltf("/maxwell.glb") then model}
+		<T
+			is={model.scene}
+			position.z={0}
+			rotation={[Math.PI / 2, 0, 0]}
+			{...modelProps}
+		/>
+	{/await}
+
+	<T.Mesh {...imageProps}>
+		<T.PlaneGeometry args={[6, 6]} />
+		<!-- {#await useTexture("/maxwell.jpg") then texture}
+			<T.MeshBasicMaterial map={texture}>
+				<T.DoubleSide attach="side" />
+			</T.MeshBasicMaterial>
+		{/await} -->
+		{#await map then value}
+			<T.MeshBasicMaterial map={value}>
+				<T.DoubleSide attach="side" />
+			</T.MeshBasicMaterial>
+		{/await}
+	</T.Mesh>
+</T.Group>
 
 <!-- Add a plane -->
 <!-- <T.Mesh position.z={-0.02}>
@@ -2137,7 +2247,7 @@
 	rotation={[-Math.PI / 2, 0, 0]}
 	t={grid3dProps.t}
 /> -->
-<!-- <Plane
+<Plane
 	view={transformedView}
 	dim={planeDim}
 	position={[-planeDim / 2, -planeDim / 2, -planeDim / 2]}
@@ -2150,5 +2260,7 @@
 	position={[-planeDim / 2, planeDim / 2, planeDim / 2]}
 	rotation={[-Math.PI / 2, 0, 0]}
 	t={grid3dProps.t}
-/> -->
+/>
+
+<!-- FIXME: Has weird artifacts for some reason? -->
 <!-- <Gridlines view={transformedView} t={grid3dProps.t} /> -->

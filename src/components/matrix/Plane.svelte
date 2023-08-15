@@ -35,16 +35,14 @@
 		.surface({
 			fill: true,
 			width: 2,
-			zBias: 1,
-			// color: colorB3,
-			color: "black",
-			opacity: 0.5,
+			color: colorB3,
+			// color: "black",
+			opacity: 0.95,
 			// opacity: 0,
       closed: true,
       // shaded: true,
       width: 1,
-      // zIndex: 1,
-      zBias: -0.5
+      zBias: -5,
 		});
 
 	$: transition.set({ enter: t });

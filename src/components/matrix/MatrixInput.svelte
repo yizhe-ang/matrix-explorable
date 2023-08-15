@@ -23,7 +23,7 @@
 
 	$: dims = $show3d ? 3 : 2;
 
-	const spinnerClass = `text-2xl w-20 text-right py-2 px-2 bg-base-200`;
+	const spinnerClass = `number-spinner`;
 
 	// Compute matrix-vector multiplication
 	let outputVector;
@@ -64,9 +64,9 @@
 			<div
 				class="container font-serif grid grid-cols-3 grid-rows-3 px-3 bg-base-200"
 			>
-				{#each indices3d as idx, i}
+				{#each indices3d as idx, i (i)}
 					{@const textColor = colors[i % 3]}
-					<div class="">
+					<div in:fly={{ x: -20 }}>
 						<NumberSpinner
 							bind:value={$endMatrix[idx]}
 							step={0.1}
@@ -82,9 +82,9 @@
 			<div
 				class="container font-serif grid grid-cols-2 grid-rows-2 px-3 bg-base-200"
 			>
-				{#each indices2d as idx, i}
+				{#each indices2d as idx, i (i)}
 					{@const textColor = colors[i % 2]}
-					<div class="">
+					<div in:fly={{ x: -20 }}>
 						<NumberSpinner
 							bind:value={$endMatrix[idx]}
 							step={0.1}
@@ -101,14 +101,17 @@
 
 	{#if $inputVectorToggled}
 		<!-- Input Vector -->
-		<div transition:fly={transitionProps} class="shadow-lg shadow-neutral-content/20">
+		<div
+			transition:fly={transitionProps}
+			class="shadow-lg shadow-neutral-content/20"
+		>
 			<div
 				class="font-serif grid grid-cols-1 grid-rows-2 px-3 bg-base-200"
 				style:box-shadow="inset 0px 0px 0px 3px {colorVector}"
 			>
 				{#each $show3d ? [3, 4, 5] : [3, 4] as idx, i}
 					{@const textColor = colors[i % 3]}
-					<div class="">
+					<div in:fly={{ x: -20 }}>
 						<NumberSpinner
 							bind:value={$vectorCoordsInput[i]}
 							step={0.1}
@@ -134,7 +137,7 @@
 			<div
 				class="container font-serif grid grid-cols-1 grid-rows-2 px-3 bg-base-200"
 			>
-				{#each outputVector as coord}
+				{#each outputVector as coord, i (i)}
 					<!-- <div class="">
 					<NumberSpinner
 						bind:value={$vectorCoordsInput[i]}
@@ -145,7 +148,7 @@
 						mainStyle={`color: ${colorVector};`}
 					/>
 				</div> -->
-					<div class={spinnerClass} style:color={colorVector}>
+					<div class="number" style:color={colorVector} in:fly={{ x: -20 }}>
 						{coord.toFixed(1)}
 					</div>
 				{/each}
@@ -157,5 +160,21 @@
 <style lang="postcss">
 	.container {
 		box-shadow: inset 0px 0px 0px 3px white;
+	}
+
+	.number {
+		@apply w-20 bg-base-200 px-2 py-2 text-right text-2xl;
+	}
+
+	:global(.number-spinner) {
+		@apply w-20 bg-base-200 px-2 py-2 text-right text-2xl transition-all;
+
+		&:hover {
+			@apply bg-base-100;
+		}
+
+		&:focus {
+			@apply bg-base-100 outline-none ring-1 ring-inset ring-info;
+		}
 	}
 </style>

@@ -1,5 +1,4 @@
 <script>
-	import Alert from "./Alert.svelte";
 	import Tex from "./Tex.svelte";
 	import {
 		matrixVectorFormula,
@@ -141,7 +140,7 @@
 			>. Visually, you'll notice that:
 		</P>
 
-		<ul>
+		<ul class="ml-4">
 			<li>
 				All lines in the original space remain as lines, without getting curved,
 				and
@@ -157,40 +156,44 @@
 		<Spacer />
 
 		<!-- TODO: Have a kind of recap at the end -->
-		<Insight>
-			<ul>
-				<li>
-					Any vector can be expressed as the addition of scaled basis vectors;
-					or a linear combination of basis vectors.
-				</li>
-				<li>
-					A matrix can be viewed as a way to package information about a linear
-					transformation. The columns of a matrix represent where the new basis
-					vectors land after the transformation.
-				</li>
-				<li>
-					Matrix-vector multiplication is a way to compute where a given vector
-					lands after the transformation defined by a matrix.
-				</li>
-			</ul>
-		</Insight>
+		<div>
+			<Insight>
+				<ul>
+					<li>
+						Any vector can be expressed as the addition of scaled basis vectors;
+						or a linear combination of basis vectors.
+					</li>
+					<li>
+						A matrix can be viewed as a way to package information about a
+						linear transformation. The columns of a matrix represent where the
+						new basis vectors land after the transformation.
+					</li>
+					<li>
+						Matrix-vector multiplication is a way to compute where a given
+						vector lands after the transformation defined by a matrix.
+					</li>
+				</ul>
+			</Insight>
+		</div>
 
 		<Spacer />
 
-		<P id="st-8">
-			With our understanding so far, try to tinker about and figure out what
-			kinds of transformations are possible with matrices! What basis vectors
-			should you choose in order to scale space uniformly in all directions? How
-			about a reflection, rotation or a shear?
-		</P>
-		<Action>
-			<!-- TODO: Allow users to grab the basis vectors too? -->
-			<ul>
-				<li>Toggle the numbers in the matrix...</li>
-				<li>Drag the scrubber...</li>
-				<li>Pan and zoom in / out the canvas</li>
-			</ul>
-		</Action>
+		<div class="h-[80vh] grid place-content-center">
+			<P id="st-8">
+				With our understanding so far, try to tinker about and figure out what
+				kinds of transformations are possible with matrices! What basis vectors
+				should you choose in order to scale space uniformly in all directions?
+				How about a reflection, rotation or a shear?
+			</P>
+			<Action>
+				<!-- TODO: Allow users to grab the basis vectors too? -->
+				<ul>
+					<li>Toggle the numbers in the matrix...</li>
+					<li>Drag the scrubber...</li>
+					<li>Pan and zoom in / out the canvas</li>
+				</ul>
+			</Action>
+		</div>
 	</Section>
 
 	<!-- TODO: How about 3D? -->
@@ -238,21 +241,29 @@
 			Go forth and improve your intuition of matrix transformations in 3D! Now
 			you have a whole additional dimension to fidget around with.
 		</p>
-		<Action>
-			<ul>
-				<li>Right click and drag to rotate...</li>
-			</ul>
-		</Action>
+		<div>
+			<Action>
+				<ul>
+					<li>Right click and drag to rotate...</li>
+				</ul>
+			</Action>
+		</div>
 
-    <p>
-      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id repellendus in incidunt impedit quos voluptatem itaque saepe ab alias, amet iste, recusandae ratione est veniam corrupti neque ea! Quasi, quaerat.
-    </p>
-    <p>
-      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id repellendus in incidunt impedit quos voluptatem itaque saepe ab alias, amet iste, recusandae ratione est veniam corrupti neque ea! Quasi, quaerat.
-    </p>
-    <p>
-      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id repellendus in incidunt impedit quos voluptatem itaque saepe ab alias, amet iste, recusandae ratione est veniam corrupti neque ea! Quasi, quaerat.
-    </p>
+		<p>
+			Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id repellendus
+			in incidunt impedit quos voluptatem itaque saepe ab alias, amet iste,
+			recusandae ratione est veniam corrupti neque ea! Quasi, quaerat.
+		</p>
+		<p>
+			Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id repellendus
+			in incidunt impedit quos voluptatem itaque saepe ab alias, amet iste,
+			recusandae ratione est veniam corrupti neque ea! Quasi, quaerat.
+		</p>
+		<p>
+			Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id repellendus
+			in incidunt impedit quos voluptatem itaque saepe ab alias, amet iste,
+			recusandae ratione est veniam corrupti neque ea! Quasi, quaerat.
+		</p>
 	</Section>
 
 	<!-- TODO: Composition of matrices -->

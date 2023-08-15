@@ -37,8 +37,12 @@
 		Scale3d,
 		Square,
 		Codesandbox,
-		MoveUpRight
+		MoveUpRight,
+		Cat,
+		Image
 	} from "lucide-svelte";
+	import { flip } from "svelte/animate";
+	import { fade, fly, slide } from "svelte/transition";
 
 	const size = 30;
 
@@ -113,7 +117,12 @@
 
 	<!-- Toggle 3d grid -->
 	{#if $show3d}
-		<button class="item" data-tip="Show 3D Grid" use:melt={$grid3dToggle}>
+		<button
+			class="item"
+			data-tip="Show 3D Grid"
+			use:melt={$grid3dToggle}
+			in:fly={{ x: -20 }}
+		>
 			<Codesandbox {size} />
 		</button>
 	{/if}
@@ -130,6 +139,7 @@
 				class="item"
 				use:melt={$dataItem("3d points")}
 				data-tip="Show 3D Points"
+        in:fly={{ x: -20 }}
 			>
 				<!-- <ScatterChart {size} /> -->
 				<Scale3d {size} />
@@ -143,8 +153,24 @@
 				class="item"
 				use:melt={$dataItem("3d planes")}
 				data-tip="Show 3D Planes"
+        in:fly={{ x: -20 }}
 			>
 				<Layers {size} />
+			</button>
+		{/if}
+		<!-- 2d maxwell -->
+		<button class="item" use:melt={$dataItem("image")} data-tip="Show Image">
+			<Image {size} />
+		</button>
+		<!-- 3d maxwell -->
+		{#if $show3d}
+			<button
+				class="item"
+				use:melt={$dataItem("model")}
+				data-tip="Show 3D Model"
+        in:fly={{ x: -20 }}
+			>
+				<Cat {size} />
 			</button>
 		{/if}
 	</div>
@@ -152,7 +178,7 @@
 
 <style lang="postcss">
 	.item {
-		@apply tooltip tooltip-bottom tooltip-info rounded-md p-2 transition-all;
+		@apply tooltip tooltip-info tooltip-bottom rounded-md p-2 transition-all;
 
 		&:hover {
 			@apply bg-base-100;

@@ -38,10 +38,10 @@
 		}}
 	>
 		<div class="swap-on">
-			<Play />
+			<Play fill="black" />
 		</div>
 		<div class="swap-off">
-			<Pause />
+			<Pause fill="black" />
 		</div>
 	</label>
 

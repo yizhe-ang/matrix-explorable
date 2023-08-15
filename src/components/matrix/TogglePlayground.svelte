@@ -53,8 +53,6 @@
 	onMount(() => {
 		mounted = true;
 	});
-
-	$: console.log($expandPlayground);
 </script>
 
 <button

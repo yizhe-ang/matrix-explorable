@@ -4,7 +4,12 @@ export default {
 	theme: {
 		fontFamily: {
 			serif: ["Old Standard TT", "serif"],
-			sans: ["Manrope Variable", "sans-serif"]
+			sans: ["Chivo Variable", "sans-serif"],
+			sansAlt: ["Bungee Hairline", "sans-serif"],
+			// display: ["Bungee Shade", "sans-serif"],
+			display: ["Bungee Outline", "sans-serif"],
+			displayAlt: ["Bungee Hairline", "sans-serif"],
+			// sans: ["Manrope Variable", "sans-serif"]
 			// sans: ["Barlow", "sans-serif"]
 			// sans: ["sans-serif"]
 		},
