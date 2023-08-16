@@ -17,6 +17,9 @@
 	import Action from "./Action.svelte";
 	import Section from "./Section.svelte";
 	import B from "./B.svelte";
+	import { Grab } from "lucide-svelte";
+	import ActionIcon from "./ActionIcon.svelte";
+	import InteractionsList from "./InteractionsList.svelte";
 </script>
 
 <!-- FIXME: max-w-prose -->
@@ -30,6 +33,8 @@
 > -->
 	<!-- <Title /> -->
 
+	<div id="title-spacer" class="h-screen" />
+
 	<Intro />
 
 	<!-- <section id="section-1" class="prose prose-xl [&>*]:px-10 [&>*]:rounded-xl"> -->
@@ -38,7 +43,8 @@
 		<!-- <h2>Matrix as Linear Transformations</h2> -->
 
 		<p>
-			A vector multiplied by a matrix returns a new vector — it <B>transforms</B
+			A vector multiplied by a matrix returns yet another vector — it <B
+				>transforms</B
 			> a vector into a new vector. Let's visualize this transformation with an example.
 		</p>
 
@@ -95,17 +101,18 @@
 		<p>
 			Did you notice anything similar with the expression for matrix-vector
 			multiplication? A vector multiplied with a matrix can also be expressed as
-			a linear combination; this time with the standard basis vectors replaced
-			by the columns of the matrix.
+			a linear combination; only this time the standard basis vectors are
+			replaced by the columns of the matrix.
 		</p>
 
 		<Tex expr={matrixVectorFormulaEg} display color />
 
 		<P id="st-4">
 			In other words, a matrix can be viewed as a way of packaging information
-			about our new basis vectors. This is the core insight: a matrix transforms
-			a vector by <B>transforming the original basis vectors</B>; creating an
-			entirely new coordinate system.
+			about our the new basis vectors that we want. This is the core insight: a
+			matrix transforms a vector by <B
+				>transforming the original basis vectors</B
+			>; creating an entirely new coordinate system.
 		</P>
 
 		<P id="st-5">
@@ -116,10 +123,10 @@
 		<Spacer />
 
 		<p>
-			In that vein, a matrix transformation appears to warp and transform space
-			itself. In order to get a more visceral feel of this, let's visualize what
-			happens to not just a single vector, but a sample of vectors in space,
-			each multiplied by the same matrix.
+			In that vein, a matrix transformation appears to warp and transform space.
+			To get a visceral feel of this, let's visualize what happens to not just a
+			single vector, but <B>a sample of vectors in space</B>, each multiplied by
+			the same matrix.
 		</p>
 
 		<P id="st-6">
@@ -140,7 +147,7 @@
 			>. Visually, you'll notice that:
 		</P>
 
-		<ul class="ml-4">
+		<ul class="ml-4 marker:text-info marker:text-2xl">
 			<li>
 				All lines in the original space remain as lines, without getting curved,
 				and
@@ -157,16 +164,19 @@
 
 		<!-- TODO: Have a kind of recap at the end -->
 		<div>
+			<Tex expr={matrixVectorFormula} display />
 			<Insight>
 				<ul>
 					<li>
-						Any vector can be expressed as the addition of scaled basis vectors;
-						or a linear combination of basis vectors.
+						Any vector can be expressed as the addition of scaled basis vectors,
+						i.e.
+						<B>a linear combination of basis vectors</B>.
 					</li>
 					<li>
-						A matrix can be viewed as a way to package information about a
-						linear transformation. The columns of a matrix represent where the
-						new basis vectors land after the transformation.
+						A matrix can be viewed as a way to <B
+							>package information about a linear transformation</B
+						>. The columns of a matrix represent where the new basis vectors
+						land after the transformation.
 					</li>
 					<li>
 						Matrix-vector multiplication is a way to compute where a given
@@ -178,19 +188,19 @@
 
 		<Spacer />
 
-		<div class="h-[80vh] grid place-content-center">
+		<div class="">
 			<P id="st-8">
 				With our understanding so far, try to tinker about and figure out what
-				kinds of transformations are possible with matrices! What basis vectors
-				should you choose in order to scale space uniformly in all directions?
-				How about a reflection, rotation or a shear?
+				kinds of transformations are possible with matrices!
 			</P>
+			<p>
+				What basis vectors should you choose in order to scale space uniformly
+				in all directions? How about a reflection, rotation or a shear?
+			</p>
 			<Action>
 				<!-- TODO: Allow users to grab the basis vectors too? -->
-				<ul>
-					<li>Toggle the numbers in the matrix...</li>
-					<li>Drag the scrubber...</li>
-					<li>Pan and zoom in / out the canvas</li>
+				<ul class="list-none">
+					<InteractionsList />
 				</ul>
 			</Action>
 		</div>
@@ -198,7 +208,7 @@
 
 	<!-- TODO: How about 3D? -->
 	<Section id="section-2">
-		<h2 id="test">Transformations Beyond Two-Dimensions</h2>
+		<h2>Beyond Two-Dimensions</h2>
 
 		<p>
 			So far we've only been talking about matrix transformations in
@@ -232,38 +242,36 @@
 			vectors, each scaled by the respective coordinates in the starting vector.
 		</P>
 
+		<P id="st-12">
+			From the visual examples we've seen thus far, the most obvious application
+			of matrix transformations would be that of computer graphics. In fact,
+			this is precisely how this article is built! Matrices provide a language
+			to rotate, scale and translate vectors and points and consequently entire
+			objects in 2D or 3D space.
+		</P>
+
 		<p>
 			Talk about application in computer graphics... give a concrete example
-			visually. Give other examples of applications of matrices...
+			visually. Give other examples of applications of matrices... From the
+			visual examples we've seen thus far, the most obvious application of
+			matrix transformations would be that of computer. In fact,
 		</p>
 		<Spacer />
-		<p id="st-12">
-			Go forth and improve your intuition of matrix transformations in 3D! Now
-			you have a whole additional dimension to fidget around with.
+		<p id="st-13">
+			Go forth and wrap your head around matrix transformations in 3D! Now you
+			have a whole additional dimension to fidget around with.
 		</p>
 		<div>
 			<Action>
-				<ul>
-					<li>Right click and drag to rotate...</li>
+				<ul class="list-none">
+					<InteractionsList />
+					<li>
+						<ActionIcon icon={Grab} /> Right click and drag to rotate around the
+						space
+					</li>
 				</ul>
 			</Action>
 		</div>
-
-		<p>
-			Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id repellendus
-			in incidunt impedit quos voluptatem itaque saepe ab alias, amet iste,
-			recusandae ratione est veniam corrupti neque ea! Quasi, quaerat.
-		</p>
-		<p>
-			Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id repellendus
-			in incidunt impedit quos voluptatem itaque saepe ab alias, amet iste,
-			recusandae ratione est veniam corrupti neque ea! Quasi, quaerat.
-		</p>
-		<p>
-			Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id repellendus
-			in incidunt impedit quos voluptatem itaque saepe ab alias, amet iste,
-			recusandae ratione est veniam corrupti neque ea! Quasi, quaerat.
-		</p>
 	</Section>
 
 	<!-- TODO: Composition of matrices -->

@@ -85,11 +85,10 @@
 		// FIXME: Have to set size and pixel ratio?
 		composer.addPass(new RenderPass(scene, camera));
 
-		// FIXME: Keep afterimage for some animations?
-		// FIXME: Why does afterimage make the colors brighter?
+    // FIXME: Disable this if not needed?
 		composer.addPass(afterImagePass);
 
-		composer.addPass(rgbShiftPass);
+		// composer.addPass(rgbShiftPass);
 
 		// const halfTonePass = new HalftonePass(halfToneParams);
 		// composer.addPass(halfTonePass);
@@ -100,8 +99,8 @@
 		// const outputPass = new OutputPass();
 		// composer.addPass(outputPass);
 
-		const smaaPass = new SMAAPass();
-		composer.addPass(smaaPass);
+		// const smaaPass = new SMAAPass();
+		// composer.addPass(smaaPass);
 	}
 
 	$: setupEffectComposer($camera);
@@ -114,7 +113,7 @@
 	useFrame(({}, delta) => {
 		// TODO: Camera auto-rotate
 		if ($cameraAutoRotate) {
-			$cameraControls.azimuthAngle += 10 * delta * THREE.MathUtils.DEG2RAD;
+			$cameraControls.azimuthAngle += 5 * delta * THREE.MathUtils.DEG2RAD;
 			// Normalize
 			$cameraControls.azimuthAngle =
 				$cameraControls.azimuthAngle % (2 * Math.PI);
@@ -135,6 +134,28 @@
 	});
 
 	function animate() {
+    gsap
+			.timeline({
+				scrollTrigger: {
+					trigger: "#title-spacer",
+					start: "top top",
+					end: "bottom bottom",
+					scrub: 1
+				}
+			})
+      .fromTo(
+        $cameraControls,
+        {
+          distance: 15,
+					polarAngle: Math.PI * 0.35,
+					// azimuthAngle: Math.PI * 0.3
+        }, {
+					polarAngle: 0,
+					azimuthAngle: 0
+        }
+      )
+
+
 		gsap
 			.timeline({
 				scrollTrigger: {

@@ -225,7 +225,7 @@ const c7 = colorTex(eg3dMatrixZ[0], colorZ);
 const c8 = colorTex(eg3dMatrixZ[1], colorZ);
 const c9 = colorTex(eg3dMatrixZ[2], colorZ);
 
-const eg3dMatrixTex = String.raw`\left[\begin{array}{r}
+const eg3dMatrixTex = String.raw`\left[\begin{array}{rrr}
   ${c1} & ${c4} & ${c7} \\
   ${c2} & ${c5} & ${c8} \\
   ${c3} & ${c6} & ${c9}

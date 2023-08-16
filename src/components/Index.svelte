@@ -1,28 +1,34 @@
 <script>
-	import { getContext } from "svelte";
-	import Footer from "$components/Footer.svelte";
 	import Threlte from "$components/matrix/Threlte.svelte";
 	import MatrixInput from "$components/matrix/MatrixInput.svelte";
 	import ScrubberInput from "$components/matrix/ScrubberInput.svelte";
 	import Article from "./matrix/Article.svelte";
-	import Intro from "./matrix/Intro.svelte";
 	import Title from "./matrix/Title.svelte";
 	import ToggleInput from "./matrix/ToggleInput.svelte";
-	import { Vector3 } from "three/src/math/Vector3";
 	import { debug, showPlayground } from "$stores";
 	import TogglePlayground from "./matrix/TogglePlayground.svelte";
+	import { loaded } from "$stores";
+	import { fade } from "svelte/transition";
+	import { gsap } from "$utils/gsap.js";
+	import Footer from "./matrix/Footer.svelte";
 
-	// const copy = getContext("copy");
-	// const data = getContext("data");
+  $: if ($loaded) {
+    gsap.from('canvas', {
+      opacity: 0,
+      duration: 1
+    })
+  }
 </script>
 
 {#if !$debug}
 	<Title />
 {/if}
 
+<!-- TODO: Some fancy gradient? -->
+<!-- <div id="loading-overlay" class="fixed inset-0 bg-base-300" /> -->
+
 <!-- TODO: Update width? -->
 <article class="relative flex bg-base-300 w-[calc(100%+65ch)]">
-	<!-- FIXME: For some reason no pointer events around the origin -->
 	<div
 		id="canvas-wrapper"
 		class="sticky top-0 flex-1 min-w-0 h-screen bg-base-300 {!$debug

@@ -90,9 +90,11 @@
 	</button>
 
 	<!-- Toggle 3d mode -->
+	{#if $show3d}
 	<button class="item" data-tip="3d View" use:melt={$threeDToggle}>
 		<Move3d {size} />
 	</button>
+  {/if}
 
 	<div class="separator" use:melt={$separator} />
 

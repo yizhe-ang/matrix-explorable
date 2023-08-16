@@ -1,8 +1,40 @@
 <script>
 	import { matrixVectorFormula, matrixVectorEg } from "$data/tex";
+	import { onMount } from "svelte";
 	import B from "./B.svelte";
 	import Spacer from "./Spacer.svelte";
 	import Tex from "./Tex.svelte";
+	import { gsap } from "$utils/gsap.js";
+
+	onMount(() => {
+		gsap
+			.timeline({
+				scrollTrigger: {
+					trigger: "#tex-1",
+					start: "top 55%",
+				}
+			})
+			.from("#tex-1 span", {
+				opacity: 0,
+				stagger: {
+					amount: 0.7
+				}
+			});
+
+		gsap
+			.timeline({
+				scrollTrigger: {
+					trigger: "#tex-2",
+					start: "top 55%",
+				}
+			})
+			.from("#tex-2 span", {
+				opacity: 0,
+				stagger: {
+					amount: 0.7
+				}
+			});
+	});
 </script>
 
 <!-- <section class="prose prose-xl translate-x-[calc(-50vw+32.5ch-32.5ch)]"> -->
@@ -12,15 +44,17 @@
 	<!-- <section class="prose prose-xl"> -->
 	<p>What do <B>matrices</B> mean to you?</p>
 
-  <Spacer />
+	<Spacer />
 
 	<p>
 		Why do we need a way to represent an array of rows and columns of numbers,
 		and to execute computations and operations between them?
 	</p>
 
-  <!-- TODO: Animate in these math expressions -->
-	<Tex expr={matrixVectorEg} display />
+	<!-- TODO: Animate in these math expressions -->
+	<div id="tex-1">
+		<Tex expr={matrixVectorEg} display />
+	</div>
 
 	<p>
 		In school, you may recall reluctantly performing drill after drills of
@@ -28,14 +62,16 @@
 		memorize several inane formulas.
 	</p>
 
-	<Tex expr={matrixVectorFormula} display />
+	<div id="tex-2">
+		<Tex expr={matrixVectorFormula} display />
+	</div>
 
-  <Spacer />
+	<Spacer />
 
 	<!-- <p>Is there a deeper, and visual intuition behind what matrices represent?</p> -->
 	<p>
 		Let's explore a deeper, and a more <B>visual</B> intuition behind what matrices
 		represent.
 	</p>
-  <!-- TODO: Cute, arcade like emoticon here -->
+	<!-- TODO: Cute, arcade like emoticon here -->
 </section>

@@ -1,12 +1,15 @@
 <script>
-	import { titleMounted, showHero, endMatrix } from "$stores";
-	import { egEndMatrix } from "$data/variables";
+	import { colorVector } from "$data/variables";
+	import { titleMounted, showHero, endMatrix, loaded } from "$stores";
 	import { playgroundSt } from "$stores";
 	import { gsap } from "$utils/gsap.js";
 	import { onMount } from "svelte";
+  import { RingLoader } from "svelte-loading-spinners"
 
 	// TODO: Colorful gradient shadows
 	// TODO: Get inspiration from decoration
+
+  // TODO: To scroll down indicator
 
 	let mounted = false;
 
@@ -55,25 +58,28 @@
 			A Visual Explorable <br /> of Matrix Transformations
 		</div>
 
-		<!-- <a href="#st-12">Skip to Playground!</a> -->
-		<button
-			class="playground-btn btn font-sansAlt text-xl backdrop-blur-sm bg-white/10 hover:bg-white/20 border-0"
-			on:click={() => {
-				// const target = document.querySelector('#st-12')
+		{#if $loaded}
+			<button
+				class="playground-btn btn font-sansAlt text-xl backdrop-blur-sm bg-white/10 hover:bg-white/20 border-0"
+				on:click={() => {
+					// const target = document.querySelector('#st-12')
 
-				// target?.scrollIntoView()
+					// target?.scrollIntoView()
 
-				// gsap.to(window, {
-				// 	scrollTo: "#st-12"
-				// });
+					// gsap.to(window, {
+					// 	scrollTo: "#st-12"
+					// });
 
-				gsap.to(window, {
-					scrollTo: $playgroundSt.end
-				});
-			}}
-		>
-			Skip to Playground!
-		</button>
+					gsap.to(window, {
+						scrollTo: $playgroundSt.end
+					});
+				}}
+			>
+				Skip to Playground!
+			</button>
+		{:else}
+      <RingLoader color={colorVector} />
+		{/if}
 	</div>
 </div>
 
@@ -87,20 +93,21 @@
 			right: 0;
 			bottom: 0;
 			left: 0;
-			background: linear-gradient(-45deg, #fff000 0%, #ed008c 100%);
+			/* background: linear-gradient(-45deg, #fff000 0%, #ed008c 100%); */
+			background: linear-gradient(-45deg, #fefedf 0%, #c493ff 100%);
 			transform: translate3d(0px, 20px, 0) scale(0.95);
 			filter: blur(20px);
 			/* opacity: var(0.7); */
-			opacity: 0.7;
+			opacity: 0.6;
 			transition: opacity 0.3s;
 			border-radius: inherit;
 		}
 
-    &:hover {
-      &:before {
-        opacity: 1;
-      }
-    }
+		&:hover {
+			&:before {
+				opacity: 1;
+			}
+		}
 		/*
 * Prevents issues when the parent creates a
 * stacking context. (For example, using the transform

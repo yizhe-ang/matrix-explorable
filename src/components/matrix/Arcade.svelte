@@ -76,7 +76,7 @@
 	import Hero from "./Hero.svelte";
 	import { spring } from "svelte/motion";
 
-  $: console.log($vectorCoordsInput)
+	$: console.log($vectorCoordsInput);
 
 	export let mathbox;
 
@@ -210,9 +210,10 @@
 				fadeStrength: 4
 		  }
 		: {
-				fadeDistance: 50,
-				// fadeStrength: 5
-				fadeStrength: 9
+				// fadeDistance: 50,
+				// fadeStrength: 9
+				fadeDistance: 100,
+				fadeStrength: 8
 		  };
 
 	let gridProps = {
@@ -234,6 +235,8 @@
 		cellColor: colorGridAlt,
 		sectionColor: colorGrid,
 		gridSize: [10, 10],
+		cellThickness: 0,
+		sectionThickness: 0,
 		t: 0
 	};
 
@@ -1582,7 +1585,7 @@
 						// basisAltProps.vectorVisible = true;
 
 						// $vectorCoordsInput = egVector;
-            console.log(egVector)
+						console.log(egVector);
 						$vectorCoordsInput[0] = egVector[0];
 						$vectorCoordsInput[1] = egVector[1];
 						$vectorCoordsInput[2] = 0;
@@ -1936,12 +1939,45 @@
 		// 	)
 		// 	.to({}, { duration: delay });
 
+		// Maxwell the carryable cat
+		gsap
+			.timeline({
+				...timelineProps,
+				scrollTrigger: {
+					...stProps,
+					trigger: "#st-12",
+					end: `+=${scrollUnit * 1}`,
+					onLeave: () => {
+						stProps.onLeave();
+
+						$dataToggled = "model";
+					},
+					onLeaveBack: () => {
+						stProps.onLeaveBack();
+
+						$dataToggled = undefined;
+					}
+				}
+			})
+			.to(modelProps, {
+				scale: 0.25,
+				onUpdate: function () {
+					modelProps = modelProps;
+				}
+			})
+			.to(
+				{},
+				{
+					duration: delay
+				}
+			);
+
 		// Show playground
 		const playgroundTl = gsap
 			.timeline({
 				scrollTrigger: {
 					...stPropsAlt,
-					trigger: "#st-12",
+					trigger: "#st-13",
 					start: "top center",
 					onEnter: () => {
 						$cameraAutoRotate = false;
@@ -2034,6 +2070,43 @@
 			);
 
 		$playgroundSt = playgroundTl.scrollTrigger;
+
+		ScrollTrigger.create({
+			trigger: "#article",
+			start: "bottom bottom",
+			onEnter: () => {
+				console.log("enter");
+				$showPlayground = false;
+			},
+			onLeaveBack: () => {
+				$showPlayground = true;
+			}
+		});
+
+		gsap
+			.timeline({
+				scrollTrigger: {
+					...stPropsAlt,
+					trigger: "#article",
+					start: "bottom bottom",
+					onEnter: () => {
+						$showPlayground = false;
+					},
+					onLeaveBack: () => {
+						$showPlayground = true;
+					}
+				},
+				timelinePropsAlt
+			})
+			.to(
+				"#inputs",
+				{
+					autoAlpha: 0,
+					x: -40,
+					duration
+				},
+				"step-1"
+			);
 	}
 
 	function updateStProgress(progress) {

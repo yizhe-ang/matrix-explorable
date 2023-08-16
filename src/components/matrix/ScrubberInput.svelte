@@ -30,7 +30,7 @@
 	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 	<!-- svelte-ignore a11y-label-has-associated-control -->
 	<label
-		class="swap swap-rotate"
+		class="swap swap-rotate drop-shadow-lg shadow-neutral-content/20"
 		class:swap-active={$playToggle}
 		on:click={() => {
 			togglePlay($matrixTween);

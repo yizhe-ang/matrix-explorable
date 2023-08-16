@@ -12,10 +12,10 @@
 
 	const { camera } = useThrelte();
 
-	const xBasis = new Vector3(1, 0, 0);
+	let xBasis = new Vector3(1, 0, 0);
   // FIXME: Does this have to be a spring too?
   const xBasisSpring = spring([1, 0, 0])
-  // xBasisSpring.stiffness = 0.1
+  xBasisSpring.stiffness = 0.1
   xBasisSpring.damping = 1.5
 
 	let width;
@@ -25,6 +25,7 @@
   // TODO: Make the hero 3d?
 
   $: onChange($xBasisSpring)
+  // $: onChange(xBasis)
   function onChange(xBasis) {
     $heroMatrix = [
       xBasis[0], 0, 0, 0,
@@ -32,6 +33,12 @@
       0, 0, 1, 0,
       0, 0, 0, 1
     ]
+    // $heroMatrix = [
+    //   xBasis.x, 0, 0, 0,
+    //   xBasis.y, 1, 0, 0,
+    //   0, 0, 1, 0,
+    //   0, 0, 0, 1
+    // ]
   }
 </script>
 
@@ -45,8 +52,9 @@
     // FIXME:
 		xBasis.set(((e.clientX / width) * 2 - 1) * 1, (-(e.clientY / height) * 2 + 1) * 1, 0);
 
-		xBasis.unproject($camera);
+		// xBasis.unproject($camera);
 
     $xBasisSpring = [xBasis.x, xBasis.y, xBasis.z]
+    // xBasis = xBasis
 	}}
 />

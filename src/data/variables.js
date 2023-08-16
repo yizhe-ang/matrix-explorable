@@ -82,6 +82,9 @@ export const colorN = "hsl(230, 15%, 30%)";
 export const colorNc = "hsl(232, 7%, 85%)";
 export const colorNf = "hsl(230, 15%, 23%)";
 
+export const colorIn = "hsl(191, 97%, 77%)"
+
+
 console.log(dracula);
 
 function colorToHex(color) {

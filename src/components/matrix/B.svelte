@@ -1,3 +1,3 @@
-<b class="font-extrabold text-base-content">
+<b class="font-bold text-base-content">
 	<slot />
 </b>
