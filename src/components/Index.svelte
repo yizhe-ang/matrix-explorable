@@ -16,7 +16,7 @@
 
 	$: if ($mq.lg && $loaded) {
 		gsap.to("#loading-overlay", {
-			opacity: 0,
+			autoAlpha: 0,
 			duration: 2
 		});
 
