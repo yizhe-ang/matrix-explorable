@@ -2,6 +2,7 @@ import { browser } from "$app/environment";
 import { readable } from "svelte/store";
 
 const queries = {
+  "lg": "(min-width: 1024px)",
 	"20rem": "(min-width: 20rem)",
 	"30rem": "(min-width: 30rem)",
 	"40rem": "(min-width: 40rem)",

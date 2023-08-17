@@ -16,7 +16,9 @@
 }
 
 body {
-  overflow: hidden;
+  /* overflow: hidden; */
+
+  @apply overflow-auto lg:overflow-hidden;
 }
 
 ul {

@@ -21,6 +21,7 @@
 		transformedGridToggled,
 		showHero
 	} from "$stores";
+	import mq from "$stores/mq";
 	import * as THREE from "three";
 	import CameraControls from "camera-controls";
 	import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
@@ -127,7 +128,7 @@
 		context.frame();
 	});
 
-	$: if (mounted) animate();
+	$: if (mounted && $mq.lg) animate();
 
 	onMount(() => {
 		// FIXME: Set size responsively?

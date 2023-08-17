@@ -566,6 +566,7 @@
 		scrub: 1,
 		pinSpacing: true,
 		toggleClass: "active",
+    invalidateOnRefresh: true,
 		onEnter: function () {
 			animateInStProgress();
 		},
@@ -2153,6 +2154,8 @@
 			);
 
 		$playgroundSt = test.scrollTrigger;
+
+    // ScrollTrigger.refresh()
 	}
 
 	function updateStProgress(progress) {

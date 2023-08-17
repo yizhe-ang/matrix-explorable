@@ -8,23 +8,23 @@
 	import { debug, showPlayground } from "$stores";
 	import TogglePlayground from "./matrix/TogglePlayground.svelte";
 	import { loaded } from "$stores";
-	import { fade } from "svelte/transition";
 	import { gsap, ScrollTrigger } from "$utils/gsap.js";
 	import Footer from "./matrix/Footer.svelte";
+	import mq from "$stores/mq.js";
 
-  $: if ($loaded) {
-    gsap.from('canvas', {
-      opacity: 0,
-      duration: 2
-    })
+	$: if ($mq.lg && $loaded) {
+		gsap.from("canvas", {
+			opacity: 0,
+			duration: 2
+		});
 
-    gsap.set('body', {
-      overflowY: "visible",
-      overflowX: "hidden"
-    })
+		gsap.set("body", {
+			overflowY: "visible",
+			overflowX: "hidden"
+		});
 
-    ScrollTrigger.refresh()
-  }
+		ScrollTrigger.refresh();
+	}
 </script>
 
 {#if !$debug}
@@ -35,7 +35,8 @@
 <!-- <div id="loading-overlay" class="fixed inset-0 bg-base-300" /> -->
 
 <!-- TODO: Update width? -->
-<article class="relative flex bg-base-300 w-[calc(100%+65ch)]">
+<!-- {#if $mq.lg} -->
+<article class="relative bg-base-300 w-[calc(100%+65ch)] hidden lg:flex">
 	<div
 		id="canvas-wrapper"
 		class="sticky top-0 flex-1 min-w-0 h-screen bg-base-300 {!$debug
@@ -47,6 +48,7 @@
 
 	<Article />
 </article>
+<!-- {/if} -->
 
 {#if $showPlayground}
 	<TogglePlayground />
