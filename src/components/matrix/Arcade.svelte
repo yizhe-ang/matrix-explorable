@@ -75,13 +75,13 @@
 	} from "three";
 	import Hero from "./Hero.svelte";
 	import { spring } from "svelte/motion";
+	import { base, assets } from "$app/paths";
 
 	export let mathbox;
 
-	const map = useTexture("/maxwell.jpg");
+	// const map = useTexture("/maxwell.jpg");
+	const map = useTexture(`${assets}/maxwell.jpg`);
 	$: if ($map) $map.encoding = sRGBEncoding;
-
-	const model = useGltf("/maxwell.glb");
 
 	let mounted;
 
@@ -564,7 +564,7 @@
 		scrub: 1,
 		pinSpacing: true,
 		toggleClass: "active",
-    invalidateOnRefresh: true,
+		invalidateOnRefresh: true,
 		onEnter: function () {
 			animateInStProgress();
 		},
@@ -2153,7 +2153,7 @@
 
 		$playgroundSt = test.scrollTrigger;
 
-    // ScrollTrigger.refresh()
+		// ScrollTrigger.refresh()
 	}
 
 	function updateStProgress(progress) {
@@ -2305,7 +2305,7 @@
 
 <!-- Maxwell the carryable cat -->
 <T.Group renderOrder={-4} matrix={$matrixTransform} matrixAutoUpdate={false}>
-	{#await useGltf("/maxwell.glb") then model}
+	{#await useGltf(`${assets}/maxwell.glb`) then model}
 		<T
 			is={model.scene}
 			position.z={0}

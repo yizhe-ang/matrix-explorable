@@ -54,11 +54,15 @@
 	<TogglePlayground />
 {/if}
 
-<div
+<!-- <div
 	id="inputs"
 	class="fixed left-0 top-0 flex flex-col items-start px-8 py-8 gap-7 pointer-events-none {!$debug
 		? `invisible`
 		: ``}"
+> -->
+<div
+	id="inputs"
+	class="fixed left-0 top-0 flex flex-col items-start px-8 py-8 gap-7 pointer-events-none invisible"
 >
 	<ToggleInput />
 	<ScrubberInput />
