@@ -450,6 +450,23 @@
 
 				// Remove z-coord of input vector
 				$vectorCoordsInput[2] = 0;
+				// $vectorCoordsInput = $vectorCoordsInput
+
+				// $endMatrix[2] = 0
+				// $endMatrix[6] = 0
+				// $endMatrix[8] = 0
+				// $endMatrix[9] = 0
+				// $endMatrix[10] = 1
+				gsap.to($endMatrix, {
+					endArray: initMatrix,
+					onUpdate: () => {
+						$endMatrix = $endMatrix;
+					},
+					duration
+				});
+
+				$grid3dToggled = false;
+				onGrid3dToggle(false);
 			} else {
 				basisAltProps.zVisible = true;
 			}
@@ -595,21 +612,21 @@
 				scrollTrigger: {
 					...stProps,
 					trigger: "#st-1",
-					end: `+=${scrollUnit * 1}`,
-					onEnter: () => {
-						stProps.onEnter();
+					end: `+=${scrollUnit * 1}`
+					// onEnter: () => {
+					// 	stProps.onEnter();
 
-						($gridToggled = true), ($transformedGridToggled = false);
+					// 	($gridToggled = true), ($transformedGridToggled = false);
 
-						$rgbShiftEnabled = false;
-					},
-					onLeaveBack: () => {
-						stProps.onLeaveBack();
+					// 	// $rgbShiftEnabled = false;
+					// },
+					// onLeaveBack: () => {
+					// 	stProps.onLeaveBack();
 
-						($gridToggled = false), ($transformedGridToggled = true);
+					// 	($gridToggled = false), ($transformedGridToggled = true);
 
-						$rgbShiftEnabled = true;
-					}
+					// 	// $rgbShiftEnabled = true;
+					// }
 				}
 			})
 			.to(vectorCoords, {
@@ -1197,6 +1214,12 @@
 					}
 				},
 				"step-1"
+			)
+			.to(
+				{},
+				{
+					duration: delay
+				}
 			);
 
 		// Perform linear transformation
@@ -1215,12 +1238,6 @@
 					}
 				}
 			})
-			.to(
-				{},
-				{
-					duration: delay
-				}
-			)
 			.add("step-1")
 			// Perform linear transformation
 			.to(
@@ -1414,10 +1431,8 @@
 					}
 				},
 				"step-1"
-			)
-			// Show example vector
-
-			.add("step-2");
+			);
+		// Show example vector
 
 		// Animate back
 		gsap
@@ -1459,6 +1474,14 @@
 						// stProps.onLeaveBack();
 
 						$showPlayground = true;
+
+						// $vectorCoordsInput[0] = egVector[0];
+						// $vectorCoordsInput[1] = egVector[1];
+						// $vectorCoordsInput[2] = 0;
+
+						// $inputVectorToggled = false;
+						// onInputVectorToggle(false);
+						basisAltProps.vectorVisible = true;
 
 						// $dataToggled = cachePlaygroundSettings.dataToggled;
 					}
@@ -1570,11 +1593,11 @@
 
 						basisAltProps.vectorVisible = false;
 
-						$inputVectorToggled = true;
+						// $inputVectorToggled = true;
 
-						$vectorCoordsInput[0] = eg3dVector[0];
-						$vectorCoordsInput[1] = eg3dVector[1];
-						$vectorCoordsInput[2] = eg3dVector[2];
+						// $vectorCoordsInput[0] = eg3dVector[0];
+						// $vectorCoordsInput[1] = eg3dVector[1];
+						// $vectorCoordsInput[2] = eg3dVector[2];
 					},
 					onLeaveBack: () => {
 						stProps.onLeaveBack();
@@ -1582,15 +1605,17 @@
 						$show3d = false;
 						$grid3dToggled = false;
 
+						$inputVectorToggled = false;
+						onInputVectorToggle(false);
+
 						// basisAltProps.vectorVisible = true;
 
 						// $vectorCoordsInput = egVector;
-						console.log(egVector);
-						$vectorCoordsInput[0] = egVector[0];
-						$vectorCoordsInput[1] = egVector[1];
-						$vectorCoordsInput[2] = 0;
+						// $vectorCoordsInput[0] = egVector[0];
+						// $vectorCoordsInput[1] = egVector[1];
+						// $vectorCoordsInput[2] = 0;
 
-						$inputVectorToggled = false;
+						// $inputVectorToggled = false;
 
 						// // Reset matrix transform
 						// gsap.to($endMatrix, {
@@ -1771,7 +1796,21 @@
 				scrollTrigger: {
 					...stProps,
 					trigger: "#st-10",
-					end: `+=${scrollUnit * 1}`
+					end: `+=${scrollUnit * 1}`,
+					onEnter: () => {
+						stProps.onEnter();
+
+						$vectorCoordsInput[0] = eg3dVector[0];
+						$vectorCoordsInput[1] = eg3dVector[1];
+						$vectorCoordsInput[2] = eg3dVector[2];
+					},
+					onLeaveBack: () => {
+						stProps.onLeaveBack();
+
+						$vectorCoordsInput[0] = egVector[0];
+						$vectorCoordsInput[1] = egVector[1];
+						$vectorCoordsInput[2] = 0;
+					}
 				}
 			})
 			.add("step-1")
@@ -1951,6 +1990,8 @@
 						stProps.onLeave();
 
 						$dataToggled = "model";
+
+						$inputVectorToggled = true;
 					},
 					onLeaveBack: () => {
 						stProps.onLeaveBack();
@@ -1993,9 +2034,12 @@
 						$showPlayground = false;
 
 						// Reset
-						$dataToggled = undefined;
+						$dataToggled = "model";
+						$grid3dToggled = true;
 						$gridToggled = true;
 						$transformedGridToggled = false;
+
+						$show3d = true;
 
 						// Reset playhead
 						$matrixTween.progress(1);
@@ -2069,21 +2113,21 @@
 				"step-1"
 			);
 
-		$playgroundSt = playgroundTl.scrollTrigger;
+		// $playgroundSt = playgroundTl.scrollTrigger;
 
-		ScrollTrigger.create({
-			trigger: "#article",
-			start: "bottom bottom",
-			onEnter: () => {
-				console.log("enter");
-				$showPlayground = false;
-			},
-			onLeaveBack: () => {
-				$showPlayground = true;
-			}
-		});
+		// ScrollTrigger.create({
+		// 	trigger: "#article",
+		// 	start: "bottom bottom",
+		// 	onEnter: () => {
+		// 		console.log("enter");
+		// 		$showPlayground = false;
+		// 	},
+		// 	onLeaveBack: () => {
+		// 		$showPlayground = true;
+		// 	}
+		// });
 
-		gsap
+		const test = gsap
 			.timeline({
 				scrollTrigger: {
 					...stPropsAlt,
@@ -2107,6 +2151,8 @@
 				},
 				"step-1"
 			);
+
+		$playgroundSt = test.scrollTrigger;
 	}
 
 	function updateStProgress(progress) {
@@ -2129,10 +2175,7 @@
 
 	// TODO: Make sure ScrollTriggers are in order
 	// DOM / Layout is already mounted
-	$: if (!$debug && mounted && $titleMounted && $sceneMounted) animate();
-
-	// $: if (loaded && $titleMounted && $sceneMounted) animate();
-	// $: if (loaded) animate();
+	$: if (!$debug && mounted && $sceneMounted) animate();
 
 	onMount(() => {
 		mounted = true;

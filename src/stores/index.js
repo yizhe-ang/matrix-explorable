@@ -88,6 +88,7 @@ export const playToggle = writable(true);
 
 export const titleMounted = writable(false);
 export const sceneMounted = writable(false);
+export const introMounted = writable(false)
 
 export const loaded = writable(false);
 

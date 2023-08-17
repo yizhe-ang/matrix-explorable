@@ -16,17 +16,22 @@
 @tailwind components;
 @tailwind utilities;
 
+::selection {
+	color: hsl(191, 20%, 16%);
+	background-color: hsla(191, 97%, 77%, 0.9);
+}
+
 body {
-	overflow-x: hidden;
+  overflow: hidden;
 }
 
 ul {
-  /* @apply list-inside; */
+	/* @apply list-inside; */
 }
 
 li:not(:last-child) {
 	/* margin-bottom: 5px; */
-  @apply mb-5;
+	@apply mb-5;
 }
 
 .skip-to-main {

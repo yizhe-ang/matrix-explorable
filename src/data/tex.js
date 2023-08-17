@@ -54,6 +54,40 @@ c x+d y
 \end{aligned}
 `;
 
+const a0 = colorTex("a", colorX)
+const c0 = colorTex("c", colorX)
+const b0 = colorTex("b", colorY)
+const d0 = colorTex("d", colorY)
+
+const x0 = colorTex("x", colorXAlt)
+const y0 = colorTex("y", colorYAlt)
+
+const xy = colorTex(String.raw`\left[\begin{array}{l}
+  ${x0} \\
+  ${y0}
+  \end{array}\right]`, colorVector)
+
+const axbycxdy = colorTex(String.raw`\left[\begin{array}{l}
+  ${a0} ${x0}+${b0} ${y0} \\
+  ${c0} ${x0}+${d0} ${y0}
+  \end{array}\right]`, colorVector)
+
+export const matrixVectorFormulaColored = String.raw`
+\begin{aligned}
+{\left[\begin{array}{ll}
+${a0} & ${b0} \\
+${c0} & ${d0}
+\end{array}\right]${xy} } & =${x0}\left[\begin{array}{l}
+${a0} \\
+${c0}
+\end{array}\right]+${y0}\left[\begin{array}{l}
+${b0} \\
+${d0}
+\end{array}\right] \\
+& =${axbycxdy}
+\end{aligned}
+`;
+
 export const matrixVectorEg = String.raw`\left[\begin{array}{r}
   ${egMatrixX[0]} & ${egMatrixY[0]} \\
   ${egMatrixX[1]} & ${egMatrixY[1]}

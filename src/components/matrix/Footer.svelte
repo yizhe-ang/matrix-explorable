@@ -13,7 +13,7 @@
 <footer class="max-w-prose mx-auto p-5 prose prose-xl pt-16 pb-28">
 	<section class="flex flex-col items-center gap-8 text-center pb-10">
 		<div>
-			<p>Like my stuff? Give me some support :)</p>
+			<p>Like my stuff? :)</p>
 			<div class="kofi-button grid place-content-center">
 				<a class="kofi-link" href="https://ko-fi.com/U7U4NH69A" target="_blank"
 					><img
@@ -28,7 +28,7 @@
 			</div>
 		</div>
 		<div>
-			<p>Any questions or comments? Feel free to connect with me!</p>
+			<p>Any questions, comments or suggestions? Feel free to connect with me!</p>
 			<div class="flex gap-5 justify-center">
 				<IconLink href="https://twitter.com/yizhe_ang">
 					<Twitter slot="icon" size={iconSize} />

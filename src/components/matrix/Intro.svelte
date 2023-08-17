@@ -5,41 +5,52 @@
 	import Spacer from "./Spacer.svelte";
 	import Tex from "./Tex.svelte";
 	import { gsap } from "$utils/gsap.js";
+	import { sceneMounted, introMounted } from "$stores";
 
-	onMount(() => {
-		gsap
-			.timeline({
-				scrollTrigger: {
-					trigger: "#tex-1",
-					start: "top 55%",
-				}
-			})
-			.from("#tex-1 span", {
-				opacity: 0,
-				stagger: {
-					amount: 0.7
-				}
-			});
+	// let mounted;
 
-		gsap
-			.timeline({
-				scrollTrigger: {
-					trigger: "#tex-2",
-					start: "top 55%",
-				}
-			})
-			.from("#tex-2 span", {
-				opacity: 0,
-				stagger: {
-					amount: 0.7
-				}
-			});
-	});
+	// $: if (mounted && sceneMounted) animate();
+
+	// onMount(() => {
+	// 	mounted = true;
+	// });
+
+	// function animate() {
+	// 	gsap
+	// 		.timeline({
+	// 			scrollTrigger: {
+	// 				trigger: "#tex-1",
+	// 				start: "top 60%"
+	// 			}
+	// 		})
+	// 		.from("#tex-1 span", {
+	// 			opacity: 0,
+	// 			stagger: {
+	// 				amount: 0.5
+	// 			}
+	// 		});
+
+	// 	gsap
+	// 		.timeline({
+	// 			scrollTrigger: {
+	// 				trigger: "#tex-2",
+	// 				start: "top 60%"
+	// 			}
+	// 		})
+	// 		.from("#tex-2 span", {
+	// 			opacity: 0,
+	// 			stagger: {
+	// 				amount: 0.5
+	// 			}
+	// 		});
+
+	// 	$introMounted = true;
+	// }
 </script>
 
 <!-- <section class="prose prose-xl translate-x-[calc(-50vw+32.5ch-32.5ch)]"> -->
 <section
-	class="prose prose-xl translate-x-[calc(-50vw-50%)] mt-[100vh] max-w-prose h-[120vh]"
+	class="prose prose-xl translate-x-[calc(-50vw-50%)] mt-[100vh] max-w-prose"
 >
 	<!-- <section class="prose prose-xl"> -->
 	<p>What do <B>matrices</B> mean to you?</p>

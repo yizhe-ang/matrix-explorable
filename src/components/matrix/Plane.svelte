@@ -38,7 +38,7 @@
 			color: colorB3,
 			// color: "black",
 			// opacity: 0.95,
-			opacity: 0.8,
+			opacity: 0.7,
 			// opacity: 0,
       closed: true,
       // shaded: true,

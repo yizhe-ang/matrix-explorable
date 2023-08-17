@@ -66,7 +66,7 @@
 			>
 				{#each indices3d as idx, i (i)}
 					{@const textColor = colors[i % 3]}
-					<div in:fly={{ x: -20 }}>
+					<div>
 						<NumberSpinner
 							bind:value={$endMatrix[idx]}
 							step={0.1}
@@ -84,7 +84,7 @@
 			>
 				{#each indices2d as idx, i (i)}
 					{@const textColor = colors[i % 2]}
-					<div in:fly={{ x: -20 }}>
+					<div>
 						<NumberSpinner
 							bind:value={$endMatrix[idx]}
 							step={0.1}
@@ -111,7 +111,7 @@
 			>
 				{#each $show3d ? [3, 4, 5] : [3, 4] as idx, i}
 					{@const textColor = colors[i % 3]}
-					<div in:fly={{ x: -20 }}>
+					<div>
 						<NumberSpinner
 							bind:value={$vectorCoordsInput[i]}
 							step={0.1}
@@ -148,7 +148,7 @@
 						mainStyle={`color: ${colorVector};`}
 					/>
 				</div> -->
-					<div class="number" style:color={colorVector} in:fly={{ x: -20 }}>
+					<div class="number" style:color={colorVector}>
 						{coord.toFixed(1)}
 					</div>
 				{/each}
@@ -167,7 +167,7 @@
 	}
 
 	:global(.number-spinner) {
-		@apply w-20 bg-base-200 px-2 py-2 text-right text-2xl transition-all;
+		@apply w-20 bg-base-200 px-2 py-2 text-right text-2xl transition-all selection:text-inherit;
 
 		&:hover {
 			@apply bg-base-100;

@@ -2,6 +2,7 @@
 	import Tex from "./Tex.svelte";
 	import {
 		matrixVectorFormula,
+		matrixVectorFormulaColored,
 		vectorAsLinearComb,
 		matrixVectorFormulaEg,
 		matrixVectorFormula3dEg
@@ -22,20 +23,16 @@
 	import InteractionsList from "./InteractionsList.svelte";
 </script>
 
-<!-- FIXME: max-w-prose -->
 <div
 	id="article"
 	class="relative max-w-prose bg-gradient-to-l from-base-100 via-base-300 via-90% py-12"
 >
-	<!-- <div
-	id="article"
-	class="relative bg-gradient-to-l from-base-100 from-20% px-10 py-12"
-> -->
-	<!-- <Title /> -->
 
-	<div id="title-spacer" class="h-screen" />
+	<div id="title-spacer" class="h-[2500px]" />
 
 	<Intro />
+
+	<div class="h-[500px]" />
 
 	<!-- <section id="section-1" class="prose prose-xl [&>*]:px-10 [&>*]:rounded-xl"> -->
 	<Section id="section-1">
@@ -96,7 +93,7 @@
 
 		<Spacer />
 
-		<Tex expr={matrixVectorFormula} display />
+		<Tex expr={matrixVectorFormulaColored} display />
 
 		<p>
 			Did you notice anything similar with the expression for matrix-vector
@@ -164,7 +161,7 @@
 
 		<!-- TODO: Have a kind of recap at the end -->
 		<div>
-			<Tex expr={matrixVectorFormula} display />
+			<Tex expr={matrixVectorFormulaColored} display />
 			<Insight>
 				<ul>
 					<li>

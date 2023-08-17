@@ -4,45 +4,45 @@
 	import { playgroundSt } from "$stores";
 	import { gsap } from "$utils/gsap.js";
 	import { onMount } from "svelte";
-  import { RingLoader } from "svelte-loading-spinners"
+	import { RingLoader } from "svelte-loading-spinners";
 
 	// TODO: Colorful gradient shadows
 	// TODO: Get inspiration from decoration
 
-  // TODO: To scroll down indicator
+	// TODO: To scroll down indicator
 
-	let mounted = false;
+	// let mounted = false;
 
-	$: if (mounted) animate();
+	// $: if (mounted) animate();
 
-	onMount(() => {
-		mounted = true;
-	});
+	// onMount(() => {
+	// 	mounted = true;
+	// });
 
-	function animate() {
+	// function animate() {
 		// Animate title
-		gsap
-			.timeline({
-				scrollTrigger: {
-					trigger: "#title",
-					start: "top top",
-					scrub: 1,
-					onLeave: () => {
-						// HACK:
-						$showHero = false;
-						// $endMatrix = egEndMatrix
-					},
-					onEnterBack: () => {
-						$showHero = true;
-					}
-				}
-			})
-			.to("#title", {
-				autoAlpha: 0
-			});
+		// gsap
+		// 	.timeline({
+		// 		scrollTrigger: {
+		// 			trigger: "#title",
+		// 			start: "top top",
+		// 			scrub: 1,
+		// 			onLeave: () => {
+		// 				// HACK:
+		// 				$showHero = false;
+		// 				// $endMatrix = egEndMatrix
+		// 			},
+		// 			onEnterBack: () => {
+		// 				$showHero = true;
+		// 			}
+		// 		}
+		// 	})
+		// 	// .to("#title", {
+		// 	// 	autoAlpha: 0
+		// 	// });
 
-		$titleMounted = true;
-	}
+		// $titleMounted = true;
+	// }
 </script>
 
 <div
@@ -50,13 +50,15 @@
 	class="fixed top-0 left-0 right-0 z-10 grid place-content-center pt-16 px-10 max-w-5xl mx-auto"
 >
 	<!-- TODO: Vertically center everything here? -->
-	<div class="flex flex-col gap-5 items-center">
+	<div class="flex flex-col gap-5 items-center relative">
 		<h1 class="text-9xl font-display drop-shadow-xl">
 			The <br /> Matrix Arcade
 		</h1>
 		<div class="text-3xl font-displayAlt text-right">
 			A Visual Explorable <br /> of Matrix Transformations
 		</div>
+
+		<div class="absolute top-0 right-0 font-displayAlt text-4xl">By <a href="https://yizhe-ang.github.io/" target="_blank" rel="noopener noreferrer" class="underline decoration-2 underline-offset-8 decoration-neutral text-secondary">Yi Zhe Ang</a></div>
 
 		{#if $loaded}
 			<button
@@ -67,18 +69,21 @@
 					// target?.scrollIntoView()
 
 					// gsap.to(window, {
-					// 	scrollTo: "#st-12"
+					// 	scrollTo: () => "#st-13"
 					// });
 
 					gsap.to(window, {
-						scrollTo: $playgroundSt.end
+						scrollTo: {
+              // y: $playgroundSt.end,
+              y: $playgroundSt.start,
+            }
 					});
 				}}
 			>
 				Skip to Playground!
 			</button>
 		{:else}
-      <RingLoader color={colorVector} />
+			<RingLoader color={colorVector} />
 		{/if}
 	</div>
 </div>

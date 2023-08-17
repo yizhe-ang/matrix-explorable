@@ -16,7 +16,10 @@
 		show3d,
 		debug,
 		resetViewToggle,
-		rgbShiftEnabled
+		rgbShiftEnabled,
+		gridToggled,
+		transformedGridToggled,
+		showHero
 	} from "$stores";
 	import * as THREE from "three";
 	import CameraControls from "camera-controls";
@@ -85,7 +88,7 @@
 		// FIXME: Have to set size and pixel ratio?
 		composer.addPass(new RenderPass(scene, camera));
 
-    // FIXME: Disable this if not needed?
+		// FIXME: Disable this if not needed?
 		composer.addPass(afterImagePass);
 
 		// composer.addPass(rgbShiftPass);
@@ -124,7 +127,7 @@
 		context.frame();
 	});
 
-	$: if (mounted && $titleMounted) animate();
+	$: if (mounted) animate();
 
 	onMount(() => {
 		// FIXME: Set size responsively?
@@ -134,27 +137,78 @@
 	});
 
 	function animate() {
-    gsap
+		gsap.set("#title", {
+			transformPerspective: 400
+		});
+
+		gsap
 			.timeline({
 				scrollTrigger: {
 					trigger: "#title-spacer",
 					start: "top top",
-					end: "bottom bottom",
-					scrub: 1
+					end: "+=2000",
+					scrub: 1,
+					onLeave: () => {
+						($gridToggled = true), ($transformedGridToggled = false);
+						$showHero = false;
+					},
+					onLeaveBack: () => {
+						($gridToggled = false), ($transformedGridToggled = true);
+						$showHero = true;
+					}
 				}
 			})
-      .fromTo(
-        $cameraControls,
-        {
-          distance: 15,
-					polarAngle: Math.PI * 0.35,
+			.add("step-1")
+			.fromTo(
+				$cameraControls,
+				{
+					distance: 15,
+					polarAngle: Math.PI * 0.35
 					// azimuthAngle: Math.PI * 0.3
-        }, {
+				},
+				{
 					polarAngle: 0,
 					azimuthAngle: 0
-        }
-      )
+				},
+				"step-1"
+			)
+			.to(
+				"#title",
+				{
+					rotationX: -70,
+					transformOrigin: "50% 100%, 200",
+					autoAlpha: 0
+				},
+				"step-1"
+			);
 
+		gsap
+			.timeline({
+				scrollTrigger: {
+					trigger: "#tex-1",
+					start: "top 60%"
+				}
+			})
+			.from("#tex-1 span", {
+				opacity: 0,
+				stagger: {
+					amount: 0.5
+				}
+			});
+
+		gsap
+			.timeline({
+				scrollTrigger: {
+					trigger: "#tex-2",
+					start: "top 60%"
+				}
+			})
+			.from("#tex-2 span", {
+				opacity: 0,
+				stagger: {
+					amount: 0.5
+				}
+			});
 
 		gsap
 			.timeline({

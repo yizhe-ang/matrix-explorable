@@ -9,14 +9,21 @@
 	import TogglePlayground from "./matrix/TogglePlayground.svelte";
 	import { loaded } from "$stores";
 	import { fade } from "svelte/transition";
-	import { gsap } from "$utils/gsap.js";
+	import { gsap, ScrollTrigger } from "$utils/gsap.js";
 	import Footer from "./matrix/Footer.svelte";
 
   $: if ($loaded) {
     gsap.from('canvas', {
       opacity: 0,
-      duration: 1
+      duration: 2
     })
+
+    gsap.set('body', {
+      overflowY: "visible",
+      overflowX: "hidden"
+    })
+
+    ScrollTrigger.refresh()
   }
 </script>
 
