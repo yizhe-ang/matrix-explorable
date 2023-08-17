@@ -85,8 +85,6 @@ export const colorNf = "hsl(230, 15%, 23%)";
 export const colorIn = "hsl(191, 97%, 77%)"
 
 
-console.log(dracula);
-
 function colorToHex(color) {
 	return d3Color(color).formatHex();
 }

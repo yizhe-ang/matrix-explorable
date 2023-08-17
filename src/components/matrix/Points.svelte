@@ -1,7 +1,4 @@
 <script>
-	import variables from "$data/variables.json";
-	import { color as d3Color } from "d3";
-
 	export let view;
 	export let t;
 	export let dim3 = false;

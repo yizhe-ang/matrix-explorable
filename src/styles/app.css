@@ -1,15 +1,9 @@
-@import "variables.css";
-
 /* Fonts */
 @import "@fontsource/old-standard-tt/400.css";
 @import "@fontsource/old-standard-tt/700.css";
-@import "@fontsource-variable/manrope";
-@import "@fontsource/barlow";
 @import "@fontsource-variable/chivo";
-@import "@fontsource/bungee-shade";
 @import "@fontsource/bungee-outline";
 @import "@fontsource/bungee-hairline";
-@import "@fontsource/bungee-inline";
 
 /* Tailwind */
 @tailwind base;
