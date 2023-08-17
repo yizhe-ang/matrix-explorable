@@ -242,7 +242,7 @@
 		<P id="st-12">
 			From the visual examples we've seen thus far, the most obvious application
 			of matrix transformations would be that of computer graphics. In fact,
-			this is precisely how this article is built! Matrices provide a language
+			this is precisely how this article was built! Matrices provide a language
 			to rotate, scale and translate vectors and points and consequently entire
 			objects in 2D or 3D space.
 		</P>

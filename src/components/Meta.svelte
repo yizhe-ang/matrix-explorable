@@ -1,19 +1,19 @@
 <script>
-	export let title = "Title TK";
-	export let description = "Description TK";
-	export let url = "https://pudding.cool";
-	export let keywords = "";
-	export let preloadFont = [];
+	export let title = "The Matrix Arcade";
+	export let description = "A Visual Explorable of Matrices and Linear Transformations";
+	export let url = "https://yizhe-ang.github.io/matrix-explorable/";
+	export let keywords = "matrix, vector, multiplication, linear, transformation, visual, explorable, explainer, math, linear algebra, interactive, visualization, tutorial, intuition";
+  export let socialImg = "https://yizhe-ang.github.io/matrix-explorable/social.png"
 </script>
 
 <svelte:head>
 	<title>{title}</title>
 	<meta name="description" content={description} />
-	<meta name="author" content="The Pudding" />
+	<meta name="author" content="Yi Zhe Ang" />
 	<meta name="news_keywords" content={keywords} />
 
 	<meta property="og:title" content={title} />
-	<meta property="og:site_name" content="The Pudding" />
+	<meta property="og:site_name" content="Yi Zhe Ang" />
 	<meta property="og:url" content={url} />
 	<meta property="og:description" content={description} />
 	<meta property="og:type" content="article" />
@@ -35,7 +35,7 @@
 
 	<link rel="canonical" href="{url}/" />
 
-	{#each preloadFont as href}
+	<!-- {#each preloadFont as href}
 		<link rel="preload" {href} as="font" type="font/woff2" crossorigin />
-	{/each}
+	{/each} -->
 </svelte:head>
