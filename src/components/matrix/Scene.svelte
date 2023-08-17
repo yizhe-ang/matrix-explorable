@@ -117,7 +117,7 @@
 	useFrame(({}, delta) => {
 		// TODO: Camera auto-rotate
 		if ($cameraAutoRotate) {
-			$cameraControls.azimuthAngle += 2.5 * delta * THREE.MathUtils.DEG2RAD;
+			$cameraControls.azimuthAngle += 5 * delta * THREE.MathUtils.DEG2RAD;
 			// Normalize
 			$cameraControls.azimuthAngle =
 				$cameraControls.azimuthAngle % (2 * Math.PI);

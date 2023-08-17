@@ -11,9 +11,11 @@
 	import { gsap, ScrollTrigger } from "$utils/gsap.js";
 	import Footer from "./matrix/Footer.svelte";
 	import mq from "$stores/mq.js";
+  import { RingLoader } from "svelte-loading-spinners";
+	import { colorVector } from "$data/variables";
 
 	$: if ($mq.lg && $loaded) {
-		gsap.from("canvas", {
+		gsap.to("#loading-overlay", {
 			opacity: 0,
 			duration: 2
 		});
@@ -32,7 +34,9 @@
 {/if}
 
 <!-- TODO: Some fancy gradient? -->
-<!-- <div id="loading-overlay" class="fixed inset-0 bg-base-300" /> -->
+<div id="loading-overlay" class="fixed inset-0 bg-base-300 place-content-center z-50 hidden lg:grid">
+  <RingLoader color={colorVector} />
+</div>
 
 <!-- TODO: Update width? -->
 <!-- {#if $mq.lg} -->

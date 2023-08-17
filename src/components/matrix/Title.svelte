@@ -73,7 +73,7 @@
 		</div>
 
 		<div class="hidden lg:block">
-			{#if $loaded}
+			<!-- {#if $loaded} -->
 				<button
 					class="playground-btn btn font-sansAlt text-xl backdrop-blur-sm bg-white/10 hover:bg-white/20 border-0"
 					on:click={() => {
@@ -95,9 +95,9 @@
 				>
 					Skip to Playground!
 				</button>
-			{:else}
-				<RingLoader color={colorVector} />
-			{/if}
+			<!-- {:else} -->
+				<!-- <RingLoader color={colorVector} /> -->
+			<!-- {/if} -->
 		</div>
 		<div
 			class="relative alert bg-transparent border-0 flex flex-col mt-10 lg:hidden"
