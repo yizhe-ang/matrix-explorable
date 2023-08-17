@@ -76,8 +76,6 @@
 	import Hero from "./Hero.svelte";
 	import { spring } from "svelte/motion";
 
-	$: console.log($vectorCoordsInput);
-
 	export let mathbox;
 
 	const map = useTexture("/maxwell.jpg");

@@ -205,7 +205,7 @@
 
 	<!-- TODO: How about 3D? -->
 	<Section id="section-2">
-		<h2>Beyond Two-Dimensions</h2>
+		<h2 class="text-neutral">Beyond Two-Dimensions</h2>
 
 		<p>
 			So far we've only been talking about matrix transformations in
@@ -247,12 +247,12 @@
 			objects in 2D or 3D space.
 		</P>
 
-		<p>
+		<!-- <p>
 			Talk about application in computer graphics... give a concrete example
 			visually. Give other examples of applications of matrices... From the
 			visual examples we've seen thus far, the most obvious application of
 			matrix transformations would be that of computer. In fact,
-		</p>
+		</p> -->
 		<Spacer />
 		<p id="st-13">
 			Go forth and wrap your head around matrix transformations in 3D! Now you
