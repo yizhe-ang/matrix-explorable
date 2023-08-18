@@ -1,7 +1,7 @@
 <script>
 	import { colorVector } from "$data/variables";
 	import { titleMounted, showHero, endMatrix, loaded } from "$stores";
-	import { playgroundSt } from "$stores";
+	import { playgroundSt, dataToggled  } from "$stores";
 	import { gsap } from "$utils/gsap.js";
 	import { onMount } from "svelte";
 	import { RingLoader } from "svelte-loading-spinners";
@@ -72,10 +72,10 @@
 			>
 		</div>
 
-		<div class="hidden lg:block">
+		<div class="relative hidden lg:block">
 			<!-- {#if $loaded} -->
 				<button
-					class="playground-btn btn font-sansAlt text-xl backdrop-blur-sm bg-white/10 hover:bg-white/20 border-0"
+					class="relative playground-btn btn font-sansAlt text-xl backdrop-blur-sm bg-white/10 hover:bg-white/20 border-0"
 					on:click={() => {
 						// const target = document.querySelector('#st-12')
 
@@ -89,8 +89,21 @@
 							scrollTo: {
 								// y: $playgroundSt.end,
 								y: $playgroundSt.start
-							}
+							},
+              duration: 1,
 						});
+
+            // HACK:
+            // $dataToggled = "points"
+            // $dataToggled = undefined
+            // $dataToggled = "model"
+
+						// gsap.set(window, {
+						// 	scrollTo: {
+						// 		// y: $playgroundSt.end,
+						// 		y: $playgroundSt.start
+						// 	}
+						// });
 					}}
 				>
 					Skip to Playground!

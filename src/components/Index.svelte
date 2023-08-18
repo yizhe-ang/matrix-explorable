@@ -11,7 +11,7 @@
 	import { gsap, ScrollTrigger } from "$utils/gsap.js";
 	import Footer from "./matrix/Footer.svelte";
 	import mq from "$stores/mq.js";
-  import { RingLoader } from "svelte-loading-spinners";
+	import { RingLoader } from "svelte-loading-spinners";
 	import { colorVector } from "$data/variables";
 
 	$: if ($mq.lg && $loaded) {
@@ -34,8 +34,14 @@
 {/if}
 
 <!-- TODO: Some fancy gradient? -->
-<div id="loading-overlay" class="fixed inset-0 bg-base-300 place-content-center z-50 hidden lg:grid">
-  <RingLoader color={colorVector} />
+<div
+	id="loading-overlay"
+	class="fixed inset-0 bg-base-300 place-content-center z-50 hidden lg:grid"
+>
+	<div class="flex flex-col items-center gap-5">
+		<div class="inline-block font-displayAlt text-xl">Loading...</div>
+		<RingLoader color={colorVector} />
+	</div>
 </div>
 
 <!-- TODO: Update width? -->

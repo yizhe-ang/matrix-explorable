@@ -5,7 +5,7 @@
 </script>
 
 <h3 class="-mb-10 mt-0 font-sansAlt text-8xl text-neutral">{title}</h3>
-<div class="alert backdrop-blur-0 bg-transparent border-0">
+<div class="relative alert backdrop-blur-0 bg-transparent border-0">
 	<slot />
 </div>
 
