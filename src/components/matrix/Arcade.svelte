@@ -76,6 +76,7 @@
 	import Hero from "./Hero.svelte";
 	import { spring } from "svelte/motion";
 	import { base, assets } from "$app/paths";
+	import Vectors from "./Vectors.svelte";
 
 	export let mathbox;
 
@@ -539,6 +540,10 @@
 	};
 	let imageProps = {
 		scale: 0
+	};
+	let vectorsProps = {
+		enter: 0,
+		exit: 1
 	};
 
 	let basisAltProps = {
@@ -1182,7 +1187,7 @@
 				scrollTrigger: {
 					...stProps,
 					trigger: "#st-6",
-					end: `+=${scrollUnit * 1}`,
+					end: `+=${scrollUnit * 4}`,
 					onLeaveBack: () => {
 						stProps.onLeaveBack();
 
@@ -1192,6 +1197,28 @@
 				}
 			})
 			.add("step-1")
+			// Animate in vectors
+			.to(
+				vectorsProps,
+				{
+					enter: 1,
+					onUpdate: function () {
+						vectorsProps = vectorsProps;
+					}
+				},
+				"step-1"
+			)
+			// Animate out vectors
+			.to(
+				vectorsProps,
+				{
+					exit: 0,
+					onUpdate: function () {
+						vectorsProps = vectorsProps;
+					}
+				},
+				"step-1+=0.1"
+			)
 			// Animate in points
 			.to(
 				pointsProps,
@@ -1201,7 +1228,7 @@
 						pointsProps = pointsProps;
 					}
 				},
-				"step-1"
+				"step-1+=0.15"
 			)
 			// Animate in transformed grid
 			.to(
@@ -1212,7 +1239,7 @@
 						gridVars = gridVars;
 					}
 				},
-				"step-1"
+				"step-1+=0.15"
 			)
 			.to(
 				{},
@@ -2379,5 +2406,4 @@
 	t={grid3dProps.t}
 />
 
-<!-- FIXME: Has weird artifacts for some reason? -->
-<!-- <Gridlines view={transformedView} t={grid3dProps.t} /> -->
+<Vectors view={transformedView} enter={vectorsProps.enter} exit={vectorsProps.exit} />

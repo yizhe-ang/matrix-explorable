@@ -1,7 +1,6 @@
 <script>
 	// https://github.com/unconed/mathbox/blob/master/examples/test/context.html
 	import { T, useFrame, useThrelte, extend, useRender } from "@threlte/core";
-	import { OrbitControls, Grid, useCursor } from "@threlte/extras";
 	import * as MathBox from "mathbox";
 	import { onMount } from "svelte";
 	import Arcade from "./Arcade.svelte";
@@ -9,17 +8,15 @@
 	import {
 		sceneMounted,
 		cameraControls,
-		afterImageEnabled,
 		cameraAutoRotate,
-		heroMatrix,
-		titleMounted,
 		show3d,
 		debug,
 		resetViewToggle,
 		rgbShiftEnabled,
 		gridToggled,
 		transformedGridToggled,
-		showHero
+		showHero,
+    afterImageEnabled
 	} from "$stores";
 	import mq from "$stores/mq";
 	import * as THREE from "three";
@@ -32,10 +29,6 @@
 	import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
 	import { RGBShiftShader } from "three/examples/jsm/shaders/RGBShiftShader.js";
 	import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
-	import { RenderPixelatedPass } from "three/addons/postprocessing/RenderPixelatedPass.js";
-	import { HalftonePass } from "three/addons/postprocessing/HalftonePass.js";
-	import { initMatrix } from "$data/variables";
-	// import { EffectComposer, RenderPass } from "postprocessing";
 
 	let mounted = false;
 
@@ -64,24 +57,11 @@
 	let composer;
 
 	const afterImagePass = new AfterimagePass();
-	// $: afterImagePass.enabled = $afterImageEnabled;
+	$: afterImagePass.enabled = $afterImageEnabled;
 
 	const rgbShiftPass = new ShaderPass(RGBShiftShader);
 	rgbShiftPass.uniforms["amount"].value = 0.0015;
 	$: rgbShiftPass.enabled = $rgbShiftEnabled;
-
-	const halfToneParams = {
-		shape: 1,
-		radius: 4,
-		rotateR: Math.PI / 12,
-		rotateB: (Math.PI / 12) * 2,
-		rotateG: (Math.PI / 12) * 3,
-		scatter: 0,
-		blending: 1,
-		blendingMode: 1,
-		greyscale: false,
-		disable: false
-	};
 
 	function setupEffectComposer(camera) {
 		composer = new EffectComposer(renderer);
@@ -217,7 +197,10 @@
 					trigger: "#section-1",
 					start: "top bottom",
 					end: "+=500",
-					scrub: 1
+					scrub: 1,
+          // Remove after image postprocessing
+          onLeave: () => $afterImageEnabled = false,
+          onEnterBack: () => $afterImageEnabled = true
 				}
 			})
 			.add("step-1")
@@ -250,10 +233,11 @@
 				},
 				"step-1"
 			)
-			.to(afterImagePass.uniforms.damp, {
-				value: 0,
-				duration: 0.001
-			});
+      // Remove after image postprocessing
+			// .to(afterImagePass.uniforms.damp, {
+			// 	value: 0,
+			// 	duration: 0.001
+			// });
 
 		$sceneMounted = true;
 	}

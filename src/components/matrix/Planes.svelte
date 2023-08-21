@@ -6,7 +6,7 @@
 	export let t;
 	export let dim3 = false;
 
-	const samples = 9;
+	const samples = 8;
 	const dim = 6;
 	const range = [0, 1];
 

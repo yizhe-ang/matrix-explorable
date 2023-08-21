@@ -1,18 +1,15 @@
 <script>
 	import Tex from "./Tex.svelte";
 	import {
-		matrixVectorFormula,
 		matrixVectorFormulaColored,
 		vectorAsLinearComb,
 		matrixVectorFormulaEg,
 		matrixVectorFormula3dEg
 	} from "$data/tex";
 	import Term from "./Term.svelte";
-	import { Color } from "three";
 	import ColorText from "./ColorText.svelte";
 	import Insight from "./Insight.svelte";
 	import Intro from "./Intro.svelte";
-	import Title from "./Title.svelte";
 	import P from "./P.svelte";
 	import Spacer from "./Spacer.svelte";
 	import Action from "./Action.svelte";
@@ -128,7 +125,7 @@
 
 		<P id="st-6">
 			In order to make the space less visually cluttered, we can represent each
-			vector as a point in space instead. We'll transform the grid lines along
+			vector with just its tip as a point in space. We'll transform the grid lines along
 			too, overlaying on top a copy of the original.
 		</P>
 
