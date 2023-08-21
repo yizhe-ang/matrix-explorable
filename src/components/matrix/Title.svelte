@@ -1,12 +1,13 @@
 <script>
 	import { colorVector } from "$data/variables";
 	import { titleMounted, showHero, endMatrix, loaded } from "$stores";
-	import { playgroundSt, dataToggled  } from "$stores";
+	import { playgroundSt, dataToggled } from "$stores";
 	import { gsap } from "$utils/gsap.js";
 	import { onMount } from "svelte";
 	import { RingLoader } from "svelte-loading-spinners";
 	import mq from "$stores/mq";
 	import B from "./B.svelte";
+	import { Mouse } from "lucide-svelte";
 
 	// TODO: Colorful gradient shadows
 	// TODO: Get inspiration from decoration
@@ -72,44 +73,52 @@
 			>
 		</div>
 
-		<div class="relative hidden lg:block">
+		<div class="relative hidden lg:flex flex-col items-center gap-5 mt-5">
+			<div class="flex flex-col items-center gap-2">
+				<div class="animate-bounce">
+					<Mouse size={48} />
+				</div>
+				<div class="font-sansAlt text-xl">Scroll down</div>
+			</div>
+			<div class="font-sansAlt text-md text-neutral-content">Or</div>
+
 			<!-- {#if $loaded} -->
-				<button
-					class="relative playground-btn btn font-sansAlt text-xl backdrop-blur-sm bg-white/10 hover:bg-white/20 border-0"
-					on:click={() => {
-						// const target = document.querySelector('#st-12')
+			<button
+				class="relative playground-btn btn font-sansAlt text-xl backdrop-blur-sm bg-white/10 hover:bg-white/20 border-0"
+				on:click={() => {
+					// const target = document.querySelector('#st-12')
 
-						// target?.scrollIntoView()
+					// target?.scrollIntoView()
 
-						// gsap.to(window, {
-						// 	scrollTo: () => "#st-13"
-						// });
+					// gsap.to(window, {
+					// 	scrollTo: () => "#st-13"
+					// });
 
-						gsap.to(window, {
-							scrollTo: {
-								// y: $playgroundSt.end,
-								y: $playgroundSt.start
-							},
-              duration: 1,
-						});
+					gsap.to(window, {
+						scrollTo: {
+							// y: $playgroundSt.end,
+							y: $playgroundSt.start
+						},
+						duration: 1
+					});
 
-            // HACK:
-            // $dataToggled = "points"
-            // $dataToggled = undefined
-            // $dataToggled = "model"
+					// HACK:
+					// $dataToggled = "points"
+					// $dataToggled = undefined
+					// $dataToggled = "model"
 
-						// gsap.set(window, {
-						// 	scrollTo: {
-						// 		// y: $playgroundSt.end,
-						// 		y: $playgroundSt.start
-						// 	}
-						// });
-					}}
-				>
-					Skip to Playground!
-				</button>
+					// gsap.set(window, {
+					// 	scrollTo: {
+					// 		// y: $playgroundSt.end,
+					// 		y: $playgroundSt.start
+					// 	}
+					// });
+				}}
+			>
+				Skip to Playground!
+			</button>
 			<!-- {:else} -->
-				<!-- <RingLoader color={colorVector} /> -->
+			<!-- <RingLoader color={colorVector} /> -->
 			<!-- {/if} -->
 		</div>
 		<div

@@ -94,7 +94,7 @@
 
 		<p>
 			I'd love to extend this article with more examples of different types of
-			linear transformations and their associated matrices, and matrix
+			linear transformations and their associated matrices, as well as matrix
 			decompositions like spectral decomposition and singular value
 			decomposition. Stay tuned!
 		</p>
