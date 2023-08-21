@@ -30,7 +30,8 @@
 		debug,
 		inputVectorToggled,
 		rgbShiftEnabled,
-		resetViewToggle
+		resetViewToggle,
+    arcadeMounted
 	} from "$stores";
 	import Vector from "./Vector.svelte";
 	import { ScrollTrigger, gsap } from "$utils/gsap.js";
@@ -2181,6 +2182,8 @@
 		$playgroundSt = test.scrollTrigger;
 
 		// ScrollTrigger.refresh()
+
+    $arcadeMounted = true
 	}
 
 	function updateStProgress(progress) {

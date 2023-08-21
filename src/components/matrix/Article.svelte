@@ -18,6 +18,52 @@
 	import { Grab } from "lucide-svelte";
 	import ActionIcon from "./ActionIcon.svelte";
 	import InteractionsList from "./InteractionsList.svelte";
+	import { gsap, ScrollTrigger } from "$utils/gsap.js";
+	import { onMount } from "svelte";
+	import { arcadeMounted } from "$stores";
+
+	let mounted;
+
+	$: if (mounted && $arcadeMounted) animate();
+
+	onMount(() => {
+		mounted = true;
+	});
+
+	function animate() {
+		gsap.utils.toArray("#article section.animate > *").forEach((el) => {
+			let animation;
+
+			if (el.className === "exclude") {
+        animation = gsap.timeline({ paused: true })
+          .from(el, {
+            opacity: 0,
+            y: 100,
+            duration: 0.5
+          })
+          .from(el.querySelectorAll('li'), {
+            x: -40,
+            opacity: 0,
+            stagger: {
+              amount: 0.3
+            }
+          })
+			} else {
+				animation = gsap.from(el, {
+					opacity: 0,
+					y: 20,
+					paused: true
+				});
+			}
+
+			ScrollTrigger.create({
+				trigger: el,
+				start: "top center",
+				animation,
+				pinnedContainer: "#article"
+			});
+		});
+	}
 </script>
 
 <div
@@ -31,7 +77,7 @@
 	<div class="h-[500px]" />
 
 	<!-- <section id="section-1" class="prose prose-xl [&>*]:px-10 [&>*]:rounded-xl"> -->
-	<Section id="section-1">
+	<Section id="section-1" classNames="animate">
 		<!-- <section class="prose prose-xl max-w-[50ch]"> -->
 		<!-- <h2>Matrix as Linear Transformations</h2> -->
 
@@ -156,7 +202,7 @@
 		<Spacer />
 
 		<!-- TODO: Have a kind of recap at the end -->
-		<div>
+		<div class="exclude">
 			<Tex expr={matrixVectorFormulaColored} display />
 			<Insight>
 				<ul>
@@ -181,7 +227,7 @@
 
 		<Spacer />
 
-		<div class="">
+		<div class="exclude">
 			<P id="st-8">
 				With our understanding so far, try to tinker about and figure out what
 				kinds of transformations are possible with matrices!
@@ -200,7 +246,7 @@
 	</Section>
 
 	<!-- TODO: How about 3D? -->
-	<Section id="section-2">
+	<Section id="section-2" classNames="animate">
 		<h2 class="text-neutral">Beyond Two-Dimensions</h2>
 
 		<p>
@@ -250,11 +296,11 @@
 			matrix transformations would be that of computer. In fact,
 		</p> -->
 		<Spacer />
-		<p id="st-13">
-			Go forth and wrap your head around matrix transformations in 3D! Now you
-			have a whole additional dimension to fidget around with.
-		</p>
-		<div>
+		<div class="exclude">
+			<p id="st-13">
+				Go forth and wrap your head around matrix transformations in 3D! Now you
+				have a whole additional dimension to fidget around with.
+			</p>
 			<Action>
 				<ul class="list-none">
 					<InteractionsList />
