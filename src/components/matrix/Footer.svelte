@@ -28,7 +28,9 @@
 			</div>
 		</div>
 		<div>
-			<p>Any questions, comments or suggestions? Feel free to connect with me!</p>
+			<p>
+				Any questions, comments or suggestions? Feel free to connect with me!
+			</p>
 			<div class="flex gap-5 justify-center">
 				<IconLink href="https://twitter.com/yizhe_ang">
 					<Twitter slot="icon" size={iconSize} />
@@ -77,6 +79,11 @@
 
 	<section class="prose-lg">
 		<p>
+			<A href="https://github.com/yizhe-ang/matrix-explorable">Source code</A> of
+			the article.
+		</p>
+
+		<p>
 			This article was directly inspired by explainer videos of matrices and
 			linear transformations by <A href="https://youtu.be/kYB8IZa5AuE"
 				>3Blue1Brown</A
@@ -90,11 +97,6 @@
 			linear transformations and their associated matrices, and matrix
 			decompositions like spectral decomposition and singular value
 			decomposition. Stay tuned!
-		</p>
-
-		<p>
-			<A href="https://github.com/yizhe-ang/matrix-explorable">Source code</A> of
-			the article.
 		</p>
 
 		<p>

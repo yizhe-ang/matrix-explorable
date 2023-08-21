@@ -24,7 +24,6 @@
 	id="article"
 	class="relative max-w-prose bg-gradient-to-l from-base-100 via-base-300 via-90% py-12"
 >
-
 	<div id="title-spacer" class="h-[2500px]" />
 
 	<Intro />
@@ -125,8 +124,8 @@
 
 		<P id="st-6">
 			In order to make the space less visually cluttered, we can represent each
-			vector with just its tip as a point in space. We'll transform the grid lines along
-			too, overlaying on top a copy of the original.
+			vector with just its tip as a point in space. We'll transform the grid
+			lines along too, overlaying on top a copy of the original.
 		</P>
 
 		<P id="st-7">
@@ -260,8 +259,8 @@
 				<ul class="list-none">
 					<InteractionsList />
 					<li>
-						<ActionIcon icon={Grab} /> Right click and drag to rotate around the
-						space
+						<ActionIcon icon={Grab} />
+						<B>Right click and drag</B> to rotate around the space
 					</li>
 				</ul>
 			</Action>
