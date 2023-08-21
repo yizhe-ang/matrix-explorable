@@ -22,48 +22,48 @@
 	import { onMount } from "svelte";
 	import { arcadeMounted } from "$stores";
 
-	let mounted;
+	// let mounted;
 
-	$: if (mounted && $arcadeMounted) animate();
+	// $: if (mounted && $arcadeMounted) animate();
 
-	onMount(() => {
-		mounted = true;
-	});
+	// onMount(() => {
+	// 	mounted = true;
+	// });
 
-	function animate() {
-		gsap.utils.toArray("#article section.animate > *").forEach((el) => {
-			let animation;
+	// function animate() {
+	// 	gsap.utils.toArray("#article section.animate > *").forEach((el) => {
+	// 		let animation;
 
-			if (el.className === "exclude") {
-        animation = gsap.timeline({ paused: true })
-          .from(el, {
-            opacity: 0,
-            y: 100,
-            duration: 0.5
-          })
-          .from(el.querySelectorAll('li'), {
-            x: -40,
-            opacity: 0,
-            stagger: {
-              amount: 0.3
-            }
-          })
-			} else {
-				animation = gsap.from(el, {
-					opacity: 0,
-					y: 20,
-					paused: true
-				});
-			}
+	// 		if (el.className === "exclude") {
+  //       animation = gsap.timeline({ paused: true })
+  //         .from(el, {
+  //           opacity: 0,
+  //           y: 100,
+  //           duration: 0.6
+  //         })
+  //         .from(el.querySelectorAll('li'), {
+  //           x: -40,
+  //           opacity: 0,
+  //           stagger: {
+  //             amount: 0.3
+  //           }
+  //         })
+	// 		} else {
+	// 			animation = gsap.from(el, {
+	// 				opacity: 0,
+	// 				y: 20,
+	// 				paused: true
+	// 			});
+	// 		}
 
-			ScrollTrigger.create({
-				trigger: el,
-				start: "top center",
-				animation,
-				pinnedContainer: "#article"
-			});
-		});
-	}
+	// 		ScrollTrigger.create({
+	// 			trigger: el,
+	// 			start: "top center",
+	// 			animation,
+	// 			pinnedContainer: "#article"
+	// 		});
+	// 	});
+	// }
 </script>
 
 <div
@@ -282,7 +282,7 @@
 		</P>
 
 		<P id="st-12">
-			From the visual examples we've seen thus far, the most obvious application
+			From these visually-focused examples we've seen thus far, the most obvious application
 			of matrix transformations would be that of computer graphics. In fact,
 			this is precisely how this article was built! Matrices provide a language
 			to rotate, scale and translate vectors and points and consequently entire

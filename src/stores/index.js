@@ -69,6 +69,7 @@ if (get(debug)) showHero.set(false);
 
 export const show3d = writable(false);
 if (get(debug)) show3d.set(true);
+export const show2d = writable(true)
 export const showPlayground = writable(false);
 if (get(debug)) showPlayground.set(true);
 

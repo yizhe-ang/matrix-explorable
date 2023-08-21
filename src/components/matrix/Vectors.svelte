@@ -40,7 +40,7 @@
 		}
 	});
 
-	const transition = view.reveal({ stagger: [2, 2, 0, 0] });
+	const transition = view.reveal({ stagger: [1.5, 1.5, 0, 0] });
 
 	transition
 		.transform({

@@ -31,7 +31,7 @@
 		inputVectorToggled,
 		rgbShiftEnabled,
 		resetViewToggle,
-    arcadeMounted
+    show2d
 	} from "$stores";
 	import Vector from "./Vector.svelte";
 	import { ScrollTrigger, gsap } from "$utils/gsap.js";
@@ -1607,6 +1607,7 @@
 						stProps.onEnter();
 
 						$show3d = true;
+            $show2d = false
 						basisAltProps.zVisible = false;
 
 						// // Update matrix transform
@@ -1630,6 +1631,7 @@
 						stProps.onLeaveBack();
 
 						$show3d = false;
+            $show2d = true
 						$grid3dToggled = false;
 
 						$inputVectorToggled = false;
@@ -2183,7 +2185,42 @@
 
 		// ScrollTrigger.refresh()
 
-    $arcadeMounted = true
+		// $arcadeMounted = true
+
+		// Text animations
+		gsap.utils.toArray("#article section.animate > *").forEach((el) => {
+			let animation;
+
+			if (el.className === "exclude") {
+				animation = gsap
+					.timeline({ paused: true })
+					.from(el, {
+						opacity: 0,
+						y: 100,
+						duration: 0.6
+					})
+					.from(el.querySelectorAll("li"), {
+						x: -40,
+						opacity: 0,
+						stagger: {
+							amount: 0.3
+						}
+					});
+			} else {
+				animation = gsap.from(el, {
+					opacity: 0,
+					y: 20,
+					paused: true
+				});
+			}
+
+			ScrollTrigger.create({
+				trigger: el,
+				start: "top center",
+				animation,
+				pinnedContainer: "#article"
+			});
+		});
 	}
 
 	function updateStProgress(progress) {
@@ -2409,4 +2446,8 @@
 	t={grid3dProps.t}
 />
 
-<Vectors view={transformedView} enter={vectorsProps.enter} exit={vectorsProps.exit} />
+<Vectors
+	view={transformedView}
+	enter={vectorsProps.enter}
+	exit={vectorsProps.exit}
+/>

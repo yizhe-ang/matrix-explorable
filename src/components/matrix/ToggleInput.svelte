@@ -24,7 +24,8 @@
 		show3d,
 		resetViewToggle,
 		grid3dToggled,
-		inputVectorToggled
+		inputVectorToggled,
+    show2d
 	} from "$stores";
 	import { createToolbar, createToggle, melt } from "@melt-ui/svelte";
 	import {
@@ -90,9 +91,11 @@
 	</button>
 
 	<!-- Toggle 3d mode -->
-	<button class="item" data-tip="3d View" use:melt={$threeDToggle}>
-		<Move3d {size} />
-	</button>
+	{#if !$show2d}
+		<button class="item" data-tip="3d View" use:melt={$threeDToggle}>
+			<Move3d {size} />
+		</button>
+	{/if}
 
 	<div class="separator" use:melt={$separator} />
 
@@ -139,7 +142,7 @@
 				class="item"
 				use:melt={$dataItem("3d points")}
 				data-tip="Show 3D Points"
-        in:fly={{ x: -20 }}
+				in:fly={{ x: -20 }}
 			>
 				<!-- <ScatterChart {size} /> -->
 				<Scale3d {size} />
@@ -153,7 +156,7 @@
 				class="item"
 				use:melt={$dataItem("3d planes")}
 				data-tip="Show 3D Planes"
-        in:fly={{ x: -20 }}
+				in:fly={{ x: -20 }}
 			>
 				<Layers {size} />
 			</button>
@@ -168,7 +171,7 @@
 				class="item"
 				use:melt={$dataItem("model")}
 				data-tip="Show 3D Model"
-        in:fly={{ x: -20 }}
+				in:fly={{ x: -20 }}
 			>
 				<Cat {size} />
 			</button>
