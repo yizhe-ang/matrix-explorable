@@ -148,7 +148,7 @@
 
 		<P id="st-4">
 			In other words, a matrix can be viewed as a way of packaging information
-			about our the new basis vectors that we want. This is the core insight: a
+			about the new basis vectors that we want. This is the core insight: a
 			matrix transforms a vector by <B
 				>transforming the original basis vectors</B
 			>; creating an entirely new coordinate system.
