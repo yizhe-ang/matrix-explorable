@@ -115,7 +115,7 @@
 					// });
 				}}
 			>
-				Skip to Playground!
+        <a href="/playground">Launch Playground!</a>
 			</button>
 			<!-- {:else} -->
 			<!-- <RingLoader color={colorVector} /> -->
