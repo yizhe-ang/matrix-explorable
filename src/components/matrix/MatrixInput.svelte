@@ -4,7 +4,8 @@
 		endMatrix,
 		show3d,
 		vectorCoordsInput,
-		inputVectorToggled
+		inputVectorToggled,
+		matrixMode
 	} from "$stores";
 	import { Matrix } from "ml-matrix";
 	import { colorVector } from "$data/variables";
@@ -55,24 +56,39 @@
 			outputVector = [b.get(0, 0), b.get(1, 0)];
 		}
 	}
+
+	function isDisabled(mode, i) {
+		console.log(mode);
+		if (mode === "scale") {
+			console.log("test");
+			return [1, 2, 3, 5, 6, 7].includes(i);
+		} else {
+			return false;
+		}
+	}
+
+	$: console.log($matrixMode);
 </script>
 
 <div class="flex gap-5 items-center pointer-events-auto">
 	<!-- Matrix -->
-	<div class="shadow-lg shadow-neutral-content/20">
+	<div id="matrix-input" class="shadow-lg shadow-neutral-content/20">
 		{#if $show3d}
 			<div
 				class="container font-serif grid grid-cols-3 grid-rows-3 px-3 bg-base-200"
 			>
 				{#each indices3d as idx, i (i)}
 					{@const textColor = colors[i % 3]}
-					<div>
+					<div
+						class="number-spinner-wrapper"
+						class:disabled={isDisabled($matrixMode, i)}
+					>
 						<NumberSpinner
 							bind:value={$endMatrix[idx]}
 							step={0.1}
 							decimals={1}
 							speed={0.1}
-							class={spinnerClass}
+							class="number-spinner number-spinner-{i}"
 							mainStyle={`color: hsl(var(--${textColor}));`}
 						/>
 					</div>
@@ -157,6 +173,14 @@
 	{/if}
 </div>
 
+{#if $matrixMode === "scale"}
+  <div transition:fly={transitionProps} class="mt-5 text-lg">
+    <div>Scale x-axis by <span class="text-primary">{$endMatrix[0]}</span></div>
+    <div>Scale y-axis by <span class="text-secondary">{$endMatrix[5]}</span></div>
+    <div>Scale z-axis by <span class="text-accent">{$endMatrix[10]}</span></div>
+  </div>
+{/if}
+
 <style lang="postcss">
 	.container {
 		box-shadow: inset 0px 0px 0px 3px white;
@@ -175,6 +199,14 @@
 
 		&:focus {
 			@apply bg-base-100 outline-none ring-1 ring-inset ring-info;
+		}
+	}
+
+	.number-spinner-wrapper {
+		@apply transition duration-300;
+
+		&.disabled {
+			@apply pointer-events-none brightness-50 grayscale;
 		}
 	}
 </style>

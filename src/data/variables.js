@@ -8,7 +8,12 @@ export const egMatrixX = [1, -2];
 // export const egMatrixY = [3, 0];
 export const egMatrixY = [2, 0];
 
-export const initMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+export const initMatrix = [
+  1, 0, 0, 0,
+  0, 1, 0, 0,
+  0, 0, 1, 0,
+  0, 0, 0, 1
+];
 
 export const egEndMatrix = [
 	egMatrixX[0], egMatrixY[0], 0, 0,
@@ -51,6 +56,20 @@ export const eg3dMatrix = [
 	x3, y3, z3, 0,
 	0, 0, 0, 1,
 ];
+
+export const scalingMatrix = [
+  1, 0, 0, 0,
+  0, 1, 0, 0,
+  0, 0, 2, 0,
+  0, 0, 0, 1
+]
+
+export const reflectionMatrix = [
+  1, 0, 0, 0,
+  0, 1, 0, 0,
+  0, 0, -1, 0,
+  0, 0, 0, 1
+]
 
 // Colors
 const dracula = themeColors["[data-theme=dracula]"];

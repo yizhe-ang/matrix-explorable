@@ -14,6 +14,8 @@
 	import { RingLoader } from "svelte-loading-spinners";
 	import { colorVector } from "$data/variables";
 
+  // FIXME: Just wait to load the first part of the article?
+  // Don't have to wait for the entire page to be loaded
 	$: if ($mq.lg && $loaded) {
 		gsap.to("#loading-overlay", {
 			autoAlpha: 0,

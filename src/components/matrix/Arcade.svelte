@@ -31,7 +31,8 @@
 		inputVectorToggled,
 		rgbShiftEnabled,
 		resetViewToggle,
-    show2d
+		show2d,
+		matrixMode
 	} from "$stores";
 	import Vector from "./Vector.svelte";
 	import { ScrollTrigger, gsap } from "$utils/gsap.js";
@@ -63,7 +64,9 @@
 		egEndMatrix,
 		initMatrix,
 		colorGrid,
-		colorGridAlt
+		colorGridAlt,
+		scalingMatrix,
+		reflectionMatrix
 	} from "$data/variables";
 	import colors from "tailwindcss/colors";
 	import CameraControls from "camera-controls";
@@ -1607,7 +1610,7 @@
 						stProps.onEnter();
 
 						$show3d = true;
-            $show2d = false
+						$show2d = false;
 						basisAltProps.zVisible = false;
 
 						// // Update matrix transform
@@ -1631,7 +1634,7 @@
 						stProps.onLeaveBack();
 
 						$show3d = false;
-            $show2d = true
+						$show2d = true;
 						$grid3dToggled = false;
 
 						$inputVectorToggled = false;
@@ -2142,20 +2145,97 @@
 				"step-1"
 			);
 
-		// $playgroundSt = playgroundTl.scrollTrigger;
+		// Show examples
+		// TODO: Disable show 3D toggle?
+		gsap.timeline({
+			scrollTrigger: {
+				...stPropsAlt,
+				trigger: "#section-3",
+				start: "top center",
+				onEnter: () => {
+					$inputVectorToggled = false;
 
-		// ScrollTrigger.create({
-		// 	trigger: "#article",
-		// 	start: "bottom bottom",
-		// 	onEnter: () => {
-		// 		console.log("enter");
-		// 		$showPlayground = false;
-		// 	},
-		// 	onLeaveBack: () => {
-		// 		$showPlayground = true;
-		// 	}
-		// });
+					// Reset matrix
+					gsap.to($endMatrix, {
+						endArray: initMatrix,
+						onUpdate: () => {
+							$endMatrix = $endMatrix;
+						},
+						duration
+					});
 
+					// TODO: Reset playhead?
+					// TODO: Show 3d
+					// TODO: What other settings to reset?
+				},
+				onLeaveBack: () => {
+					$inputVectorToggled = true;
+				}
+			},
+			timelinePropsAlt
+		});
+
+		// const matrixEls = gsap.utils.toArray(
+		// 	"#matrix-input .number-spinner-wrapper"
+		// );
+
+		// const scaleMatrixIdx = [1, 2, 3, 5, 6, 7];
+		// const scaleMatrixSelected = scaleMatrixIdx.map((i) => matrixEls[i]);
+		// console.log(scaleMatrixSelected);
+
+		// Disable matrix entries
+		gsap.timeline({
+			scrollTrigger: {
+				...stPropsAlt,
+				trigger: "#scaling-section",
+				start: "top center",
+				markers: true,
+				onEnter: () => {
+					$matrixMode = "scale";
+				},
+				onLeaveBack: () => {
+					$matrixMode = null;
+				}
+			},
+			timelinePropsAlt
+		});
+
+		// Show scaling example
+		gsap
+			.timeline({
+				...timelineProps,
+				scrollTrigger: {
+					...stProps,
+					trigger: "#st-14",
+					end: `+=${scrollUnit * 1}`
+				}
+			})
+			.to($endMatrix, {
+				endArray: scalingMatrix,
+				onUpdate: function () {
+					$endMatrix = $endMatrix;
+				}
+			});
+		// TODO: Focus number spinner
+
+		// Show reflection example
+		gsap
+			.timeline({
+				...timelineProps,
+				scrollTrigger: {
+					...stProps,
+					trigger: "#st-15",
+					end: `+=${scrollUnit * 1}`
+				}
+			})
+			.to($endMatrix, {
+				endArray: reflectionMatrix,
+				onUpdate: function () {
+					$endMatrix = $endMatrix;
+				}
+			});
+
+		// Exit main article and disable playground
 		const test = gsap
 			.timeline({
 				scrollTrigger: {
@@ -2183,11 +2263,7 @@
 
 		$playgroundSt = test.scrollTrigger;
 
-		// ScrollTrigger.refresh()
-
-		// $arcadeMounted = true
-
-		// Text animations
+		// Text fade-in animations
 		gsap.utils.toArray("#article section.animate > *").forEach((el) => {
 			let animation;
 

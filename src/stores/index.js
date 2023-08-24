@@ -106,3 +106,5 @@ export const resetViewToggle = writable(true);
 
 export const expandPlayground = writable(false);
 if (get(debug)) expandPlayground.set(true);
+
+export const matrixMode = writable(null)

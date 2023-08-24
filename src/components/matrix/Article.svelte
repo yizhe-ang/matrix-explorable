@@ -35,19 +35,19 @@
 	// 		let animation;
 
 	// 		if (el.className === "exclude") {
-  //       animation = gsap.timeline({ paused: true })
-  //         .from(el, {
-  //           opacity: 0,
-  //           y: 100,
-  //           duration: 0.6
-  //         })
-  //         .from(el.querySelectorAll('li'), {
-  //           x: -40,
-  //           opacity: 0,
-  //           stagger: {
-  //             amount: 0.3
-  //           }
-  //         })
+	//       animation = gsap.timeline({ paused: true })
+	//         .from(el, {
+	//           opacity: 0,
+	//           y: 100,
+	//           duration: 0.6
+	//         })
+	//         .from(el.querySelectorAll('li'), {
+	//           x: -40,
+	//           opacity: 0,
+	//           stagger: {
+	//             amount: 0.3
+	//           }
+	//         })
 	// 		} else {
 	// 			animation = gsap.from(el, {
 	// 				opacity: 0,
@@ -247,7 +247,7 @@
 
 	<!-- TODO: How about 3D? -->
 	<Section id="section-2" classNames="animate">
-		<h2 class="text-neutral">Beyond Two-Dimensions</h2>
+		<h2>Beyond Two-Dimensions</h2>
 
 		<p>
 			So far we've only been talking about matrix transformations in
@@ -282,11 +282,11 @@
 		</P>
 
 		<P id="st-12">
-			From these visually-focused examples we've seen thus far, the most obvious application
-			of matrix transformations would be that of computer graphics. In fact,
-			this is precisely how this article was built! Matrices provide a language
-			to rotate, scale and translate vectors and points and consequently entire
-			objects in 2D or 3D space.
+			From these visually-focused examples we've seen thus far, the most obvious
+			application of matrix transformations would be that of computer graphics.
+			In fact, this is precisely how this article was built! Matrices provide a
+			language to rotate, scale and translate vectors and points and
+			consequently entire objects in 2D or 3D space.
 		</P>
 
 		<!-- <p>
@@ -313,5 +313,85 @@
 		</div>
 	</Section>
 
+	<Section id="section-3" classNames="animate">
+		<p>
+			Did you manage to explore a good chunk of the space of transformations
+			that are possible with matrices? In the following sections, we'll review
+			and consolidate common transformation operations.
+		</p>
+
+		<h2 id="scaling-section">Scaling</h2>
+
+		<p>
+			How do you scale or stretch an object in order to make it taller or wider?
+		</p>
+
+		<P id="st-14">
+			To make an object twice as tall, we have to scale the z-basis vector to be
+			twice as long. stretching space in the z-direction.
+		</P>
+
+		<p>
+			In other words, to scale along a specified axis, we have to scale the
+			corresponding basis vector by the same factor.
+		</p>
+
+		<p>
+			Since we're simply scaling each basis vector independently, the matrix for
+			a scaling transformation is always a diagonal matrix.
+		</p>
+	</Section>
+
+	<Section classNames="animate">
+		<h2>Reflection</h2>
+
+		<P id="st-15">
+			As you might've noticed, scaling a basis vector to zero and towards the
+			opposite direction, i.e. by a negative factor, flips space along the
+			associated axis.
+		</P>
+	</Section>
+
+	<Section>
+		<h2>Shearing</h2>
+
+		<p>Off-diagonal entries of the matrix are non-zero.</p>
+	</Section>
+
+	<Section>
+		<h2>Rotation</h2>
+
+		<p>
+			Say you'd like to rotate an object clockwise. This means we have to rotate
+			the basis vectors clockwise accordingly too.
+		</p>
+
+		<p>
+			Since our original basis vectors are of length one, our rotated basis
+			vectors will always lie on a circle of radius one.
+		</p>
+
+		<p>
+			Notice that since each basis vector is rotated by the same angle, they
+			also remain perpendicular to each other.
+		</p>
+
+		<p>How about in 3D?</p>
+	</Section>
+
+	<Section>
+		<h2>Linearly Dependent Columns / Projection</h2>
+	</Section>
+
+	<Section>
+		<h2>Inverse</h2>
+	</Section>
+
 	<!-- TODO: Composition of matrices -->
 </div>
+
+<style lang="postcss">
+	h2 {
+		@apply text-neutral;
+	}
+</style>

@@ -79,7 +79,7 @@
 
 	<section class="prose-lg">
 		<p>
-			<A href="https://github.com/yizhe-ang/matrix-explorable">Source code</A> of
+			(Messy) <A href="https://github.com/yizhe-ang/matrix-explorable">source code</A> of
 			the article.
 		</p>
 
